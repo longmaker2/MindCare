@@ -10,13 +10,16 @@ urlpatterns = [
     path('post/<str:pk>', views.post, name='post'),
     path('dashboard', views.dashboard, name='dashboard'),
     path('training_materials', views.training_materials, name='training_materials'),
-    path('index.html', views.contact, name='contact'),
     path('home', views.home, name='home.html'),
     path('room', views.room, name='room.html'),
     path('all', views.all, name='all.html'),
     path('mentorship/', views.mentorship_application, name='mentorship_application'),
     path('upload_video/', views.upload_video, name='upload_video'),
-    path('send-info/', views.send_info, name='send_info')
+    path('send-info/', views.send_info, name='send_info'),
+    path('contact', views.contact, name='contact'),
+    path('professionals/create/', views.create_professional, name='create_professional'),
+    path('professionals/<int:pk>/', views.professional_detail, name='professional_detail')
+
 ]
 
 

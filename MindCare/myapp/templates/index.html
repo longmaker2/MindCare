@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Eyt</title>
+  <title>MindCare</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -35,7 +35,7 @@
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center justify-content-between">
 
-      <h1 class="logo"><a href="index.html">Empowering Burundi's youths through Technology(EBYT)
+      <h1 class="logo"><a href="index.html">MindCare Burundi
       </a></h1>
       
       <nav id="navbar" class="navbar">
@@ -44,6 +44,7 @@
           <li><a class="nav-link scrollto" href="#about">About</a></li>
           {% if user.is_authenticated %}
           <li><a class="nav-link scrollto" href="#services">Services</a></li>
+          <li><a class="nav-link scrollto" href="#professionals">Help & Support</a></li>
           {% endif %}
           
           
@@ -69,12 +70,16 @@
           {% if user.is_authenticated %}
           <h1>Welcome, {{user.username}}</h1>
           {% else %}
-          <h2>We are a team that helps to get a better understanding of technology</h2>
+          <h2>We are a team that is dedicated to make Mental health support accessible to everyone</h2>
           {% endif %}
         </div>
       </div>
       <div class="text-center">
-        <a href="#about" class="btn-get-started scrollto">Start now</a>
+        {% if user.is_authenticated %}
+        <a href="#professionals" class="btn-get-started scrollto">Get Support</a>
+        {% else %}
+        <a href="#about" class="btn-get-started scrollto">Start Now</a>
+        {% endif %}
       </div>
 
       <div class="row icon-boxes">
@@ -101,18 +106,13 @@
 
         <div class="section-title">
           <h2>About Us</h2>
-          <p>We believe in empowering young minds to excel in the world of technology. </p>
+          <p>MindCare enhances mental well-being with accessible resources and expert support.</p>
         </div>
 
         <div class="row content">
           <div class="col-lg-6">
             <p>
-              Our aim is to get patform where youth in Burundi will access learning ressources. The website offers free tech resources,
-               training, and mentorship to bridge the digital skills gap. Our mission is rooted in the belief that technology
-                can uplift communities, boost economic growth, and amplify youth voices as it will help youths to get access
-                 to the opportunities around the world. By providing free tech resources, training, and mentorship to empower
-                  Burundian youth.
-                   Together, we will spark a technology-driven revolution, building a brighter future for Burundi.
+              At MindCare, our mission is to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
             </p>
           </div>
           <div class="col-lg-6 pt-4 pt-lg-0">
@@ -138,7 +138,7 @@
           <div class="col-lg-6 pt-3 pt-lg-0 content" data-aos="fade-left" data-aos-delay="100">
             <h3>What we expext</h3>
             <p>
-              We believe that by using the website  which  offers technology workshops, mentorship programs, and access to digital resources, we will significantly improve the digital literacy in youth.
+              At MindCare, we expect to create a supportive and accessible platform where individuals can easily access mental health resources, expert guidance, and interactive tools. Our goal is to foster a safe and inclusive space that encourages mental well-being, empowers users to take control of their emotional health, and reduces stigma around mental health challenges. Through innovation and professional care, we aim to make mental health support more approachable and effective for everyone.
             </p>
             
            
@@ -155,7 +155,8 @@
         {% if user.is_authenticated %}
         <div class="section-title">
           <h2>Sevices</h2>
-          <p>We aim to establish a tech hub in Burundi, empowering 500 youths within a year. It bridges the digital skills gap, fostering innovation and economic growth.</p>
+          <p>
+            We aim to make mental health support accessible and empowering for all.</p>
         </div>
 
         <div class="row">
@@ -167,7 +168,7 @@
                 </svg>
                 <i class="bx bxl-dribbble"></i>
               </div>
-              <h4><a href="training_materials">Training Materials</a></h4>
+              <h4><a href="training_materials">MindCare Resource Center</a></h4>
               <p>Pages displaying articles, videos, courses, or other learning materials categorized by topics or skill levels.</p>
             </div>
           </div>
@@ -180,8 +181,8 @@
                 </svg>
                 <i class="bx bx-file"></i>
               </div>
-              <h4><a href="home">Mentorship Interaction</a></h4>
-              <p>A chat system or messaging platform for communication between mentors and mentees and Forms for applying to mentorship programs.</p>
+              <h4><a href="home">Mental Health Support Space</a></h4>
+              <p>A chat system or messaging platform for communication between people and mental health proffesional and anonymous chart.</p>
             </div>
           </div>
 
@@ -198,8 +199,35 @@
             </div>
           </div>
 
-          {% endif %}
 
+    <!-- ======= Professionals Section ======= --> 
+    <section id="professionals" class="professionals">
+      <div class="container" data-aos="fade-up">
+        <div class="section-title">
+          <h2>Meet Our Professionals</h2>
+          <p>Connect with experienced mental health professionals ready to support you.</p>
+        </div>
+        <div class="row">
+          {% for professional in professionals %}
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="member">
+              <a href="{% url 'professional_detail' professional.id %}">
+                <img src="{% static professional.image %}" class="img-fluid" alt="">
+                <h4>{{ professional.name }}</h4>
+                <p>{{ professional.specialty }}</p>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+          <a href="{% url 'create_professional' %}" class="btn btn-primary">Join as a Professional</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ======= end professionals Section ======= -->
+    {% endif %}
  
 
     
@@ -221,7 +249,7 @@
               <div class="address">
                 <i class="bi bi-geo-alt"></i>
                 <h4>Location:</h4>
-                <p>Manga, Kinindo, Bujumbura</p>
+                <p>Bibare, Kimironko, Rwanda</p>
               </div>
 
               <div class="email">
@@ -233,7 +261,7 @@
               <div class="phone">
                 <i class="bi bi-phone"></i>
                 <h4>Call:</h4>
-                <p>+25776411023</p>
+                <p>+250790135783</p>
               </div>
 
             </div>
@@ -242,28 +270,16 @@
 
           <div class="col-lg-8 mt-5 mt-lg-0">
 
-            <form action="/contact.html" method="post" role="form" class="php-email-form">
-              <div class="row gy-2 gx-md-3">
-                <div class="col-md-6 form-group">
-                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
-                </div>
-                <div class="col-md-6 form-group">
-                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
-                </div>
-                <div class="form-group col-12">
-                  <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
-                </div>
-                <div class="form-group col-12">
-                  <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
-                </div>
-                <div class="my-3 col-12">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-                </div>
-                <div class="text-center col-12"><button type="submit">Send Message</button></div>
-              </div>
+            <form action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
+              {% csrf_token %}
+              <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+              <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+              <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+              <textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea>
+              <button type="submit">Send Message</button>
             </form>
+            
+            
 
           </div>
 
@@ -282,12 +298,12 @@
         <div class="row">
 
           <div class="col-lg-3 col-md-6 footer-contact">
-            <h3>EYT</h3>
+            <h3>MindCare Burundi</h3>
             <p>
-              Avenue Manga <br>
-              Kinindo, number 1<br>
-              Bujumbura-Mairie <br><br>
-              <strong>Phone:</strong> +25776411023<br>
+              Bibare <br>
+              Kimironko<br>
+              Kigali <br><br>
+              <strong>Phone:</strong> +250790135783<br>
               <strong>Email:</strong> nshimirimanaerica@gmail.com<br>
             </p>
           </div>
@@ -299,7 +315,7 @@
       <div class="me-md-auto text-center text-md-start">
         <div class="copyright">
           
-    <p>&copy; 2023 Youth Empowerment in Technology</p>
+    <p>&copy; 2023 Mental health support platform</p>
         </div>
         <div class="credits">
           

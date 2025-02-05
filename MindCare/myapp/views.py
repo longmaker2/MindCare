@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
@@ -8,6 +9,9 @@ from .forms import Video
 from .forms import MentorshipApplication
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import Professional
+from .forms import ProfessionalForm
+
 
 
 def index(request):
@@ -82,7 +86,7 @@ def training_materials(request):
     return render(request, 'training_materials.html' )
 
 def contact(request):
-    return render(request, 'index.html')
+    return render(request, 'contact.html') 
 
 def home(request):
     return render(request, 'home.html')
@@ -136,6 +140,19 @@ def send_info(request):
         
         return JsonResponse({'info': info})
     return JsonResponse({'error': 'Invalid request'})
+def create_professional(request):
+    if request.method == 'POST':
+        form = ProfessionalForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('professionals')  # Redirect to the professionals list
+    else:
+        form = ProfessionalForm()
+    return render(request, 'create_professional.html', {'form': form})
+
+def professional_detail(request, pk):
+    professional = get_object_or_404(Professional, pk=pk)
+    return render(request, 'professional_detail.html', {'professional': professional})
 
     
 
