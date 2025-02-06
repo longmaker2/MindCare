@@ -21,13 +21,15 @@ https://github.com/Ericanshimir/MindCare.git
 cd MindCare
 ```
 
-#Install Python and Django:
+# Install Python and Django:
 
 
-# Ensure Python is installed
-# Then, install Django
+Ensure Python is installed
+Then, install Django
 
-```bash pip install django ```
+```bash
+pip install django 
+```
 
 Create a virtual environment:
 ```bash
