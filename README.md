@@ -18,8 +18,7 @@ Installation:
 Clone the repository:
 ```bash
 https://github.com/Ericanshimir/MindCare.git
-```
-cd MindCare
+cd MindCare ```
 
 #Install Python and Django:
 
