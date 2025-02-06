@@ -16,7 +16,9 @@ Some javascript
 Installation:
 
 Clone the repository:
+```bash
 https://github.com/Ericanshimir/MindCare.git
+```
 cd MindCare
 
 #Install Python and Django:
