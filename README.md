@@ -18,7 +18,8 @@ Installation:
 Clone the repository:
 ```bash
 https://github.com/Ericanshimir/MindCare.git
-cd MindCare ```
+cd MindCare
+```
 
 #Install Python and Django:
 
@@ -26,27 +27,34 @@ cd MindCare ```
 # Ensure Python is installed
 # Then, install Django
 
-pip install django
+```bash pip install django ```
 
 Create a virtual environment:
+```bash
 python -m venv myenv
-
+```
 # Activate the virtual environment :
+```bash
 source myenv/bin/activate   # For Unix or MacOS
 myenv\Scripts\activate       # For Windows
+```
 
 Install project dependencies:
+```bash
 pip install -r requirements.txt
+```
 Usage
 
 Run migrations:
-
+```bash
 python manage.py makemigrations
 python manage.py migrate
-
+```
 Start the development server:
 
+```bash
 python manage.py runserver
+```
 
 Access the application:
 Open a web browser and go to http://127.0.0.1:8000/ to view the site.
