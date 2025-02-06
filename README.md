@@ -1,10 +1,11 @@
-Empowering youth through technology(EYT)
+MindCare Burundi
 
-![image](https://github.com/Ericanshimir/EYT/assets/109414922/8ea8d642-ff68-4353-8534-ee8208650362)
+![image](https://github.com/user-attachments/assets/3185023a-261d-44c0-a634-da654600586d)
+
 
 Description:
 
-This project is called "empowering youth through technology" and it aims to establish a tech hub in Burundi, providing free resources, training, and mentorship to empower 500 Burundian youths within a year. It tackles the challenges of limited technology access and education among Burundian youth. My belief is that technology can help in the development of communities and stimulate economic growth.
+At MindCare, our mission is to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
 
 Prerequisites:
 
@@ -15,8 +16,8 @@ Some javascript
 Installation:
 
 Clone the repository:
-git clone https://github.com/Ericanshimir/EYT.git
-cd eyt
+https://github.com/Ericanshimir/MindCare.git
+cd MindCare
 
 #Install Python and Django:
 
