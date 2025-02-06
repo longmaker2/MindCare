@@ -65,3 +65,7 @@ python manage.py runserver
 Access the application:
 Open a web browser and go to http://127.0.0.1:8000/ to view the site.
 
+# Deployment plan
+
+I entend to use netlify for deployment.
+
