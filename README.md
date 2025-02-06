@@ -21,7 +21,7 @@ Installation:
 
 Clone the repository:
 ```bash
-https://github.com/Ericanshimir/MindCare.git
+git clone https://github.com/Ericanshimir/MindCare.git
 cd MindCare
 ```
 
