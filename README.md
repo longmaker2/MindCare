@@ -1,9 +1,9 @@
-MindCare Burundi
+# MindCare Burundi
 
 ![image](https://github.com/user-attachments/assets/3185023a-261d-44c0-a634-da654600586d)
 
 
-Description:
+# Description:
 
 At MindCare, our mission is to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
 
