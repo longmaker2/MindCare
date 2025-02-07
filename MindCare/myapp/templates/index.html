@@ -222,7 +222,6 @@
             <h4>{{ professional.name }}</h4>
             <p>{{ professional.specialty }}</p>
           </a>
-
           <!-- Appointment Booking Form -->
           <form method="post"  action="{% url 'book_appointment' %}">
             {% csrf_token %}
