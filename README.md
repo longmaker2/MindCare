@@ -5,7 +5,7 @@
 
 # Description:
 
-At MindCare, our aim is to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
+MindCare is a platform that aims to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
 
 # Link to the git hub repository
 ```bash
