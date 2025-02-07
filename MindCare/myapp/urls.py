@@ -1,5 +1,9 @@
 from django.urls import path
 from . import views
+from .views import professionals_list
+from .views import index, appointment_success
+from .views import book_appointment
+from django.shortcuts import render
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -18,9 +22,15 @@ urlpatterns = [
     path('send-info/', views.send_info, name='send_info'),
     path('contact', views.contact, name='contact'),
     path('professionals/create/', views.create_professional, name='create_professional'),
-    path('professionals/<int:pk>/', views.professional_detail, name='professional_detail')
+    path('professionals/<int:pk>/', views.professional_detail, name='professional_detail'),
+    path('professionals/', professionals_list, name='professionals_list'),
+    path('appointment-success/', appointment_success, name='appointment_success'),
+    path("book-appointment/", book_appointment, name="book_appointment"),
+    path("appointment-success/", lambda request: render(request, "appointment_success.html"), name="appointment_success")
 
 ]
+
+
 
 
     

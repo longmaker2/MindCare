@@ -17,7 +17,22 @@ class MentorshipApplicationForm(forms.ModelForm):
         fields = ('field1', 'field2')
 
 
+from django import forms
+from .models import Professional
+
 class ProfessionalForm(forms.ModelForm):
     class Meta:
         model = Professional
-        fields = ['name', 'specialty', 'contact_email', 'phone_number', 'image']
+        fields = ['name', 'image', 'specialty', 'contact_email', 'phone_number']  # Ensure these exist in models.py
+
+
+from myapp.models import Professional
+
+
+#from django import forms
+from .models import Appointment
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ["professional", "date", "time", "reason"]  # Ensure only valid fields are here

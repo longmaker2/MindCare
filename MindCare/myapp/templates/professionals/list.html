@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professionals List</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>List of Professionals</h1>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Specialty</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+        </tr>
+        {% for professional in professionals %}
+        <tr>
+            <td>{{ professional.name }}</td>
+            <td>{{ professional.specialty }}</td>
+            <td>{{ professional.contact_email }}</td>
+            <td>{{ professional.phone_number }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No professionals found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

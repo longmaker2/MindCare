@@ -199,38 +199,56 @@
             </div>
           </div>
 
+          {% endif %}
 
     <!-- ======= Professionals Section ======= --> 
-    <section id="professionals" class="professionals">
-      <div class="container" data-aos="fade-up">
-        <div class="section-title">
-          <h2>Meet Our Professionals</h2>
-          <p>Connect with experienced mental health professionals ready to support you.</p>
-        </div>
-        <div class="row">
-          {% for professional in professionals %}
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
-            <div class="member">
-              <a href="{% url 'professional_detail' professional.id %}">
-                <img src="{% static professional.image %}" class="img-fluid" alt="">
-                <h4>{{ professional.name }}</h4>
-                <p>{{ professional.specialty }}</p>
-              </a>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-          <a href="{% url 'create_professional' %}" class="btn btn-primary">Join as a Professional</a>
+<section id="professionals" class="professionals">
+  <div class="container" data-aos="fade-up">
+    <div class="section-title">
+      <h2>Meet Our Professionals</h2>
+      <p>Connect with experienced mental health professionals ready to support you.</p>
+    </div>
+
+    <div class="row">
+      {% for professional in professionals %}
+      <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+        <div class="member">
+          <a href="#">
+            {% if professional.image %}
+              <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
+            {% else %}
+              <img src="{% static 'assets/images/default.png' %}" class="img-fluid" alt="Default Image">
+            {% endif %}
+            <h4>{{ professional.name }}</h4>
+            <p>{{ professional.specialty }}</p>
+          </a>
+
+          <!-- Appointment Booking Form -->
+          <form method="post"  action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="professional" value="{{ professional.id }}">
+            
+            <label for="date">Select Date:</label>
+            <input type="date" name="date" required>
+
+            <label for="time">Select Time:</label>
+            <input type="time" name="time" required>
+
+            <label for="reason">Reason:</label>
+            <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
+
+            <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
+          </form>
         </div>
       </div>
-    </section>
-    
-    <!-- ======= end professionals Section ======= -->
-    {% endif %}
- 
+      {% empty %}
+      <p class="text-center">No professionals available at the moment.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
-    
+  
     <!-- ======= Contact Section ======= -->
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">

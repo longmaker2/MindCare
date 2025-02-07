@@ -140,15 +140,6 @@ def send_info(request):
         
         return JsonResponse({'info': info})
     return JsonResponse({'error': 'Invalid request'})
-def create_professional(request):
-    if request.method == 'POST':
-        form = ProfessionalForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('professionals')  # Redirect to the professionals list
-    else:
-        form = ProfessionalForm()
-    return render(request, 'create_professional.html', {'form': form})
 
 def professional_detail(request, pk):
     professional = get_object_or_404(Professional, pk=pk)
@@ -156,3 +147,75 @@ def professional_detail(request, pk):
 
     
 
+def create_professional(request):
+    if request.method == "POST":
+        form = ProfessionalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('some_success_page')
+    else:
+        form = ProfessionalForm()
+    return render(request, 'professionals/create.html', {'form': form})
+from django.shortcuts import render
+from .models import Professional
+
+def professionals_list(request):
+    professionals = Professional.objects.all()  # Fetch all professionals from DB
+    return render(request, 'professionals/list.html', {'professionals': professionals})
+from django.shortcuts import render
+from .models import Professional  # Import your Professional model
+
+def index(request):
+    professionals = Professional.objects.all()  # Fetch professionals from DB
+    return render(request, 'index.html', {'professionals': professionals})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Professional, Appointment
+from .forms import AppointmentForm
+
+@login_required
+def index(request):
+    professionals = Professional.objects.all()  # Fetch all professionals
+    form = AppointmentForm()
+
+    if request.method == "POST":
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.user = request.user  # Assign logged-in user
+            appointment.save()
+            return redirect('appointment_success')  # Redirect after successful booking
+
+    return render(request, 'index.html', {'professionals': professionals, 'form': form})
+
+def appointment_success(request):
+    return render(request, 'appointment_success.html')
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Appointment, Professional
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def book_appointment(request):
+    if request.method == "POST":
+        professional_id = request.POST.get("professional")
+        date = request.POST.get("date")
+        time = request.POST.get("time")
+        reason = request.POST.get("reason")
+
+        professional = Professional.objects.get(id=professional_id)
+
+        # Create a new appointment
+        Appointment.objects.create(
+            user=request.user,
+            professional=professional,
+            date=date,
+            time=time,
+            reason=reason
+        )
+
+        messages.success(request, "Appointment booked successfully!")
+        return redirect("appointment_success")  # Redirect after booking
+
+    return redirect("index")  # Redirect back if accessed incorrectly
