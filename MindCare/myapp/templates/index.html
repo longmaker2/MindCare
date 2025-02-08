@@ -200,8 +200,7 @@
           </div>
 
           {% endif %}
-
-    <!-- ======= Professionals Section ======= --> 
+<!-- ======= Professionals Section ======= -->
 <section id="professionals" class="professionals">
   <div class="container" data-aos="fade-up">
     <div class="section-title">
@@ -213,31 +212,57 @@
       {% for professional in professionals %}
       <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
         <div class="member">
-          <a href="#">
-            {% if professional.image %}
-              <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
-            {% else %}
-              <img src="{% static 'assets/images/default.png' %}" class="img-fluid" alt="Default Image">
-            {% endif %}
-            <h4>{{ professional.name }}</h4>
-            <p>{{ professional.specialty }}</p>
-          </a>
+
+          <!-- Show professional's image -->
+          {% if professional.image %}
+            <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
+          {% else %}
+            <img src="{% static 'assets/images/default.png' %}" class="img-fluid" alt="Default Image">
+          {% endif %}
+
+          <!-- Show professional details -->
+          <h4>{{ professional.name }}</h4>
+          <p>{{ professional.specialty }}</p>
+
+          <!-- Display available slots -->
+          <p><strong>Available Slots:</strong></p>
+          <ul>
+            {% for slot in professional.available_slots %}
+              <li>
+                {% if slot in professional.booked_slots %}
+                  <span style="color: red;">{{ slot }} - Booked</span>
+                {% else %}
+                  <span style="color: green;">{{ slot }}</span>
+                {% endif %}
+              </li>
+            {% empty %}
+              <li style="color: red;">No available slots</li>
+            {% endfor %}
+          </ul>
+
           <!-- Appointment Booking Form -->
-          <form method="post"  action="{% url 'book_appointment' %}">
+          <form method="post" action="{% url 'book_appointment' %}">
             {% csrf_token %}
             <input type="hidden" name="professional" value="{{ professional.id }}">
-            
+
             <label for="date">Select Date:</label>
             <input type="date" name="date" required>
 
             <label for="time">Select Time:</label>
-            <input type="time" name="time" required>
+            <select name="time" required>
+              {% for slot in professional.available_slots %}
+                <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
+                  {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
+                </option>
+              {% endfor %}
+            </select>
 
             <label for="reason">Reason:</label>
             <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
 
             <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
           </form>
+
         </div>
       </div>
       {% empty %}
@@ -246,6 +271,7 @@
     </div>
   </div>
 </section>
+
 
   
     <!-- ======= Contact Section ======= -->

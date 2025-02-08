@@ -196,6 +196,17 @@ from django.contrib import messages
 from .models import Appointment, Professional
 from django.contrib.auth.decorators import login_required
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Professional
+from datetime import datetime
+import json
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Professional
+from datetime import datetime
+
 @login_required
 def book_appointment(request):
     if request.method == "POST":
@@ -204,18 +215,69 @@ def book_appointment(request):
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
+        # Convert time from "HH:MM AM/PM" to "HH:MM:SS"
+        try:
+            time_24hr = datetime.strptime(time, "%I:%M %p").strftime("%H:%M:%S")
+        except ValueError:
+            return render(request, "appointment_error.html", {"error": "Invalid time format."})
+
         professional = Professional.objects.get(id=professional_id)
 
-        # Create a new appointment
+        # Ensure the selected time is in the available slots
+        if time_24hr not in professional.available_slots:
+            return render(request, "appointment_error.html", {"error": "This slot is not available."})
+
+        # Create the appointment
         Appointment.objects.create(
             user=request.user,
             professional=professional,
             date=date,
-            time=time,
+            time=time_24hr,  # Save in correct format
             reason=reason
         )
 
-        messages.success(request, "Appointment booked successfully!")
-        return redirect("appointment_success")  # Redirect after booking
+        # Remove booked slot from available slots (directly modifying the list)
+        professional.available_slots.remove(time_24hr)
+        professional.save()
 
-    return redirect("index")  # Redirect back if accessed incorrectly
+        return redirect("appointment_success")
+
+    return redirect("home")
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Professional
+
+def get_available_slots(request, professional_id, date):
+    """Returns available slots for a professional on a given date."""
+    professional = get_object_or_404(Professional, id=professional_id)
+
+    return JsonResponse({'available_slots': professional.available_slots})
+
+from django.shortcuts import render
+from myapp.models import Professional
+
+from django.shortcuts import render
+from myapp.models import Professional, Appointment
+
+from django.shortcuts import render
+from myapp.models import Professional, Appointment
+
+from django.shortcuts import render
+from myapp.models import Professional, Appointment
+
+def index(request):
+    professionals = Professional.objects.all()
+
+    for professional in professionals:
+        # Get all booked slots for the professional
+        booked_slots = Appointment.objects.filter(professional=professional).values_list('time', flat=True)
+
+        # Store available slots with booking status
+        professional.available_slots_status = [
+            {"time": slot, "is_booked": slot in booked_slots} for slot in professional.available_slots
+        ]
+
+    return render(request, 'index.html', {'professionals': professionals})
+

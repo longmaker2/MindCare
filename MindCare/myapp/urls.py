@@ -4,6 +4,7 @@ from .views import professionals_list
 from .views import index, appointment_success
 from .views import book_appointment
 from django.shortcuts import render
+from .views import get_available_slots
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -26,9 +27,12 @@ urlpatterns = [
     path('professionals/', professionals_list, name='professionals_list'),
     path('appointment-success/', appointment_success, name='appointment_success'),
     path("book-appointment/", book_appointment, name="book_appointment"),
-    path("appointment-success/", lambda request: render(request, "appointment_success.html"), name="appointment_success")
-
+    path("appointment-success/", lambda request: render(request, "appointment_success.html"), name="appointment_success"),
+    path('api/get-available-slots/<int:professional_id>/<str:date>/', get_available_slots, name='get_available_slots')
 ]
+
+
+
 
 
 

@@ -30,32 +30,25 @@ class MentorshipApplication(models.Model):
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db import models
-from django.contrib.auth.models import User
 
 class Professional(models.Model):
     name = models.CharField(max_length=255)
     specialty = models.CharField(max_length=255)
-    contact_email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
-    image = models.ImageField(upload_to='professionals/', blank=True, null=True)
-
-    # New field: Available time slots
-    available_times = models.JSONField(default=list)  # Example: ["09:00", "10:00", "11:00"]
+    contact_email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, unique=True)
+    image = models.ImageField(upload_to='professionals/', null=True, blank=True)
+    available_slots = models.JSONField(default=list)  # Store slots as a JSON list
 
     def __str__(self):
         return self.name
-
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     professional = models.ForeignKey(Professional, on_delete=models.CASCADE)
     date = models.DateField()
-    time = models.TimeField()  # ✅ Ensure this field exists
+    time = models.TimeField()  # Correct format HH:MM:SS
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-     
-
-
-    
+    def __str__(self):
+        return f"{self.user} - {self.professional.name} - {self.date} {self.time}"

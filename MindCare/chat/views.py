@@ -35,3 +35,12 @@ def send(request):
     new_message = Message.object.create(value=message, user=username, room=room_id)
     new_message.save()
     return HttpResponse('Message sent successfuly')
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Professional
+
+def get_available_slots(request, professional_id, date):
+    professional = get_object_or_404(Professional, id=professional_id)
+
+    return JsonResponse({'available_slots': professional.available_slots})
