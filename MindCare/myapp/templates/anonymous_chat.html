@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            text-align: center;
+        }
+
+        .chat-container {
+            width: 50%;
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-box {
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .message-left {
+            background: #e1e1e1;
+            text-align: left;
+        }
+
+        .message-right {
+            background: #4ca5af;
+            color: white;
+            text-align: right;
+        }
+
+        .message-form {
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background: #4ca5af;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3a8b92;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Anonymous Chat</h2>
+<p>Your username: <b>Anonymous</b></p>
+
+<div class="chat-container">
+    <div class="chat-box">
+        {% for message in messages %}
+        <div class="message message-left">
+            <p><b>Anonymous:</b> {{ message.content }}</p>
+            <small>{{ message.timestamp }}</small>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Form to send messages -->
+    <form method="POST" class="message-form">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type a message..." required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+</body>
+</html>

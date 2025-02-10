@@ -52,3 +52,14 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.professional.name} - {self.date} {self.time}"
+
+from django.db import models
+from django.utils.timezone import now
+
+class ChatMessage(models.Model):
+    username = models.CharField(max_length=50, default="Anonymous")
+    content = models.TextField()
+    timestamp = models.DateTimeField(default=now)  # Automatically set timestamp
+
+    def __str__(self):
+        return f"{self.username}: {self.content[:50]}"

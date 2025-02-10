@@ -281,3 +281,93 @@ def index(request):
 
     return render(request, 'index.html', {'professionals': professionals})
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import ChatMessage
+from django.views.decorators.csrf import csrf_exempt
+
+def get_messages(request, room_id):
+    """ Fetch latest messages for AJAX polling """
+    messages = ChatMessage.objects.filter(room_id=room_id).order_by("timestamp")
+    data = ""
+    
+    for message in messages:
+        alignment = "message-right" if message.username == request.user.username else "message-left"
+        data += f'<div class="message {alignment}"><p>{message.content}</p><span class="timestamp">{message.timestamp}</span></div>'
+    
+    return JsonResponse(data, safe=False)
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import ChatMessage
+import random
+
+# Generate random anonymous username
+def generate_anonymous_username():
+    adjectives = ["Brave", "Smart", "Quick", "Happy", "Clever"]
+    nouns = ["Panda", "Tiger", "Dolphin", "Eagle", "Fox"]
+    return f"{random.choice(adjectives)} {random.choice(nouns)}"
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import ChatMessage
+import json
+
+def anonymous_chat(request):
+    messages = ChatMessage.objects.all()
+    return render(request, "anonymous_chat.html", {"messages": messages})
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
+from .models import ChatMessage
+
+@csrf_exempt
+def send_message(request):
+    if request.method == "POST":
+        try:
+            message = request.POST.get("message", "").strip()
+
+            if not message:
+                return JsonResponse({"error": "Message cannot be empty"}, status=400)
+
+            # Save message with "Anonymous" as default username
+            chat_message = ChatMessage.objects.create(username="Anonymous", content=message, timestamp=now())
+            chat_message.save()
+
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def chat_room(request):
+    messages = ChatMessage.objects.all()
+    return render(request, "anonymous_chat.html", {"messages": messages})
+from django.http import JsonResponse
+from .models import ChatMessage
+
+def get_messages(request):
+    messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Get latest 50 messages
+    return JsonResponse([{"content": msg.content, "timestamp": msg.timestamp} for msg in messages], safe=False)
+
+from django.shortcuts import render, redirect
+from django.utils.timezone import now
+from .models import ChatMessage
+
+def anonymous_chat(request):
+    """Handles chat functionality"""
+
+    messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Show latest 50 messages
+
+    if request.method == "POST":
+        message_content = request.POST.get("message", "").strip()
+
+        if message_content:
+            ChatMessage.objects.create(username="Anonymous", content=message_content, timestamp=now())
+
+        return redirect("anonymous_chat")  # Refresh the page after sending
+
+    return render(request, "anonymous_chat.html", {"messages": messages})

@@ -5,6 +5,8 @@ from .views import index, appointment_success
 from .views import book_appointment
 from django.shortcuts import render
 from .views import get_available_slots
+from django.urls import path
+from .views import chat_room, get_messages, send_message
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -28,7 +30,12 @@ urlpatterns = [
     path('appointment-success/', appointment_success, name='appointment_success'),
     path("book-appointment/", book_appointment, name="book_appointment"),
     path("appointment-success/", lambda request: render(request, "appointment_success.html"), name="appointment_success"),
-    path('api/get-available-slots/<int:professional_id>/<str:date>/', get_available_slots, name='get_available_slots')
+    path('api/get-available-slots/<int:professional_id>/<str:date>/', get_available_slots, name='get_available_slots'),
+    path("chat/<str:room_name>/", chat_room, name="chat_room"),
+    path("anonymous_chat/", views.anonymous_chat, name="anonymous_chat"),
+    path("get-messages/", views.get_messages, name="get_messages"),
+    path("send-message/", views.send_message, name="send_message"),
+
 ]
 
 
