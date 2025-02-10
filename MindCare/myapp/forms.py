@@ -36,3 +36,12 @@ class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
         fields = ["professional", "date", "time", "reason"]  # Ensure only valid fields are here
+
+from django import forms
+from .models import Video
+
+class VideoUploadForm(forms.ModelForm):  # Renamed to follow naming conventions
+    class Meta:
+        model = Video
+        fields = ['title', 'category', 'video_file', 'video', 'caption']
+

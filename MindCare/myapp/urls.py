@@ -7,7 +7,7 @@ from django.shortcuts import render
 from .views import get_available_slots
 from django.urls import path
 from .views import chat_room, get_messages, send_message
-
+from .views import training_materials, upload_video
 urlpatterns = [
     path('', views.index, name='index'),
     path('counter', views.counter, name='counter'),
@@ -35,6 +35,11 @@ urlpatterns = [
     path("anonymous_chat/", views.anonymous_chat, name="anonymous_chat"),
     path("get-messages/", views.get_messages, name="get_messages"),
     path("send-message/", views.send_message, name="send_message"),
+    path("training_materials/", training_materials, name="training_materials"),
+    path("upload_video/", upload_video, name="upload_video"),  # Admin-only upload page
+    
+
+
 
 ]
 

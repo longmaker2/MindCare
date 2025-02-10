@@ -54,12 +54,29 @@ class Appointment(models.Model):
         return f"{self.user} - {self.professional.name} - {self.date} {self.time}"
 
 from django.db import models
-from django.utils.timezone import now
 
 class ChatMessage(models.Model):
     username = models.CharField(max_length=50, default="Anonymous")
     content = models.TextField()
-    timestamp = models.DateTimeField(default=now)  # Automatically set timestamp
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.username}: {self.content[:50]}"
+from django.db import models
+
+class Video(models.Model):
+    CATEGORY_CHOICES = [
+        ('Anxiety', 'Anxiety'),
+        ('Depression', 'Depression'),
+        ('PTSD', 'Post-Traumatic Stress Disorder'),
+    ]
+
+    title = models.CharField(max_length=256)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    video_file = models.FileField(upload_to="videos/")
+    video = models.FileField(upload_to='videos/')  # Ensure this field is correctly named
+    caption = models.TextField()
+
+    def __str__(self):
+        return self.title  # Keeping only one __str__ method
+

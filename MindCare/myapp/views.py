@@ -14,6 +14,7 @@ from .forms import ProfessionalForm
 
 
 
+
 def index(request):
     features = Feature.objects.all()
     return  render(request, 'index.html', {'features': features})
@@ -354,20 +355,65 @@ def get_messages(request):
     return JsonResponse([{"content": msg.content, "timestamp": msg.timestamp} for msg in messages], safe=False)
 
 from django.shortcuts import render, redirect
-from django.utils.timezone import now
 from .models import ChatMessage
 
 def anonymous_chat(request):
-    """Handles chat functionality"""
-
-    messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Show latest 50 messages
-
     if request.method == "POST":
-        message_content = request.POST.get("message", "").strip()
-
+        message_content = request.POST.get("message")
         if message_content:
-            ChatMessage.objects.create(username="Anonymous", content=message_content, timestamp=now())
+            ChatMessage.objects.create(username="Anonymous", content=message_content)
+        return redirect("anonymous_chat")  # Redirect to clear form
 
-        return redirect("anonymous_chat")  # Refresh the page after sending
+    messages = ChatMessage.objects.all().order_by("-timestamp")
+    return render(request, "chat.html", {"messages": messages})
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Video
+from .forms import VideoUploadForm
 
-    return render(request, "anonymous_chat.html", {"messages": messages})
+# Function to check if user is an admin
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def upload_video(request):
+    """Allow only admin users to upload videos"""
+    if request.method == "POST":
+        form = VideoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("training_materials")
+    else:
+        form = VideoUploadForm()
+    
+    return render(request, "upload_video.html", {"form": form})
+
+def training_materials(request):
+    """Allow all users to view and filter uploaded videos"""
+    videos = Video.objects.all()
+    return render(request, "training_materials.html", {"videos": videos})
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Video
+from .forms import VideoUploadForm
+
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def upload_video(request):
+    if request.method == "POST":
+        form = VideoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("training_materials")
+    else:
+        form = VideoUploadForm()
+    
+    return render(request, "upload_video.html", {"form": form})
+
+def training_materials(request):
+    videos = Video.objects.all()
+    return render(request, "training_materials.html", {"videos": videos})
