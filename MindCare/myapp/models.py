@@ -56,12 +56,16 @@ class Appointment(models.Model):
 from django.db import models
 
 class ChatMessage(models.Model):
-    username = models.CharField(max_length=50, default="Anonymous")
     content = models.TextField()
+    username = models.CharField(max_length=100, default="Anonymous")
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    # Remove `room_id` completely if not needed
+    # room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, null=True, blank=True)  # Remove this if unused
 
     def __str__(self):
         return f"{self.username}: {self.content[:50]}"
+
 from django.db import models
 
 class Video(models.Model):
@@ -71,12 +75,11 @@ class Video(models.Model):
         ('PTSD', 'Post-Traumatic Stress Disorder'),
     ]
 
-    title = models.CharField(max_length=256)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    video_file = models.FileField(upload_to="videos/")
-    video = models.FileField(upload_to='videos/')  # Ensure this field is correctly named
-    caption = models.TextField()
+    title = models.CharField(max_length=255, null=True, blank=True)  # Ensure it allows null values
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, null=True, blank=True)
+    video_file = models.FileField(upload_to="videos/", null=True, blank=True)
+    video = models.FileField(upload_to='videos/', null=True, blank=True)
+    caption = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.title  # Keeping only one __str__ method
-
+        return self.title if self.title else "Untitled Video"

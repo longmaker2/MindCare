@@ -315,8 +315,21 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import ChatMessage
 import json
 
+from django.shortcuts import render, redirect
+from .models import ChatMessage
+
+from django.shortcuts import render, redirect
+from .models import ChatMessage
+
 def anonymous_chat(request):
-    messages = ChatMessage.objects.all()
+    if request.method == "POST":
+        message_content = request.POST.get("message")
+
+        if message_content:  # ✅ Ensure message is not empty
+            ChatMessage.objects.create(username="Anonymous", content=message_content)  # No room required
+            return redirect("anonymous_chat")  # ✅ Refresh page after sending
+
+    messages = ChatMessage.objects.order_by('-timestamp')  # ✅ Fetch all messages
     return render(request, "anonymous_chat.html", {"messages": messages})
 
 from django.http import JsonResponse

@@ -35,9 +35,27 @@
       margin-top: 20px;
     }
 
+    /* ✅ New: Arrange videos in a horizontal row */
+    .video-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .video-item {
+      width: 23%; /* ✅ Adjust width to fit 4 per row */
+      margin-bottom: 15px;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
     video {
-      width: 100%;
-      margin-bottom: 10px;
+      width: 100%;  /* ✅ Make video responsive */
+      height: 150px; /* ✅ Adjust height */
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -59,17 +77,21 @@
       <option value="PTSD">PTSD</option>
     </select>
 
-    <div class="container" id="videoList">
+    <div class="container">
       <h3>Uploaded Videos</h3>
-      {% for video in videos %}
-        <div class="video-item" data-category="{{ video.category }}">
-          <h4>{{ video.title }} ({{ video.category }})</h4>
-          <video controls>
-            <source src="{{ video.video_file.url }}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      {% endfor %}
+      
+      <!-- ✅ New: Flexbox container for horizontal layout -->
+      <div class="video-container" id="videoList">
+        {% for video in videos %}
+          <div class="video-item" data-category="{{ video.category }}">
+            <h4>{{ video.title }} ({{ video.category }})</h4>
+            <video controls>
+              <source src="{{ video.video_file.url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
