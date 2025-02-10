@@ -241,34 +241,27 @@
           </ul>
 
           <!-- Appointment Booking Form -->
-<form method="post" action="{% url 'book_appointment' %}" class="p-3 rounded shadow-lg bg-white">
-    {% csrf_token %}
-    <input type="hidden" name="professional" value="{{ professional.id }}">
-    
-    <div class="mb-3">
-        <label for="date" class="form-label fw-bold">Select Date:</label>
-        <input type="date" name="date" class="form-control" required>
-    </div>
-    
-    <div class="mb-3">
-        <label for="time" class="form-label fw-bold">Select Time:</label>
-        <select name="time" class="form-select" required>
-            {% for slot in professional.available_slots %}
-                <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled class="text-danger"{% endif %}>
-                    {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-    
-    <div class="mb-3">
-        <label for="reason" class="form-label fw-bold">Reason:</label>
-        <textarea name="reason" class="form-control" placeholder="Enter appointment reason" required rows="3"></textarea>
-    </div>
-    
-    <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
-</form>
+          <form method="post" action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="professional" value="{{ professional.id }}">
 
+            <label for="date">Select Date:</label>
+            <input type="date" name="date" required>
+
+            <label for="time">Select Time:</label>
+            <select name="time" required>
+              {% for slot in professional.available_slots %}
+                <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
+                  {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
+                </option>
+              {% endfor %}
+            </select>
+
+            <label for="reason">Reason:</label>
+            <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
+
+            <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
+          </form>
 
         </div>
       </div>
