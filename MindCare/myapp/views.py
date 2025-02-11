@@ -459,3 +459,8 @@ from .models import Professional
 def professional_detail(request, professional_id):
     professional = get_object_or_404(Professional, id=professional_id)
     return render(request, "professional_detail.html", {"professional": professional})
+
+from django.shortcuts import render
+
+def professional_dashboard(request):
+    return render(request, "professional_dashboard.html")

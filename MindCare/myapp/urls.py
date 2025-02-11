@@ -9,6 +9,7 @@ from django.urls import path
 from .views import chat_room, get_messages, send_message
 from .views import training_materials, upload_video
 from .views import professional_detail
+from .views import professional_dashboard
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -40,7 +41,7 @@ urlpatterns = [
     path("training_materials/", training_materials, name="training_materials"),
     path("upload_video/", upload_video, name="upload_video"),  # Admin-only upload page
     path("professionals/<int:professional_id>/", professional_detail, name="professional_detail"),
-    
+    path("professional_dashboard/", professional_dashboard, name="professional_dashboard"),
 ] 
 
 
