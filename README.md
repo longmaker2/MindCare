@@ -21,7 +21,9 @@ MindCare is a digital mental health platform designed to provide users with acce
 ## Technologies Used
 
 Backend: Django (Python)
+
 Frontend: HTML, CSS, JavaScript
+
 Database: PostgreSQL
 
 ## Intended Platform of Deployment
