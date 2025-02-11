@@ -240,28 +240,28 @@
             {% endfor %}
           </ul>
 
-          <!-- Appointment Booking Form -->
-          <form method="post" action="{% url 'book_appointment' %}">
-            {% csrf_token %}
-            <input type="hidden" name="professional" value="{{ professional.id }}">
+         <!-- Appointment Booking Form -->
+<form method="post" action="{% url 'book_appointment' %}">
+  {% csrf_token %}
+  <input type="hidden" name="professional" value="{{ professional.id }}">
 
-            <label for="date">Select Date:</label>
-            <input type="date" name="date" required>
+  <label for="date">Select Date:</label>
+  <input type="date" name="date" required>
 
-            <label for="time">Select Time:</label>
-            <select name="time" required>
-              {% for slot in professional.available_slots %}
-                <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
-                  {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
-                </option>
-              {% endfor %}
-            </select>
+  <label for="time">Select Time:</label>
+  <select name="time" required>
+      {% for slot in professional.available_slots %}
+          <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
+              {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
+          </option>
+      {% endfor %}
+  </select>
 
-            <label for="reason">Reason:</label>
-            <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
+  <label for="reason">Reason:</label>
+  <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
 
-            <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
-          </form>
+  <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
+</form>
 
         </div>
       </div>

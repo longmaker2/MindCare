@@ -235,52 +235,49 @@ from .models import Appointment, Professional
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Appointment, Professional
-from datetime import datetime
-import json
+from django.http import JsonResponse
+from django.contrib import messages
+from .models import Professional, Appointment
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Appointment, Professional
-from datetime import datetime
-
-@login_required
 def book_appointment(request):
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "You must be logged in to book an appointment."}, status=403)
+
         professional_id = request.POST.get("professional")
         date = request.POST.get("date")
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
-        # Convert time from "HH:MM AM/PM" to "HH:MM:SS"
+        if not professional_id or not date or not time or not reason:
+            return JsonResponse({"error": "All fields are required."}, status=400)
+
+        # Get Professional
         try:
-            time_24hr = datetime.strptime(time, "%I:%M %p").strftime("%H:%M:%S")
-        except ValueError:
-            return render(request, "appointment_error.html", {"error": "Invalid time format."})
+            professional = Professional.objects.get(id=professional_id)
+        except Professional.DoesNotExist:
+            return JsonResponse({"error": "Selected professional does not exist."}, status=400)
 
-        professional = Professional.objects.get(id=professional_id)
+        # Check Slot Availability
+        if time in professional.booked_slots:
+            return JsonResponse({"error": "Selected time slot is already booked."}, status=400)
 
-        # Ensure the selected time is in the available slots
-        if time_24hr not in professional.available_slots:
-            return render(request, "appointment_error.html", {"error": "This slot is not available."})
-
-        # Create the appointment
-        Appointment.objects.create(
-            user=request.user,
+        # ✅ Book the appointment and link the user
+        appointment = Appointment.objects.create(
+            user=request.user,  # Attach the logged-in user
             professional=professional,
             date=date,
-            time=time_24hr,  # Save in correct format
+            time=time,
             reason=reason
         )
 
-        # Remove booked slot from available slots (directly modifying the list)
-        professional.available_slots.remove(time_24hr)
+        # ✅ Mark slot as booked and save
+        professional.booked_slots.append(time)
         professional.save()
 
-        return redirect("appointment_success")
+        return render(request, "appointment_success.html", {"appointment": appointment})
 
-    return redirect("home")
+    return render(request, "appointment_form.html")
 
 
 from django.http import JsonResponse

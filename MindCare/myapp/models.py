@@ -28,8 +28,8 @@ class MentorshipApplication(models.Model):
         return self.field1
      
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 class Professional(models.Model):
     name = models.CharField(max_length=255)
@@ -37,23 +37,26 @@ class Professional(models.Model):
     contact_email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, unique=True)
     image = models.ImageField(upload_to='professionals/', null=True, blank=True)
-    available_slots = models.JSONField(default=list)  # Store slots as a JSON list
+    available_slots = models.JSONField(default=list)  # Store available slots as a JSON list
+    booked_slots = models.JSONField(default=list)  # Store booked slots as a JSON list
 
     def __str__(self):
         return self.name
 
+
+from django.db import models
+from django.contrib.auth.models import User
+
 class Appointment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    professional = models.ForeignKey(Professional, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Ensuring user is linked to appointment
+    professional = models.ForeignKey('Professional', on_delete=models.CASCADE)
     date = models.DateField()
-    time = models.TimeField()  # Correct format HH:MM:SS
+    time = models.TimeField()
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user} - {self.professional.name} - {self.date} {self.time}"
-
-from django.db import models
+        return f"Appointment with {self.professional.name} on {self.date} at {self.time}"
 
 class ChatMessage(models.Model):
     content = models.TextField()
