@@ -20,7 +20,10 @@ MindCare is a digital mental health platform designed to provide users with acce
 
 ## Technologies Used
 
-## Intended Platform of Deployment
+Backend: Django (Python)
+Frontend: HTML, CSS, JavaScript
+Database: PostgreSQL
+
 ## Intended Platform of Deployment
 MindCare is designed to be deployed on **Netlify**, a modern deployment platform optimized for frontend applications. Netlify provides continuous deployment, serverless functions, and a global CDN for fast performance.
 
