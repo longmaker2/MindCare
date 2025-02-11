@@ -86,8 +86,45 @@ def dashboard(request):
 def training_materials(request):
     return render(request, 'training_materials.html' )
 
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib import messages
+
 def contact(request):
-    return render(request, 'contact.html') 
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        # Debugging log to ensure data is received
+        print(f"📩 New Message from {name} ({email}): {message}")
+
+        if not name or not email or not subject or not message:
+            return JsonResponse({"error": "All fields are required."}, status=400)
+
+        messages.success(request, "Message sent successfully!")
+
+        # ✅ Make sure to return JSON format
+        return JsonResponse({"message": "Message sent successfully!"}, status=200)
+
+    return render(request, "index.html")
 
 def home(request):
     return render(request, 'home.html')

@@ -272,64 +272,143 @@
   </div>
 </section>
 
+  <!-- Success and Error Message Display (Django Messages Framework) -->
+  {% if messages %}
+  <div>
+      {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+              {{ message }}
+          </div>
+      {% endfor %}
+  </div>
+{% endif %}
 
-  
-    <!-- ======= Contact Section ======= -->
+<!-- Success Popup -->
+<div id="success-popup">Message sent successfully!</div>
+
+    <!-- Contact Section -->
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">
-
-        <div class="section-title">
-          <h2>Contact</h2>
-        </div>
-
-        <div>
-        </div>
-
-        <div class="row mt-5">
-
-          <div class="col-lg-4">
-            <div class="info">
-              <div class="address">
-                <i class="bi bi-geo-alt"></i>
-                <h4>Location:</h4>
-                <p>Bibare, Kimironko, Rwanda</p>
-              </div>
-
-              <div class="email">
-                <i class="bi bi-envelope"></i>
-                <h4>Email:</h4>
-                <p>nshimirimanaerica@gmail.com</p>
-              </div>
-
-              <div class="phone">
-                <i class="bi bi-phone"></i>
-                <h4>Call:</h4>
-                <p>+250790135783</p>
-              </div>
-
-            </div>
-
+          <div class="section-title">
+              <h2>Contact</h2>
           </div>
-
-          <div class="col-lg-8 mt-5 mt-lg-0">
-
-            <form action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
-              {% csrf_token %}
-              <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-              <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-              <input type="text" name="subject" class="form-control" placeholder="Subject" required>
-              <textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea>
-              <button type="submit">Send Message</button>
-            </form>
-            
-            
-
+          <style>
+            .alert-success {
+                background-color: green;
+                color: white;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            .alert-danger {
+                background-color: red;
+                color: white;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            .alert-info {
+                background-color: blue;
+                color: white;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            #success-popup {
+            display: none;
+            background: green;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: auto;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+          <div class="row mt-5">
+              <div class="col-lg-4">
+                  <div class="info">
+                      <div class="address">
+                          <i class="bi bi-geo-alt"></i>
+                          <h4>Location:</h4>
+                          <p>Bibare, Kimironko, Rwanda</p>
+                      </div>
+                      <div class="email">
+                          <i class="bi bi-envelope"></i>
+                          <h4>Email:</h4>
+                          <p>nshimirimanaerica@gmail.com</p>
+                      </div>
+                      <div class="phone">
+                          <i class="bi bi-phone"></i>
+                          <h4>Call:</h4>
+                          <p>+250790135783</p>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="col-lg-8 mt-5 mt-lg-0">
+                  <form id="contact-form" action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
+                      {% csrf_token %}
+                      <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                      <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                      <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+                      <textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea>
+                      <button type="submit">Send Message</button>
+                  </form>
+              </div>
           </div>
-
-        </div>
-
       </div>
-    </section><!-- End Contact Section -->
+  </section>
+  
+  <!-- JavaScript to Handle Popup Display -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const contactForm = document.getElementById("contact-form");
+      const successPopup = document.getElementById("success-popup");
+
+      if (!contactForm) {
+          console.error("❌ Error: contact-form not found in HTML!");
+          return;
+      }
+
+      if (!successPopup) {
+          console.error("❌ Error: success-popup div is missing in the HTML!");
+          return;
+      }
+
+      contactForm.addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent default form submission
+          let formData = new FormData(this);
+
+          fetch(this.action, {
+              method: "POST",
+              body: formData,
+              headers: { "X-Requested-With": "XMLHttpRequest" }
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.message) {
+                  console.log("✅ Popup should appear now!");
+                  successPopup.innerText = data.message;
+                  successPopup.style.display = "block";
+                  setTimeout(() => {
+                      successPopup.style.display = "none";
+                      contactForm.reset();
+                  }, 3000);
+              } else {
+                  console.error("❌ Unexpected response:", data);
+              }
+          })
+          .catch(error => {
+              console.error("❌ Fetch Error:", error);
+              alert("An error occurred. Please try again.");
+          });
+      });
+  });
+  </script>
 
   </main><!-- End #main -->
 
