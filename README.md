@@ -15,15 +15,14 @@ MindCare is a digital mental health platform designed to provide users with acce
 - **Interactive Mental Health Tools** – Includes mood tracking, guided meditation, journaling, and cognitive exercises.
 - **Community Support** – Join a safe and moderated community where users can share experiences, seek advice, and provide support to others.
 - **Emergency Support** – Provides crisis intervention information and direct contact with professional helplines.
-- **AI-Powered Chatbot** – Offers instant responses to mental health inquiries, guiding users to appropriate resources.
 - **Daily Mental Health Tips** – Provides curated content to promote well-being and positive mental habits.
 - **Privacy and Security** – Ensures user confidentiality with secure authentication and encrypted data storage.
 
 ## Technologies Used
 
 ## Intended Platform of Deployment
-MindCare is designed to be deployed on cloud-based platforms, ensuring scalability, security, and high availability:
-- **Netlify** – A modern deployment platform optimized for frontend applications, providing continuous deployment, serverless functions, and global CDN for fast performance.
+## Intended Platform of Deployment
+MindCare is designed to be deployed on **Netlify**, a modern deployment platform optimized for frontend applications. Netlify provides continuous deployment, serverless functions, and a global CDN for fast performance.
 
 ## Installation and Setup
 ### Prerequisites
@@ -73,9 +72,6 @@ We welcome contributions from the community! To contribute:
 3. Commit your changes: `git commit -m "Add new feature"`.
 4. Push to your branch: `git push origin feature-branch-name`.
 5. Open a Pull Request.
-
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ## Contact
 For any inquiries, suggestions, or feedback, feel free to open an issue on GitHub or contact us via email at [your-email@example.com].
