@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}  <!-- ✅ Add this line -->
+
+{% block content %}
+<div class="container mt-5">
+  <h1>{{ professional.name }}</h1>
+  <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
+  <p><strong>Specialty:</strong> {{ professional.specialty }}</p>
+  <p><strong>Bio:</strong> {{ professional.bio }}</p>
+
+  <h2>Available Slots:</h2>
+  <ul>
+    {% for slot in professional.available_slots %}
+      <li>{{ slot }}</li>
+    {% empty %}
+      <li>No available slots</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-success">Book Appointment</a>
+</div>
+{% endblock %}

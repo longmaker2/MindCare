@@ -86,3 +86,6 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title if self.title else "Untitled Video"
+    
+
+    

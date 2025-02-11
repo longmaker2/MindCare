@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Login Page</title>
   <style>
-    
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
@@ -12,16 +12,18 @@
     }
     h1 {
       color: #333;
+      text-align: center;
     }
     h3 {
       color: red;
+      text-align: center;
     }
     form {
       background-color: #fff;
       padding: 20px;
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      max-width: 300px;
+      max-width: 350px;
       margin: 0 auto;
     }
     p {
@@ -29,6 +31,7 @@
     }
     input[type="text"],
     input[type="password"],
+    select,
     input[type="submit"] {
       width: 100%;
       padding: 10px;
@@ -55,19 +58,33 @@
   </style>
 </head>
 <body>
+
   <h1>Login Now</h1>
+
   {% for message in messages %}
     <h3>{{ message }}</h3>
   {% endfor %}
-  <form action="login" method="POST">
+
+  <form action="{% url 'login' %}" method="POST">
     {% csrf_token %}
     <p>Username:</p>
     <input type="text" name="username" required />
+
     <p>Password:</p>
     <input type="password" name="password" required /><br>
+
+    <!-- User Role Selection -->
+    <p>Login as:</p>
+    <select name="role">
+      <option value="user">Regular User</option>
+      <option value="professional">Professional</option>
+    </select>
+
     <input type="submit" value="Login" />
+
     <p>If you don't have an account, sign up below</p>
-    <h4><a href="register">Sign Up</a></h4>
+    <h4><a href="{% url 'register' %}">Sign Up</a></h4>
   </form>
+
 </body>
 </html>

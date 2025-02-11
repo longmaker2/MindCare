@@ -179,9 +179,9 @@ def send_info(request):
         return JsonResponse({'info': info})
     return JsonResponse({'error': 'Invalid request'})
 
-def professional_detail(request, pk):
-    professional = get_object_or_404(Professional, pk=pk)
-    return render(request, 'professional_detail.html', {'professional': professional})
+##def professional_detail(request, pk):
+    #professional = get_object_or_404(Professional, pk=pk)
+    #return render(request, 'professional_detail.html', {'professional': professional})
 
     
 
@@ -452,3 +452,10 @@ def upload_video(request):
 def training_materials(request):
     videos = Video.objects.all()
     return render(request, "training_materials.html", {"videos": videos})
+
+from django.shortcuts import render, get_object_or_404
+from .models import Professional
+
+def professional_detail(request, professional_id):
+    professional = get_object_or_404(Professional, id=professional_id)
+    return render(request, "professional_detail.html", {"professional": professional})

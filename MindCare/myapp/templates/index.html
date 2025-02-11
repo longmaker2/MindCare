@@ -200,7 +200,7 @@
           </div>
 
           {% endif %}
-<!-- ======= Professionals Section ======= -->
+<!-- Professionals Section -->
 <section id="professionals" class="professionals">
   <div class="container" data-aos="fade-up">
     <div class="section-title">
@@ -212,7 +212,6 @@
       {% for professional in professionals %}
       <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
         <div class="member">
-
           <!-- Show professional's image -->
           {% if professional.image %}
             <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
@@ -220,8 +219,8 @@
             <img src="{% static 'assets/images/default.png' %}" class="img-fluid" alt="Default Image">
           {% endif %}
 
-          <!-- Show professional details -->
-          <h4>{{ professional.name }}</h4>
+          <!-- Show professional details with a link to their page -->
+          <h4><a href="{% url 'professional_detail' professional.id %}">{{ professional.name }}</a></h4>
           <p>{{ professional.specialty }}</p>
 
           <!-- Display available slots -->
@@ -241,28 +240,33 @@
           </ul>
 
          <!-- Appointment Booking Form -->
-<form method="post" action="{% url 'book_appointment' %}">
-  {% csrf_token %}
-  <input type="hidden" name="professional" value="{{ professional.id }}">
+         <form method="post" action="{% url 'book_appointment' %}" class="bg-light p-4 rounded shadow-sm">
+          {% csrf_token %}
+          <input type="hidden" name="professional" value="{{ professional.id }}">
 
-  <label for="date">Select Date:</label>
-  <input type="date" name="date" required>
+          <div class="mb-3">
+              <label for="date" class="form-label">Select Date:</label>
+              <input type="date" class="form-control" name="date" required>
+          </div>
 
-  <label for="time">Select Time:</label>
-  <select name="time" required>
-      {% for slot in professional.available_slots %}
-          <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
-              {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
-          </option>
-      {% endfor %}
-  </select>
+          <div class="mb-3">
+              <label for="time" class="form-label">Select Time:</label>
+              <select class="form-select" name="time" required>
+                  {% for slot in professional.available_slots %}
+                      <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
+                          {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
+                      </option>
+                  {% endfor %}
+              </select>
+          </div>
 
-  <label for="reason">Reason:</label>
-  <textarea name="reason" placeholder="Enter appointment reason" required></textarea>
+          <div class="mb-3">
+              <label for="reason" class="form-label">Reason:</label>
+              <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
+          </div>
 
-  <button type="submit" class="btn btn-primary mt-2">Book Appointment</button>
-</form>
-
+          <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+      </form>
         </div>
       </div>
       {% empty %}
@@ -271,7 +275,6 @@
     </div>
   </div>
 </section>
-
   <!-- Success and Error Message Display (Django Messages Framework) -->
   {% if messages %}
   <div>

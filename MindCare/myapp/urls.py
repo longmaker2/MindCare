@@ -8,6 +8,8 @@ from .views import get_available_slots
 from django.urls import path
 from .views import chat_room, get_messages, send_message
 from .views import training_materials, upload_video
+from .views import professional_detail
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('counter', views.counter, name='counter'),
@@ -25,7 +27,7 @@ urlpatterns = [
     path('send-info/', views.send_info, name='send_info'),
     path('contact', views.contact, name='contact'),
     path('professionals/create/', views.create_professional, name='create_professional'),
-    path('professionals/<int:pk>/', views.professional_detail, name='professional_detail'),
+    #path('professionals/<int:pk>/', views.professional_detail, name='professional_detail'),
     path('professionals/', professionals_list, name='professionals_list'),
     path('appointment-success/', appointment_success, name='appointment_success'),
     path("book-appointment/", book_appointment, name="book_appointment"),
@@ -37,11 +39,9 @@ urlpatterns = [
     path("send-message/", views.send_message, name="send_message"),
     path("training_materials/", training_materials, name="training_materials"),
     path("upload_video/", upload_video, name="upload_video"),  # Admin-only upload page
+    path("professionals/<int:professional_id>/", professional_detail, name="professional_detail"),
     
-
-
-
-]
+] 
 
 
 
