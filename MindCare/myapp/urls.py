@@ -15,7 +15,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('counter', views.counter, name='counter'),
     path('register', views.register, name='register'),
-    path('login', views.login, name='login'),
+    path('login', views.login_view, name='login'),
     path('logout', views.logout, name='logout'),
     path('post/<str:pk>', views.post, name='post'),
     path('dashboard', views.dashboard, name='dashboard'),
@@ -41,7 +41,11 @@ urlpatterns = [
     path("training_materials/", training_materials, name="training_materials"),
     path("upload_video/", upload_video, name="upload_video"),  # Admin-only upload page
     path("professionals/<int:professional_id>/", professional_detail, name="professional_detail"),
-    path("professional_dashboard/", professional_dashboard, name="professional_dashboard"),
+    path("professional_dashboard", professional_dashboard, name="professional_dashboard"),
+    path('professional/dashboard/', views.professional_dashboard, name='professional_dashboard'),
+    #path('login/', views.login_view, name='login'),
+    path('professional/', views.professional_dashboard, name='professional_dashboard'),
+    #path('regular_user.html', views.regular_user_dashboard, name='regular_user_dashboard'),
 ] 
 
 

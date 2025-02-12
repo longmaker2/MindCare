@@ -47,22 +47,22 @@ def register(request):
     
 
 
-def login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+#def login(request):
+    ##if request.method == 'POST':
+      #  username = request.POST['username']
+       # password = request.POST['password']
 
-        user = auth.authenticate(username=username, password=password)
+        #user = auth.authenticate(username=username, password=password)
 
-        if user is not None:
-            auth.login(request, user)
-            return redirect('/')
-        else:
-            messages.info(request, 'Credentials Invalid')
-            return redirect('login')
+        #if user is not None:
+         #   auth.login(request, user)
+          #  return redirect('/')
+        #else:
+          #  messages.info(request, 'Credentials Invalid')
+           # return redirect('login')
 
-    else:
-       return render (request, 'login.html')
+    #else:
+     #  return render (request, 'login.html')
     
 
 def logout(request):
@@ -88,20 +88,6 @@ def training_materials(request):
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-
-from django.http import JsonResponse
-from django.shortcuts import render
-
-from django.http import JsonResponse
-from django.shortcuts import render
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib import messages
@@ -230,9 +216,9 @@ def index(request):
 def appointment_success(request):
     return render(request, 'appointment_success.html')
 from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.contrib import messages 
 from .models import Appointment, Professional
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required 
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -464,3 +450,27 @@ from django.shortcuts import render
 
 def professional_dashboard(request):
     return render(request, "professional_dashboard.html")
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        role = request.POST['role']  # Get the role from the form
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            if role == 'professional':
+                return render(request, 'professional.html')  # Render professional.html
+            else:
+                return render(request, 'index.html')  # Render index.html
+        else:
+            messages.error(request, 'Invalid username or password.')
+
+    return render(request, 'login.html')
+
+
