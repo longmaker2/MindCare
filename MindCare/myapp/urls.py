@@ -46,6 +46,8 @@ urlpatterns = [
     #path('login/', views.login_view, name='login'),
     path('professional/', views.professional_dashboard, name='professional_dashboard'),
     #path('regular_user.html', views.regular_user_dashboard, name='regular_user_dashboard'),
+    path('professional_detail/', views.professional_detail, name='professional_detail'),  # No ID required
+
 ] 
 
 

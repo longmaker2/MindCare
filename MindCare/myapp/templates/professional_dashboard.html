@@ -6,60 +6,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MindCare - Professional Dashboard{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <style>
+        /* Full-Height Layout for Sticky Footer */
+        html, body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Styling */
+        .wrapper {
+            flex: 1;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            min-height: 100vh;
+        }
+        .sidebar a {
+            padding: 15px;
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .sidebar .active {
+            background-color: #007bff;
+        }
+
+        /* Page Content */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Custom Card Styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #212529;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            width: 100%;
+            margin-top: auto; /* Pushes footer to the bottom */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="bg-primary text-white py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="m-0">MindCare Professional Dashboard</h1>
-            <nav>
-                <a class="text-white mx-3 text-decoration-none" href="{% url 'index' %}">Home</a>
-                <a class="text-white mx-3 text-decoration-none" href="{% url 'contact' %}">Contact</a>
-                <a class="text-white mx-3 text-decoration-none" href="{% url 'logout' %}">Logout</a>
-            </nav>
-        </div>
-    </header>
 
-    <main class="container my-5">
-        <h2 class="text-center mb-4">Welcome, {{ professional.name }}</h2>
-        
-        <div class="row">
-            <!-- Upcoming Appointments -->
-            <div class="col-md-6">
-                <div class="card shadow-sm p-3 mb-4">
-                    <h4 class="card-title">Upcoming Appointments</h4>
-                    <ul class="list-group">
-                        {% for appointment in professional.appointments %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ appointment.date }} - {{ appointment.time }}
-                                <span class="badge bg-success">Confirmed</span>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item text-muted">No upcoming appointments</li>
-                        {% endfor %}
-                    </ul>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4 class="text-center text-white">MindCare</h4>
+            <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a>
+            <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
+            <a href="{% url 'professional_detail' %}"><i class="fas fa-user"></i> Profile</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+
+        <!-- Page Content -->
+        <div class="content">
+            <header class="bg-primary text-white text-center py-3 mb-4">
+                <h2>Welcome, {{ professional.name }}</h2>
+            </header>
+
+            <div class="row">
+                <!-- Upcoming Appointments -->
+                <div class="col-md-6">
+                    <div class="card p-3 mb-4">
+                        <h4 class="card-title text-primary"><i class="fas fa-calendar-check"></i> Upcoming Appointments</h4>
+                        <ul class="list-group">
+                            {% for appointment in professional.appointments %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ appointment.date }} - {{ appointment.time }}
+                                    <span class="badge bg-success">Confirmed</span>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-muted">No upcoming appointments</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Messages and Notifications -->
+                <div class="col-md-6">
+                    <div class="card p-3 mb-4">
+                        <h4 class="card-title text-primary"><i class="fas fa-comments"></i> Messages & Notifications</h4>
+                        <ul class="list-group">
+                            {% for message in professional.messages %}
+                                <li class="list-group-item">{{ message.content }}</li>
+                            {% empty %}
+                                <li class="list-group-item text-muted">No new messages</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Messages and Notifications -->
-            <div class="col-md-6">
-                <div class="card shadow-sm p-3 mb-4">
-                    <h4 class="card-title">Messages & Notifications</h4>
-                    <ul class="list-group">
-                        {% for message in professional.messages %}
-                            <li class="list-group-item">{{ message.content }}</li>
-                        {% empty %}
-                            <li class="list-group-item text-muted">No new messages</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
         </div>
-    </main>
+    </div>
 
-    <footer class="bg-dark text-white text-center py-3">
+    <!-- Footer -->
+    <footer>
         <p>&copy; 2025 MindCare. All Rights Reserved.</p>
         <div>
             <a href="#" class="text-white mx-2"><i class="fab fa-facebook"></i></a>
@@ -69,6 +151,7 @@
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

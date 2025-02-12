@@ -85,6 +85,11 @@
     <p>If you don't have an account, sign up below</p>
     <h4><a href="{% url 'register' %}">Sign Up</a></h4>
   </form>
-
+  <script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+  </script>
+  
 </body>
 </html>
