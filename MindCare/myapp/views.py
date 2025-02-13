@@ -294,7 +294,7 @@ def index(request):
 
     for professional in professionals:
         # Get all booked slots for the professional
-        booked_slots = Appointment.objects.filter(professional=professional).values_list('time', flat=True)
+        booked_slots = Appointment.objects.filter(professional_name=professional).values_list('time', flat=True)
 
         # Store available slots with booking status
         professional.available_slots_status = [
