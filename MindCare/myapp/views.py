@@ -560,7 +560,7 @@ def user_dashboard(request):
 
     # Fetch user-specific data
     appointments = Appointment.objects.filter(user=user).order_by('date')
-    completed_courses = CompletedCourse.objects.filter(user=user)
+    completed_courses = CompletedCourse.objects.all()  # or another valid filter
     achievements = Achievement.objects.filter(user=user)
     
     # Calculate progress (e.g., % of completed courses)
@@ -608,15 +608,10 @@ from django.shortcuts import render
 from .models import CompletedCourse
 
 def completed_courses(request):
-    courses = CompletedCourse.objects.filter(user=request.user)
-    return render(request, 'completed_courses.html', {'completed_courses': courses})
+    courses = CompletedCourse.objects.filter(user=request.user)  # Now valid
+    return render(request, 'completed_courses.html', {'courses': courses})
 
-from django.shortcuts import render
-from .models import CompletedCourse
-
-def completed_courses(request):
-    courses = CompletedCourse.objects.filter(user=request.user)
-    return render(request, 'completed_courses.html', {'completed_courses': courses})
+    
 
 from django.shortcuts import render, get_object_or_404
 from .models import CompletedCourse

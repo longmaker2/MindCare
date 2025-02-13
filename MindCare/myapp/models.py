@@ -122,13 +122,20 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+from django.db import models
+from django.contrib.auth.models import User  # Import the User model
+
 class CompletedCourse(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Add this line
     title = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_completed = models.DateField()
+    description = models.TextField()
+    completion_percentage = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.title
+        return f"{self.user.username} - {self.title}"  # Ensure user.username is used
+
+
+
 
 class Achievement(models.Model):
     name = models.CharField(max_length=255)
