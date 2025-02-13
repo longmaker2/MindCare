@@ -463,21 +463,34 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        role = request.POST['role']  # Get the role from the form
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        role = request.POST.get('role')  # Get role from the form
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
             if role == 'professional':
-                return render(request, 'professional.html')  # Render professional.html
+                request.session['role'] = 'professional'  
+                return redirect('login')  
             else:
-                return render(request, 'index.html')  # Render index.html
+                request.session['role'] = 'regular'
+                return redirect('login')  
         else:
             messages.error(request, 'Invalid username or password.')
+            return redirect('login') 
+
+    role = request.session.pop('role', None) 
+    if role == 'professional':
+        return render(request, 'professional.html') 
+    elif role == 'regular':
+        return render(request, 'index.html')  # ✅ Render after GET request
 
     return render(request, 'login.html')
 
@@ -628,3 +641,15 @@ from django.shortcuts import render
 
 def quiz_category(request, category):
     return render(request, 'quiz_category.html', {'category': category})
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required  # ✅ Ensures only logged-in users can access it
+def professional_home(request):
+    return render(request, 'professional.html')  # ✅ Make sure this template exists
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required  # Ensures only logged-in users can access it
+def regular_user_dashboard(request):
+    return render(request, 'regular_user.html')  # ✅ Make sure this template exists

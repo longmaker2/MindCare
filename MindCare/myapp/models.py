@@ -154,7 +154,9 @@ class QuizResult(models.Model):
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
+    category = models.CharField(max_length=100)
     progress = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.title
@@ -184,3 +186,26 @@ class CompletedCourse(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(default="No description provided.")  # ✅ FIXED
     completion_percentage = models.IntegerField(default=100)
+
+
+from django.shortcuts import render
+from .models import Quiz
+import json
+
+def quiz_list(request):
+    quiz_categories = Quiz.objects.all()
+
+    quizzes_json = json.dumps([
+        {
+            "id": quiz.id,
+            "title": quiz.title,
+            "description": quiz.description,
+            "progress": quiz.progress if hasattr(quiz, "progress") else 0,
+            "category": quiz.category
+        }
+        for quiz in quiz_categories
+    ])
+
+    return render(request, "quizzes.html", {
+        "quizzes_json": quizzes_json
+    })
