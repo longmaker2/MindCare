@@ -51,6 +51,15 @@ urlpatterns = [
     path('upload_article/', views.upload_article, name='upload_article'),
     path('upload_course/', views.upload_course, name='upload_course'),  # Ensure this exists
     path('training_materials_prof/', views.training_materials_prof, name='training_materials_prof'),  # Ensure this exists
+    path('quizzes/', views.quizzes, name='quizzes'),
+    path('user-appointments/', views.user_appointments, name='user_appointments'),
+    path('user-appointments/', views.user_appointments, name='user_appointments'),
+    path('cancel-appointment/<int:appointment_id>/', views.cancel_appointment, name='cancel_appointment'),
+    path('completed-courses/', views.completed_courses, name='completed_courses'),
+    path('course-detail/<int:course_id>/', views.course_detail, name='course_detail'),
+    path('achievements/', views.achievements, name='achievements'), 
+    path('quiz-category/<str:category>/', views.quiz_category, name='quiz_category'),
+
 
 ] 
 

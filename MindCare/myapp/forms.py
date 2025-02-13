@@ -35,7 +35,7 @@ from .models import Appointment
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        fields = ["professional", "date", "time", "reason"]  # Ensure only valid fields are here
+        fields = ["professional_name", "date", "time", "reason"]  # Ensure only valid fields are here
 
 from django import forms
 from .models import Video

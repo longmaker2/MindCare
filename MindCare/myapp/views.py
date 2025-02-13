@@ -552,3 +552,84 @@ def training_materials(request):
         'courses': courses,
         "videos": videos
     })
+from django.shortcuts import render
+from .models import Appointment, CompletedCourse, Achievement, QuizResult
+
+def user_dashboard(request):
+    user = request.user
+
+    # Fetch user-specific data
+    appointments = Appointment.objects.filter(user=user).order_by('date')
+    completed_courses = CompletedCourse.objects.filter(user=user)
+    achievements = Achievement.objects.filter(user=user)
+    
+    # Calculate progress (e.g., % of completed courses)
+    total_courses = 10  # Set this dynamically if needed
+    progress = (completed_courses.count() / total_courses) * 100 if total_courses > 0 else 0
+
+    return render(request, "dashboard.html", {
+        "appointments": appointments,
+        "completed_courses": completed_courses,
+        "achievements": achievements,
+        "progress": round(progress, 2)
+    })
+from .models import Appointment, CompletedCourse, Achievement, QuizResult
+def my_view(request):
+    from .models import CompletedCourse  # Move import inside function
+    ...
+from django.shortcuts import render
+
+from django.shortcuts import render
+from .models import Quiz
+
+def quizzes(request):
+    quiz_list = Quiz.objects.all()
+    return render(request, 'quizzes.html', {'quizzes': quiz_list})
+
+from django.shortcuts import render
+
+from django.shortcuts import render
+from .models import Appointment
+
+def user_appointments(request):
+    user_appointments = Appointment.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'user_appointments.html', {'appointments': user_appointments})
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import Appointment
+
+def cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+    appointment.status = "Canceled"
+    appointment.save()
+    return redirect('user_appointments')
+
+from django.shortcuts import render
+from .models import CompletedCourse
+
+def completed_courses(request):
+    courses = CompletedCourse.objects.filter(user=request.user)
+    return render(request, 'completed_courses.html', {'completed_courses': courses})
+
+from django.shortcuts import render
+from .models import CompletedCourse
+
+def completed_courses(request):
+    courses = CompletedCourse.objects.filter(user=request.user)
+    return render(request, 'completed_courses.html', {'completed_courses': courses})
+
+from django.shortcuts import render, get_object_or_404
+from .models import CompletedCourse
+
+def course_detail(request, course_id):
+    course = get_object_or_404(CompletedCourse, id=course_id)
+    return render(request, 'course_detail.html', {'course': course})
+from django.shortcuts import render
+
+def achievements(request):
+    return render(request, 'achievements.html', {})
+
+from django.shortcuts import render
+
+def quiz_category(request, category):
+    return render(request, 'quiz_category.html', {'category': category})

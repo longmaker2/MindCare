@@ -121,3 +121,59 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+
+class CompletedCourse(models.Model):
+    title = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_completed = models.DateField()
+
+    def __str__(self):
+        return self.title
+
+class Achievement(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+class QuizResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.IntegerField()
+    date_taken = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.score}"
+class Quiz(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    progress = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+from django.db import models
+from django.contrib.auth.models import User
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('Upcoming', 'Upcoming'),
+        ('Completed', 'Completed'),
+        ('Canceled', 'Canceled'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    professional_name = models.CharField(max_length=255, default="Unknown Professional")
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Upcoming')
+    reason = models.TextField(null=True, blank=True)  # Add this if missing
+
+    def __str__(self):
+        return f"{self.user.username} - {self.professional_name} ({self.date})"
+
+from django.db import models
+
+class CompletedCourse(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(default="No description provided.")  # ✅ FIXED
+    completion_percentage = models.IntegerField(default=100)
