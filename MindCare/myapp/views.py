@@ -482,3 +482,37 @@ def login_view(request):
     return render(request, 'login.html')
 
 
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+
+def upload_book(request):
+    if request.method == 'POST' and request.FILES.get('book_file'):
+        book_file = request.FILES['book_file']
+        fs = FileSystemStorage()
+        filename = fs.save(book_file.name, book_file)
+        return redirect('training_materials')  # Redirect after upload
+    return render(request, 'upload_book.html')
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+
+def upload_article(request):
+    if request.method == 'POST' and request.FILES.get('article_file'):
+        article_file = request.FILES['article_file']
+        fs = FileSystemStorage()
+        filename = fs.save(article_file.name, article_file)
+        return redirect('training_materials')  # Redirect after upload
+    return render(request, 'upload_article.html')
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+
+def upload_course(request):
+    if request.method == 'POST' and request.FILES.get('course_file'):
+        course_file = request.FILES['course_file']
+        fs = FileSystemStorage()
+        filename = fs.save(course_file.name, course_file)
+        return redirect('training_materials')  # Redirect after upload
+    return render(request, 'upload_course.html')
+from django.shortcuts import render
+
+def training_materials_prof(request):
+    return render(request, 'training_materials_prof.html')  # Ensure the template exists

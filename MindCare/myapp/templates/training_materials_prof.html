@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Materials</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    h1 {
+      color: #020b15;
+      text-align: center;
+    }
+
+    p {
+      color: #030f1c;
+      text-align: center;
+    }
+
+    .admin-upload {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      border: 1px solid #007bff;
+      padding: 15px;
+      margin: 20px auto;
+      background-color: white;
+      border-radius: 5px;
+      width: 80%;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ Flexbox for better layout */
+    .materials-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .material-section {
+      width: 48%;
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ Video Grid */
+    .video-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .video-item {
+      width: 23%;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    video {
+      width: 100%;
+      height: 150px;
+      border-radius: 5px;
+    }
+
+    /* ✅ Book & Article Grid */
+    .list-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .list-item {
+      width: 45%;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ Responsive Design */
+    @media (max-width: 768px) {
+      .material-section, .list-item {
+        width: 100%;
+      }
+      .video-item {
+        width: 48%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .video-item {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Training Materials</h1>
+  <p>Explore educational resources including articles, books, videos, and courses categorized by topics and skill levels.</p>
+
+  {% if user.is_authenticated and user.is_superuser %}
+    <div style="text-align: center;">
+      <a href="{% url 'upload_video' %}" class="admin-upload">Upload Video</a>
+      <a href="{% url 'upload_book' %}" class="admin-upload">Upload Book</a>
+      <a href="{% url 'upload_article' %}" class="admin-upload">Upload Article</a>
+      <a href="{% url 'upload_course' %}" class="admin-upload">Add Course</a>
+    </div>
+  {% endif %}
+
+  <div class="container">
+    <h3>Filter by Category</h3>
+    <select id="categoryFilter">
+      <option value="All">All</option>
+      <option value="Anxiety">Anxiety</option>
+      <option value="Depression">Depression</option>
+      <option value="PTSD">PTSD</option>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+  </div>
+
+  <div class="materials-container">
+
+    <!-- ✅ Articles Section -->
+    <div class="material-section">
+      <h3>Articles</h3>
+      <div class="list-container">
+        {% for article in articles %}
+          <div class="list-item" data-category="{{ article.category }}">
+            <h4>{{ article.title }} ({{ article.category }})</h4>
+            <p>{{ article.summary }}</p>
+            <a href="{{ article.url }}" target="_blank">Read More</a>
+          </div>
+        {% empty %}
+          <p>No articles available.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ✅ Books Section -->
+    <div class="material-section">
+      <h3>Books</h3>
+      <div class="list-container">
+        {% for book in books %}
+          <div class="list-item" data-category="{{ book.category }}">
+            <h4>{{ book.title }} ({{ book.category }})</h4>
+            <p>By {{ book.author }}</p>
+            <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
+          </div>
+        {% empty %}
+          <p>No books available.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ✅ Video Section -->
+    <div class="material-section" style="width: 100%;">
+      <h3>Videos</h3>
+      <div class="video-container" id="videoList">
+        {% for video in videos %}
+          <div class="video-item" data-category="{{ video.category }}">
+            <h4>{{ video.title }} ({{ video.category }})</h4>
+            <video controls>
+              <source src="{{ video.video_file.url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        {% empty %}
+          <p>No videos available.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ✅ Courses Section -->
+    <div class="material-section" style="width: 100%;">
+      <h3>Courses</h3>
+      <div class="list-container">
+        {% for course in courses %}
+          <div class="list-item" data-category="{{ course.level }}">
+            <h4>{{ course.title }} ({{ course.level }})</h4>
+            <p>{{ course.description }}</p>
+            <a href="{{ course.url }}" target="_blank">Start Course</a>
+          </div>
+        {% empty %}
+          <p>No courses available.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.getElementById("categoryFilter").addEventListener("change", function() {
+      let selectedCategory = this.value;
+      let items = document.querySelectorAll(".list-item, .video-item");
+
+      items.forEach(item => {
+        if (selectedCategory === "All" || item.dataset.category === selectedCategory) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

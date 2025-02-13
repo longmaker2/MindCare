@@ -47,6 +47,10 @@ urlpatterns = [
     path('professional/', views.professional_dashboard, name='professional_dashboard'),
     #path('regular_user.html', views.regular_user_dashboard, name='regular_user_dashboard'),
     path('professional_detail/', views.professional_detail, name='professional_detail'),  # No ID required
+    path('upload_book/', views.upload_book, name='upload_book'),
+    path('upload_article/', views.upload_article, name='upload_article'),
+    path('upload_course/', views.upload_course, name='upload_course'),  # Ensure this exists
+    path('training_materials_prof/', views.training_materials_prof, name='training_materials_prof'),  # Ensure this exists
 
 ] 
 
