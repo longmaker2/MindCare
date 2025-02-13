@@ -140,37 +140,54 @@
 
   <div class="materials-container">
 
-    <!-- ✅ Articles Section -->
-    <div class="material-section">
-      <h3>Articles</h3>
-      <div class="list-container">
-        {% for article in articles %}
-          <div class="list-item" data-category="{{ article.category }}">
-            <h4>{{ article.title }} ({{ article.category }})</h4>
-            <p>{{ article.summary }}</p>
-            <a href="{{ article.url }}" target="_blank">Read More</a>
-          </div>
-        {% empty %}
-          <p>No articles available.</p>
-        {% endfor %}
+   <!-- ✅ Books Section -->
+<div class="material-section">
+  <h3>Books</h3>
+  <div class="list-container">
+    {% for book in books %}
+      <div class="list-item">
+        <h4>{{ book.title }} ({{ book.category }})</h4>
+        <p>By {{ book.author }}</p>
+        <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
       </div>
-    </div>
+    {% empty %}
+      <p>No books available.</p>
+    {% endfor %}
+  </div>
+</div>
 
-    <!-- ✅ Books Section -->
-    <div class="material-section">
-      <h3>Books</h3>
-      <div class="list-container">
-        {% for book in books %}
-          <div class="list-item" data-category="{{ book.category }}">
-            <h4>{{ book.title }} ({{ book.category }})</h4>
-            <p>By {{ book.author }}</p>
-            <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
-          </div>
-        {% empty %}
-          <p>No books available.</p>
-        {% endfor %}
+<!-- ✅ Articles Section -->
+<div class="material-section">
+  <h3>Articles</h3>
+  <div class="list-container">
+    {% for article in articles %}
+      <div class="list-item">
+        <h4>{{ article.title }} ({{ article.category }})</h4>
+        <p>{{ article.summary }}</p>
+        <a href="{{ article.url }}" target="_blank">Read More</a>
       </div>
-    </div>
+    {% empty %}
+      <p>No articles available.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ✅ Courses Section -->
+<div class="material-section">
+  <h3>Courses</h3>
+  <div class="list-container">
+    {% for course in courses %}
+      <div class="list-item">
+        <h4>{{ course.title }} ({{ course.level }})</h4>
+        <p>{{ course.description }}</p>
+        <a href="{{ course.url }}" target="_blank">Start Course</a>
+      </div>
+    {% empty %}
+      <p>No courses available.</p>
+    {% endfor %}
+  </div>
+</div>
+
 
     <!-- ✅ Video Section -->
     <div class="material-section" style="width: 100%;">
@@ -190,23 +207,7 @@
       </div>
     </div>
 
-    <!-- ✅ Courses Section -->
-    <div class="material-section" style="width: 100%;">
-      <h3>Courses</h3>
-      <div class="list-container">
-        {% for course in courses %}
-          <div class="list-item" data-category="{{ course.level }}">
-            <h4>{{ course.title }} ({{ course.level }})</h4>
-            <p>{{ course.description }}</p>
-            <a href="{{ course.url }}" target="_blank">Start Course</a>
-          </div>
-        {% empty %}
-          <p>No courses available.</p>
-        {% endfor %}
-      </div>
-    </div>
 
-  </div>
 
   <script>
     document.getElementById("categoryFilter").addEventListener("change", function() {

@@ -483,36 +483,72 @@ def login_view(request):
 
 
 from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
+from .models import Book, Article, Course
+from .forms import BookForm, ArticleForm, CourseForm
 
+@login_required
 def upload_book(request):
-    if request.method == 'POST' and request.FILES.get('book_file'):
-        book_file = request.FILES['book_file']
-        fs = FileSystemStorage()
-        filename = fs.save(book_file.name, book_file)
-        return redirect('training_materials')  # Redirect after upload
-    return render(request, 'upload_book.html')
-from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
+    if not request.user.is_superuser:
+        return redirect('training_materials')  # Redirect non-superusers
+    
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('training_materials')
+    else:
+        form = BookForm()
+    
+    return render(request, 'upload_book.html', {'form': form})
 
+
+@login_required
 def upload_article(request):
-    if request.method == 'POST' and request.FILES.get('article_file'):
-        article_file = request.FILES['article_file']
-        fs = FileSystemStorage()
-        filename = fs.save(article_file.name, article_file)
-        return redirect('training_materials')  # Redirect after upload
-    return render(request, 'upload_article.html')
-from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
+    if not request.user.is_superuser:
+        return redirect('training_materials')
+    
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('training_materials')
+    else:
+        form = ArticleForm()
+    
+    return render(request, 'upload_article.html', {'form': form})
 
+
+@login_required
 def upload_course(request):
-    if request.method == 'POST' and request.FILES.get('course_file'):
-        course_file = request.FILES['course_file']
-        fs = FileSystemStorage()
-        filename = fs.save(course_file.name, course_file)
-        return redirect('training_materials')  # Redirect after upload
-    return render(request, 'upload_course.html')
-from django.shortcuts import render
+    if not request.user.is_superuser:
+        return redirect('training_materials')
+    
+    if request.method == 'POST':
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('training_materials')
+    else:
+        form = CourseForm()
+    
+    return render(request, 'upload_course.html', {'form': form})
+
 
 def training_materials_prof(request):
     return render(request, 'training_materials_prof.html')  # Ensure the template exists
+from django.shortcuts import render
+from .models import Book, Article, Course, Video
+
+def training_materials(request):
+    books = Book.objects.all()
+    articles = Article.objects.all()
+    courses = Course.objects.all()
+    videos = Video.objects.all()  
+    
+    return render(request, 'training_materials.html', {
+        'books': books,
+        'articles': articles,
+        'courses': courses,
+        "videos": videos
+    })

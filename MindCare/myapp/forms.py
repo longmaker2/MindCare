@@ -45,3 +45,20 @@ class VideoUploadForm(forms.ModelForm):  # Renamed to follow naming conventions
         model = Video
         fields = ['title', 'category', 'video_file', 'video', 'caption']
 
+from django import forms
+from .models import Book, Article, Course
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'category', 'pdf_file']
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = ['title', 'category', 'summary', 'url']
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['title', 'description', 'level', 'url']

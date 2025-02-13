@@ -88,4 +88,36 @@ class Video(models.Model):
         return self.title if self.title else "Untitled Video"
     
 
-    
+from django.db import models
+
+class Book(models.Model):
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, choices=[('Fiction', 'Fiction'), ('Non-Fiction', 'Non-Fiction')])
+    pdf_file = models.FileField(upload_to='books/')  # Save PDFs in /media/books/
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, choices=[('Health', 'Health'), ('Technology', 'Technology')])
+    summary = models.TextField()
+    url = models.URLField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    level = models.CharField(max_length=50, choices=[('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')])
+    url = models.URLField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
