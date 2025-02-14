@@ -10,16 +10,16 @@ MindCare is a digital mental health platform designed to provide users with acce
 
 ## Features
 - **Personalized Mental Health Dashboard** – Users can track their mental well-being, set personal goals, and access relevant resources.
-- **Therapist Consultation** – Schedule sessions with licensed mental health professionals for personalized support.
+- **Book Appointment** – Schedule sessions with licensed mental health professionals for personalized support.
 - **Self-Help Resources** – Access articles, videos, and exercises for stress management, anxiety relief, and emotional well-being.
-- **Interactive Mental Health Tools** – Includes mood tracking, guided meditation, journaling, and cognitive exercises.
-- **Community Support** – Join a safe and moderated community where users can share experiences, seek advice, and provide support to others.
-- **Emergency Support** – Provides crisis intervention information and direct contact with professional helplines.
-- **Daily Mental Health Tips** – Provides curated content to promote well-being and positive mental habits.
-- **Privacy and Security** – Ensures user confidentiality with secure authentication and encrypted data storage.
+- **Mental Health Quizzes** – Quizzes about mental health organize in each category
+- **Mental health support space** – Join a safe and moderated community where users can share experiences, seek advice, and provide support to others.
+- **Contact** – Provides crisis intervention information and direct contact with professional helplines.
+- **Mental Health Ressource Center** – Provides curated content to promote well-being and positive mental habits.
+  
 # Designs
 
-Screenshot of the app interface
+Screenshots of the app interface
 
 https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
@@ -69,11 +69,10 @@ Ensure you have the following installed on your system:
 
 ## Usage Guide
 - **Sign up/Login** to access mental health resources.
-- **Schedule therapy sessions** with professionals.
-- **Use self-help tools** such as journaling, mood tracking, and guided meditation.
+- **Schedule appointment** with professionals.
+- **Use MindCare Ressource Center** such as journaling, mood tracking, and guided meditation.
 - **Engage in the community** for peer support and discussions.
-- **Chat with the AI-powered chatbot** for instant mental health assistance.
-- **Read daily mental health tips** to improve emotional well-being.
+- **Take quizzes** to see your improvemnt.
 
 ## Contribution
 We welcome contributions from the community! To contribute:
@@ -85,6 +84,3 @@ We welcome contributions from the community! To contribute:
 
 ## Contact
 For any inquiries, suggestions, or feedback, feel free to open an issue on GitHub or contact us via email at nshimirimanaerica@gmail.com.
-
-wee
-
