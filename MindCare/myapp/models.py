@@ -209,3 +209,24 @@ def quiz_list(request):
     return render(request, "quizzes.html", {
         "quizzes_json": quizzes_json
     })
+from django.db import models
+from django.contrib.auth.models import User
+
+class CompletedCourse(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Ensure this field exists
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    completion_percentage = models.IntegerField(default=100)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+from django.db import models
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=100)
+    progress = models.IntegerField(default=0)  # User's progress in percentage
+
+    def __str__(self):
+        return self.title

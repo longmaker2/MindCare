@@ -3,6 +3,9 @@ from .models import Feature
 from .models import Chart
 from .models import Video
 from .models import Book, Article, Course  # Import your models
+from .models import Quiz
+
+admin.site.register(Quiz)
 
 admin.site.register(Book)
 admin.site.register(Article)

@@ -643,3 +643,30 @@ from .models import Professional  # Ensure Professional model is imported
 def professional_home(request):
     professionals = Professional.objects.all()  # Fetch professionals
     return render(request, 'professional_home.html', {'professionals': professionals})
+
+
+from django.http import JsonResponse
+from django.shortcuts import render
+from .models import Quiz
+
+def quizzes_api(request):
+    quizzes = list(Quiz.objects.values("id", "title", "description", "category"))  # Convert QuerySet to list of dicts
+    return JsonResponse({"quizzes": quizzes})  # ✅ JSON response
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import Quiz
+
+def quiz_detail(request, quiz_id):
+    """Fetches quiz details based on ID"""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # ✅ If an AJAX request
+        return JsonResponse({
+            "id": quiz.id,
+            "title": quiz.title,
+            "description": quiz.description,
+            "category": quiz.category,
+            "progress": quiz.progress
+        })
+
+    return render(request, "quiz_detail.html", {"quiz": quiz})  # ✅ Render template for normal request

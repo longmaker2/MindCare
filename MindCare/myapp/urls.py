@@ -10,6 +10,7 @@ from .views import chat_room, get_messages, send_message
 from .views import training_materials, upload_video
 from .views import professional_detail
 from .views import professional_dashboard
+from .views import quizzes_api, quiz_detail 
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -60,6 +61,8 @@ urlpatterns = [
     path('achievements/', views.achievements, name='achievements'), 
     path('quiz-category/<str:category>/', views.quiz_category, name='quiz_category'),
     path('professional_home/', views.professional_home, name='professional_home'),
+    path('api/quizzes/', quizzes_api, name='quizzes_api'),
+    path('quiz/<int:quiz_id>/', quiz_detail, name='quiz_detail'),
    
 ] 
 
