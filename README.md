@@ -109,8 +109,11 @@ This deployment plan outlines the steps to deploy the MindCare application, whic
 **Step 1**: Deploy Backend on Render
 
 1️. Sign up on Render
+
 2️. Create a New Project → Click Deploy from GitHub
+
 3️. Select Your MindCare Backend Repo (Django)
+
 4️. Add Environment Variables:
 
 DJANGO_SECRET_KEY=your-secret-key
@@ -130,8 +133,11 @@ python manage.py runserver
 **Step 2**: Deploy Frontend on Vercel
 
 1️. Sign up on Vercel
+
 2️. Click 'New Site from Git' → Select Frontend GitHub Repo
+
 3️. Set API URL in Frontend (fetch() calls should use your Render backend URL)
+
 4️. Deploy & Test:
 ```bash
 npm run build  # For React-based frontend
