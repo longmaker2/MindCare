@@ -260,4 +260,4 @@ To contribute:
 5. Open a Pull Request.
 
 ## Contact
-For any inquiries, suggestions, or feedback, feel free to open an issue on GitHub or contact us via email at nshimirimanaerica@gmail.com.
+For any inquiries, suggestions, or feedback, feel free to open an issue on GitHub or contact us via email at e.nshimirim@alustudent.com.
