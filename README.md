@@ -115,11 +115,11 @@ This deployment plan outlines the steps to deploy the MindCare application, whic
 3️. Select Your MindCare Backend Repo (Django)
 
 4️. Add Environment Variables:
-
+```bash
 DJANGO_SECRET_KEY=your-secret-key
 DATABASE_URL=your-postgres-url
 ALLOWED_HOSTS=your-railway-app-url
-
+```
 5️. Run Migrations:
 ```bash
 python manage.py migrate
@@ -142,7 +142,6 @@ python manage.py runserver
 ```bash
 npm run build  # For React-based frontend
 ```
-5️. Assign Custom Domain (Optional)
 
 # Final Steps
 
