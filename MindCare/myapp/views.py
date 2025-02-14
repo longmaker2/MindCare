@@ -239,33 +239,33 @@ def book_appointment(request):
         if not professional_id or not date or not time or not reason:
             return JsonResponse({"error": "All fields are required."}, status=400)
 
-        # Get Professional
+        # ✅ Get Professional & Save Name (Instead of Object)
         try:
             professional = Professional.objects.get(id=professional_id)
+            professional_name = professional.name  # Save name as a string
         except Professional.DoesNotExist:
             return JsonResponse({"error": "Selected professional does not exist."}, status=400)
 
-        # Check Slot Availability
+        # ✅ Check Slot Availability
         if time in professional.booked_slots:
             return JsonResponse({"error": "Selected time slot is already booked."}, status=400)
 
-        # ✅ Book the appointment and link the user
+        # ✅ Book the appointment using `professional_name`
         appointment = Appointment.objects.create(
             user=request.user,  # Attach the logged-in user
-            professional=professional,
+            professional_name=professional_name,  # Save the name, not the object
             date=date,
             time=time,
             reason=reason
         )
 
-        # ✅ Mark slot as booked and save
+        # ✅ Mark slot as booked
         professional.booked_slots.append(time)
         professional.save()
 
         return render(request, "appointment_success.html", {"appointment": appointment})
 
     return render(request, "appointment_form.html")
-
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404

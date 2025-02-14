@@ -241,15 +241,20 @@
           </ul>
 
          <!-- Appointment Booking Form -->
+         <!-- Appointment Booking Form -->
          <form method="post" action="{% url 'book_appointment' %}" class="bg-light p-4 rounded shadow-sm">
           {% csrf_token %}
+      
+          <!-- Store the professional's ID instead of the whole object -->
           <input type="hidden" name="professional" value="{{ professional.id }}">
-
+          
+          <p>Booking with: <strong>{{ professional.name }}</strong></p>
+      
           <div class="mb-3">
               <label for="date" class="form-label">Select Date:</label>
               <input type="date" class="form-control" name="date" required>
           </div>
-
+      
           <div class="mb-3">
               <label for="time" class="form-label">Select Time:</label>
               <select class="form-select" name="time" required>
@@ -260,14 +265,16 @@
                   {% endfor %}
               </select>
           </div>
-
+      
           <div class="mb-3">
               <label for="reason" class="form-label">Reason:</label>
               <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
           </div>
-
+      
           <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
       </form>
+      
+
         </div>
       </div>
       {% empty %}
