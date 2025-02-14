@@ -11,7 +11,6 @@ MindCare is a comprehensive mental health platform designed to support users in 
 ## Features
 - **Personalized Mental Health Dashboard** – Users can track their mental well-being, set personal goals, and access relevant resources.
 - **Book Appointment** – Schedule sessions with licensed mental health professionals for personalized support.
-- **Self-Help Resources** – Access articles, videos, and exercises for stress management, anxiety relief, and emotional well-being.
 - **Mental Health Quizzes** – Quizzes about mental health organize in each category
 - **Mental health support space** – Join a safe and moderated community where users can share experiences, seek advice, and provide support to others.
 - **Contact** – Provides crisis intervention information and direct contact with professional helplines.
@@ -86,7 +85,7 @@ Ensure you have the following installed on your system:
 ## Usage Guide
 - **Sign up/Login** to access mental health resources.
 - **Schedule appointment** with professionals.
-- **Use MindCare Ressource Center** such as journaling, mood tracking, and guided meditation.
+- **Use MindCare Ressource Center meaterials** such as books, articles and videos
 - **Engage in the community** for peer support and discussions.
 - **Take quizzes** to see your improvemnt.
 
@@ -116,9 +115,9 @@ This deployment plan outlines the steps to deploy the MindCare application, whic
 
 4️. Add Environment Variables:
 ```bash
-DJANGO_SECRET_KEY=your-secret-key
-DATABASE_URL=your-postgres-url
-ALLOWED_HOSTS=your-railway-app-url
+DJANGO_SECRET_KEY=my-secret-key
+DATABASE_URL=my-postgres-url
+ALLOWED_HOSTS=my-railway-app-url
 ```
 5️. Run Migrations:
 ```bash
