@@ -25,7 +25,7 @@ https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
 Link to the video showcasing MindCare App functionalities.
 
-https://youtu.be/1ABPvZ6oBuQ
+https://youtu.be/P6tB0ob5rhE
 
 ## Technologies Used
 
