@@ -50,7 +50,8 @@
           
           <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
           {% if user.is_authenticated %}
-          <li><a class="getstarted scrollto" href="logout">Logout</a></li>
+          <li><a class="getstarted scrollto" href="{% url 'logout' %}">Logout</a></li>
+
           {% else %}
           <li><a class="getstarted scrollto" href="login">Login or signup</a></li>
           {% endif %}
@@ -169,7 +170,8 @@
                 </svg>
                 <i class="bx bxl-dribbble"></i>
               </div>
-              <h4><a href="professional_dashboard">Professional Dashboard</a></h4>
+              <h4><a href="{% url 'professional_dashboard' %}">Professional Dashboard</a></h4>
+
               <p>section displaying the user's progress, completed courses,achievements, etc.</p>
             </div>
           </div>

@@ -10,7 +10,6 @@ from .views import chat_room, get_messages, send_message
 from .views import training_materials, upload_video
 from .views import professional_detail
 from .views import professional_dashboard
-from .views import professional_home
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -42,8 +41,8 @@ urlpatterns = [
     path("training_materials/", training_materials, name="training_materials"),
     path("upload_video/", upload_video, name="upload_video"),  # Admin-only upload page
     path("professionals/<int:professional_id>/", professional_detail, name="professional_detail"),
-    path("professional_dashboard", professional_dashboard, name="professional_dashboard"),
-    path('professional/dashboard/', views.professional_dashboard, name='professional_dashboard'),
+    path("professional_dashboard", views.professional_dashboard, name="professional_dashboard"),
+    #path('professional/dashboard/', views.professional_dashboard, name='professional_dashboard'),
     #path('login/', views.login_view, name='login'),
     path('professional/', views.professional_dashboard, name='professional_dashboard'),
     path('regular_user.html', views.regular_user_dashboard, name='regular_user_dashboard'),
@@ -60,9 +59,8 @@ urlpatterns = [
     path('course-detail/<int:course_id>/', views.course_detail, name='course_detail'),
     path('achievements/', views.achievements, name='achievements'), 
     path('quiz-category/<str:category>/', views.quiz_category, name='quiz_category'),
-    #path('professional/', professional_home, name='professional_home'),
-
-
+    path('professional_home/', views.professional_home, name='professional_home'),
+   
 ] 
 
 
