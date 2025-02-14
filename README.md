@@ -89,6 +89,10 @@ Ensure you have the following installed on your system:
 - **Engage in the community** for peer support and discussions.
 - **Take quizzes** to see your improvemnt.
 
+# Database Schema:
+ ![database image](https://github.com/user-attachments/assets/1003a339-3ea5-478d-b4e7-53446eecc30b)
+
+
 # Deployment Plan for MindCare
 
 # Overview
