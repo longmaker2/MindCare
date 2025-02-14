@@ -139,7 +139,7 @@ python manage.py runserver
 
 4️. Deploy & Test:
 ```bash
-npm run build  # For React-based frontend
+Simply upload static HTML, CSS, and JavaScript files
 ```
 
 # Final Steps
