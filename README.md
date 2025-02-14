@@ -200,6 +200,14 @@ This deployment plan outlines the steps to deploy the MindCare application, whic
 
 # Step-by-Step Deployment Plan
 
+# Common Setup Issues & Solutions
+
+Database connection error? Ensure that the PostgreSQL service is running and the correct credentials are set in DATABASE_URL.
+
+Static files not loading? Run **python manage.py collectstatic** and ensure STATIC_URL is configured properly.
+
+CORS issues? Add the frontend URL to CORS_ALLOWED_ORIGINS in settings.py.
+
 **Step 1**: Deploy Backend on Render
 
 1️. Sign up on Render
