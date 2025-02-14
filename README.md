@@ -102,7 +102,9 @@ Method: GET
 
 # Response Example:
 {
+
   "quizzes": [
+  
       {
           "id": 1,
       
