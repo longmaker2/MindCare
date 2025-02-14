@@ -20,9 +20,9 @@ MindCare is a digital mental health platform designed to provide users with acce
 # Designs
 
 Screenshot of the app interface
-```bash
+
 https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
-```
+
 ## Technologies Used
 
 Backend: Django (Python)
