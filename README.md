@@ -100,18 +100,24 @@ URL: /api/quizzes/
 
 Method: GET
 
-Response Example:
+# Response Example:
 
 {
   "quizzes": [
+  
     {
+    
       "id": 1,
+      
       "title": "General Anxiety Quiz",
+      
       "description": "Assess your anxiety levels."
     },
     {
       "id": 2,
+      
       "title": "Depression Quiz",
+      
       "description": "Evaluate your depression symptoms."
     }
   ]
@@ -127,17 +133,29 @@ Method: GET
 
 {
   "id": 1,
+  
   "title": "General Anxiety Quiz",
+  
   "questions": [
+  
     {
+    
       "text": "Do you often feel nervous?",
+      
       "options": ["Yes", "No"]
+      
     },
+    
     {
+    
       "text": "Do you have trouble sleeping?",
+      
       "options": ["Yes", "No", "Sometimes"]
+      
     }
+    
   ]
+  
 }
 
 # Book an Appointment
@@ -149,15 +167,21 @@ Method: POST
 # Request Example (JSON Body):
 
 {
+
   "user_id": 1,
+  
   "professional_id": 3,
+  
   "date": "2024-06-20"
+  
 }
 
 # Response Example:
 
 {
+
   "message": "Appointment booked successfully!"
+  
 }
 
 
