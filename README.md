@@ -36,9 +36,6 @@ Frontend: HTML, CSS, JavaScript
 
 Database: PostgreSQL
 
-## Intended Platform of Deployment
-MindCare is designed to be deployed on **Netlify**, a modern deployment platform optimized for frontend applications. Netlify provides continuous deployment, serverless functions, and a global CDN for fast performance.
-
 ## Installation and Setup
 ### Prerequisites
 Ensure you have the following installed on your system:
@@ -92,6 +89,60 @@ Ensure you have the following installed on your system:
 - **Use MindCare Ressource Center** such as journaling, mood tracking, and guided meditation.
 - **Engage in the community** for peer support and discussions.
 - **Take quizzes** to see your improvemnt.
+
+# Deployment Plan for MindCare
+
+# Overview
+
+This deployment plan outlines the steps to deploy the MindCare application, which consists of a Django backend and a JavaScript (HTML, CSS, React) frontend. The chosen deployment stack ensures scalability, security, and ease of maintenance.
+
+# Deployment Stack
+
+**Backend (Django + API)**: Render provides a simple and scalable hosting solution with a free-tier PostgreSQL database, making it ideal for deploying and managing Django applications.
+
+**Frontend (HTML, JavaScript, React)**: Vercel offers fast, reliable, and free static hosting, making it the best choice for deploying the MindCare frontend efficiently.
+
+**Database (PostgreSQL)**: Render also manages PostgreSQL databases, ensuring secure and optimized database performance for the backend.
+
+# Step-by-Step Deployment Plan
+
+**Step 1**: Deploy Backend on Render
+
+1️. Sign up on Render
+2️. Create a New Project → Click Deploy from GitHub
+3️. Select Your MindCare Backend Repo (Django)
+4️. Add Environment Variables:
+
+DJANGO_SECRET_KEY=your-secret-key
+DATABASE_URL=your-postgres-url
+ALLOWED_HOSTS=your-railway-app-url
+
+5️. Run Migrations:
+```bash
+python manage.py migrate
+```
+6️. Run the Server:
+```bash
+python manage.py runserver
+```
+7️. Copy the Render Backend URL for frontend use.
+
+**Step 2**: Deploy Frontend on Vercel
+
+1️. Sign up on Vercel
+2️. Click 'New Site from Git' → Select Frontend GitHub Repo
+3️. Set API URL in Frontend (fetch() calls should use your Render backend URL)
+4️. Deploy & Test:
+```bash
+npm run build  # For React-based frontend
+```
+5️. Assign Custom Domain (Optional)
+
+# Final Steps
+
+1. Test API Calls from Frontend → Backend
+2. Ensure CORS is Configured in Django (settings.py)
+3. Monitor Performance & Logs on Render and Vercel
 
 ## Contribution
 To contribute:
