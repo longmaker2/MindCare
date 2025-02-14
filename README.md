@@ -17,16 +17,17 @@ MindCare is a digital mental health platform designed to provide users with acce
 - **Contact** – Provides crisis intervention information and direct contact with professional helplines.
 - **Mental Health Ressource Center** – Provides curated content to promote well-being and positive mental habits.
   
-# Designs
-
-Screenshots of the app interface
+# Screenshots of the app interface
 
 https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
-Link to the video showcasing MindCare App functionalities.
+# Link to the video showcasing MindCare App functionalities.
 
 https://youtu.be/P6tB0ob5rhE
 
+# Link to the github Repository
+
+https://github.com/Ericanshimir/MindCare
 ## Technologies Used
 
 Backend: Django (Python)
