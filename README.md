@@ -16,7 +16,7 @@ MindCare is a comprehensive mental health platform designed to support users in 
 - **Contact** – Provides crisis intervention information and direct contact with professional helplines.
 - **Mental Health Ressource Center** – Provides curated content to promote well-being and positive mental habits.
   
-# Screenshots of the app interface can be found this the *designs folder** of this repository
+# Screenshots of the app interface can be found this the **designs folder** of this repository
 
 https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
