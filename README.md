@@ -101,11 +101,9 @@ URL: /api/quizzes/
 Method: GET
 
 # Response Example:
-
 {
   "quizzes": [
-  
-    {
+      {
     
       "id": 1,
       
