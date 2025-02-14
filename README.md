@@ -104,8 +104,7 @@ Method: GET
 {
   "quizzes": [
       {
-    
-      "id": 1,
+          "id": 1,
       
       "title": "General Anxiety Quiz",
       
