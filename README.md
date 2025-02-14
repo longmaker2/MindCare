@@ -93,13 +93,13 @@ Ensure you have the following installed on your system:
 
 # Overview
 
-This deployment plan outlines the steps to deploy the MindCare application, which consists of a Django backend and a JavaScript (HTML, CSS, React) frontend. The chosen deployment stack ensures scalability, security, and ease of maintenance.
+This deployment plan outlines the steps to deploy the MindCare application, which consists of a Django backend and a JavaScript (HTML, CSS) frontend. The chosen deployment stack ensures scalability, security, and ease of maintenance.
 
 # Deployment Stack
 
 **Backend (Django + API)**: Render provides a simple and scalable hosting solution with a free-tier PostgreSQL database, making it ideal for deploying and managing Django applications.
 
-**Frontend (HTML, JavaScript, React)**: Vercel offers fast, reliable, and free static hosting, making it the best choice for deploying the MindCare frontend efficiently.
+**Frontend (HTML, JavaScript, and CSS)**: Vercel offers fast, reliable, and free static hosting, making it the best choice for deploying the MindCare frontend efficiently.
 
 **Database (PostgreSQL)**: Render also manages PostgreSQL databases, ensuring secure and optimized database performance for the backend.
 
