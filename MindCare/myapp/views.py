@@ -352,6 +352,22 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
+import json
+from django.http import JsonResponse
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from .models import Message
+
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import AnonymousPrivateMessage
+from django.contrib.auth.models import User
+import json
+from django.utils.timezone import now
+
 @csrf_exempt
 @login_required
 def send_message(request):
@@ -364,22 +380,23 @@ def send_message(request):
             if not message_content:
                 return JsonResponse({"success": False, "error": "Message cannot be empty"}, status=400)
 
-            sender = request.user.username  # Default sender is the logged-in user
+            sender = request.user.username
 
-            # Handle anonymous messaging
+            # Handle Anonymous messaging
             if recipient == "anonymous":
                 sender = "Anonymous"
-                recipient = "Everyone"  # Anonymous messages should be visible to all users
+                recipient = "Everyone"  # Send to everyone anonymously
 
-            # Validate recipient (except for "Everyone" and "Anonymous")
+            # Validate recipient for private messages
             elif recipient != "Everyone":
                 try:
                     user = User.objects.get(username=recipient)
                 except User.DoesNotExist:
                     return JsonResponse({"success": False, "error": "Recipient not found"}, status=400)
 
-            # Save message in database
-            message = Message.objects.create(sender=sender, recipient=recipient, content=message_content, timestamp=now())
+            # Save message in AnonymousPrivateMessage table
+            message = AnonymousPrivateMessage.objects.create(sender=sender, recipient=recipient, content=message_content, timestamp=now())
+            print("✅ Message saved:", message)
 
             return JsonResponse({"success": True, "sender": sender, "recipient": recipient})
 
@@ -387,6 +404,7 @@ def send_message(request):
             return JsonResponse({"success": False, "error": "Invalid JSON format"}, status=400)
 
         except Exception as e:
+            print("❌ Error saving message:", str(e))
             return JsonResponse({"success": False, "error": str(e)}, status=400)
 
     return JsonResponse({"success": False, "error": "Invalid request method"}, status=400)

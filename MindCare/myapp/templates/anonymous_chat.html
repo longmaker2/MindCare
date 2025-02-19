@@ -31,17 +31,7 @@
             border-bottom: 3px solid #4ca5af;
         }
         .chat-box {
-        max-height: 400px;  /* Increase height to make scrolling better */
-        overflow-y: auto;   /* Enable scrolling */
-        padding: 15px;
-        background: #f5f5f5;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        display: flex;
-        flex-direction: column;
-    }
-        .chat-box {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
             padding: 15px;
             background: #f5f5f5;
@@ -118,14 +108,16 @@
         <form id="message-form" class="message-form">
             {% csrf_token %}
 
-            <!-- Select Recipient -->
-            <select name="recipient" id="recipient" required>
-                <option value="all">Send to Everyone</option>
-                <option value="anonymous">Send Anonymously</option>
-                {% for user in users %}
-                    <option value="{{ user.username }}">{{ user.username }}</option>
-                {% endfor %}
-            </select>
+            <!-- User Selection List (Dropdown) -->
+            <div class="mb-3">
+                <select name="recipient" id="recipient" class="form-select" required>
+                    <option value="Everyone">Send to Everyone</option>
+                    <option value="anonymous">Send Anonymously</option>
+                    {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
             <!-- Input Message -->
             <input type="text" id="message-input" name="message" placeholder="Type a message..." required>
@@ -135,66 +127,70 @@
 
     <!-- JavaScript for Sending Messages -->
     <script>
-       
-    document.addEventListener("DOMContentLoaded", function() {
-        const chatBox = document.getElementById("chat-box");
-        const messageForm = document.getElementById("message-form");
+        document.addEventListener("DOMContentLoaded", function() {
+            const chatBox = document.getElementById("chat-box");
+            const messageForm = document.getElementById("message-form");
 
-        // Scroll to the bottom when chat loads
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // Scroll to the bottom when the page loads
-        scrollToBottom();
-
-        messageForm.addEventListener("submit", function(event) {
-            event.preventDefault(); // Stop normal form submission
-
-            const messageInput = document.getElementById("message-input");
-            const recipientSelect = document.getElementById("recipient");
-            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-            let message = messageInput.value.trim();
-            let recipient = recipientSelect.value;
-
-            if (message === "") {
-                alert("Message cannot be empty.");
-                return;
+            // Scroll to the bottom when chat loads
+            function scrollToBottom() {
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
 
-            fetch("/send-message/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken
-                },
-                body: JSON.stringify({
-                    message: message,
-                    recipient: recipient
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    let newMessage = document.createElement("div");
-                    newMessage.classList.add("message");
-                    newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${message}</p><span class="timestamp">Now</span>`;
+            // Scroll to the bottom when the page loads
+            scrollToBottom();
 
-                    // Add the new message at the **bottom** of the chat
-                    chatBox.appendChild(newMessage);
+            messageForm.addEventListener("submit", function(event) {
+                event.preventDefault(); // Stop normal form submission
 
-                    // Scroll to the new message automatically
-                    scrollToBottom();
+                const messageInput = document.getElementById("message-input");
+                const recipientSelect = document.getElementById("recipient");
+                const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-                    messageInput.value = ""; // Clear input field
-                } else {
-                    alert("Error: " + data.error);
+                let message = messageInput.value.trim();
+                let recipient = recipientSelect.value;
+
+                if (message === "") {
+                    alert("Message cannot be empty.");
+                    return;
                 }
-            })
-            .catch(error => console.error("Error:", error));
+
+                // Fix: Convert "all" to "Everyone"
+                if (recipient === "all") {
+                    recipient = "Everyone";
+                }
+
+                fetch("/send-message/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        recipient: recipient
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let newMessage = document.createElement("div");
+                        newMessage.classList.add("message");
+                        newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${message}</p><span class="timestamp">Now</span>`;
+
+                        // Add the new message at the bottom of the chat
+                        chatBox.appendChild(newMessage);
+
+                        // Scroll to the new message automatically
+                        scrollToBottom();
+
+                        messageInput.value = ""; // Clear input field
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
         });
-    });
     </script>
 </body>
 </html>
