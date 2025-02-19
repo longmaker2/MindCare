@@ -63,6 +63,7 @@ urlpatterns = [
     path('professional_home/', views.professional_home, name='professional_home'),
     path('api/quizzes/', quizzes_api, name='quizzes_api'),
     path('quiz/<int:quiz_id>/', quiz_detail, name='quiz_detail'),
+    path('quizzes/', views.quizzes, name='quizzes'),
    
 ] 
 

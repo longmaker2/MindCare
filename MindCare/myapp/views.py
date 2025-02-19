@@ -12,7 +12,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Professional
 from .forms import ProfessionalForm
 from django.db import models
-
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 
 
 def index(request):
@@ -86,11 +89,6 @@ def dashboard(request):
 def training_materials(request):
     return render(request, 'training_materials.html' )
 
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib import messages
 
 def contact(request):
     if request.method == "POST":
@@ -345,49 +343,92 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
 from .models import ChatMessage
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import Message
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 @csrf_exempt
+@login_required
 def send_message(request):
     if request.method == "POST":
         try:
-            message = request.POST.get("message", "").strip()
+            data = json.loads(request.body)
+            message_content = data.get("message", "").strip()
+            recipient = data.get("recipient", "").strip()
 
-            if not message:
-                return JsonResponse({"error": "Message cannot be empty"}, status=400)
+            if not message_content:
+                return JsonResponse({"success": False, "error": "Message cannot be empty"}, status=400)
 
-            # Save message with "Anonymous" as default username
-            chat_message = ChatMessage.objects.create(username="Anonymous", content=message, timestamp=now())
-            chat_message.save()
+            sender = request.user.username  # Default sender is the logged-in user
 
-            return JsonResponse({"success": True})
+            # Handle anonymous messaging
+            if recipient == "anonymous":
+                sender = "Anonymous"
+                recipient = "Everyone"  # Anonymous messages should be visible to all users
+
+            # Validate recipient (except for "Everyone" and "Anonymous")
+            elif recipient != "Everyone":
+                try:
+                    user = User.objects.get(username=recipient)
+                except User.DoesNotExist:
+                    return JsonResponse({"success": False, "error": "Recipient not found"}, status=400)
+
+            # Save message in database
+            message = Message.objects.create(sender=sender, recipient=recipient, content=message_content, timestamp=now())
+
+            return JsonResponse({"success": True, "sender": sender, "recipient": recipient})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON format"}, status=400)
+
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-    else:
-        return JsonResponse({"error": "Invalid request"}, status=400)
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
 
+    return JsonResponse({"success": False, "error": "Invalid request method"}, status=400)
+
+
+from django.shortcuts import render
+from .models import Message
+from django.contrib.auth.models import User
 
 def chat_room(request):
-    messages = ChatMessage.objects.all()
-    return render(request, "anonymous_chat.html", {"messages": messages})
-from django.http import JsonResponse
-from .models import ChatMessage
+    if request.user.is_authenticated:
+        # Show messages for 'Everyone' + messages sent directly to the user
+        messages = Message.objects.filter(recipient__in=["Everyone", request.user.username]).order_by("-timestamp")
+    else:
+        # Show only public messages
+        messages = Message.objects.filter(recipient="Everyone").order_by("-timestamp")
+
+    # Get all users **except the current logged-in user**
+    users = User.objects.exclude(username=request.user.username) 
+
+    return render(request, "anonymous_chat.html", {"messages": messages, "users": users})
+
+
 
 def get_messages(request):
     messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Get latest 50 messages
     return JsonResponse([{"content": msg.content, "timestamp": msg.timestamp} for msg in messages], safe=False)
 
-from django.shortcuts import render, redirect
-from .models import ChatMessage
-
 def anonymous_chat(request):
-    if request.method == "POST":
-        message_content = request.POST.get("message")
-        if message_content:
-            ChatMessage.objects.create(username="Anonymous", content=message_content)
-        return redirect("anonymous_chat")  # Redirect to clear form
+    if request.user.is_authenticated:
+        # Show oldest messages first (so new messages appear at the bottom)
+        messages = Message.objects.filter(recipient__in=["Everyone", request.user.username]).order_by("timestamp")
+    else:
+        messages = Message.objects.filter(recipient="Everyone").order_by("timestamp")
 
-    messages = ChatMessage.objects.all().order_by("-timestamp")
-    return render(request, "anonymous_chat.html", {"messages": messages})
+    # Get all users except the currently logged-in user
+    users = User.objects.exclude(username=request.user.username) if request.user.is_authenticated else []
+
+    return render(request, "anonymous_chat.html", {"messages": messages, "users": users})
+
+
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Video
@@ -670,3 +711,77 @@ def quiz_detail(request, quiz_id):
         })
 
     return render(request, "quiz_detail.html", {"quiz": quiz})  # ✅ Render template for normal request
+from django.http import JsonResponse
+def get_quizzes(request):
+    quizzes = [
+        {
+            "id": 1,
+            "title": "General Anxiety Quiz",
+            "description": "Assess your anxiety levels",
+            "questions": [
+                {"text": "How often do you feel anxious?", "options": ["Never", "Sometimes", "Often", "Always"], "correct_answer": "Often"},
+                {"text": "Do you struggle to control worry?", "options": ["No", "Rarely", "Sometimes", "Frequently"], "correct_answer": "Frequently"}
+            ]
+        }
+    ]
+    return JsonResponse({"quizzes": quizzes})
+def get_quiz_details(request, quiz_id):
+    quiz = next((q for q in quizzes if q["id"] == quiz_id), None)
+    return JsonResponse(quiz if quiz else {"error": "Quiz not found"})
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+# Sample Quiz Data (This can be replaced with a database later)
+quizzes = [
+    {
+        "id": 1,
+        "title": "General Anxiety Quiz",
+        "category": "Anxiety",
+        "description": "Assess your anxiety levels.",
+        "questions": [
+            {
+                "text": "How often do you feel anxious?",
+                "options": ["Never", "Sometimes", "Often", "Always"],
+                "correct_answer": "Often"
+            },
+            {
+                "text": "Do you struggle to control worry?",
+                "options": ["No", "Rarely", "Sometimes", "Frequently"],
+                "correct_answer": "Frequently"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "Social Anxiety Quiz",
+        "category": "Anxiety",
+        "description": "Evaluate your comfort in social situations.",
+        "questions": [
+            {
+                "text": "Do you avoid social gatherings?",
+                "options": ["Never", "Occasionally", "Often", "Always"],
+                "correct_answer": "Often"
+            },
+            {
+                "text": "Do you fear public speaking?",
+                "options": ["Not at all", "A little", "Very much", "Extremely"],
+                "correct_answer": "Very much"
+            }
+        ]
+    }
+]
+
+
+# Sample view for quizzes page
+def quizzes(request):
+    return render(request, 'quizzes.html')  # Ensure 'quizzes.html' exists in templates
+
+# Sample quiz API views
+@csrf_exempt
+def get_quizzes(request):
+    return JsonResponse({"message": "List of quizzes"}, safe=False)
+
+@csrf_exempt
+def get_quiz_details(request, quiz_id):
+    return JsonResponse({"message": f"Details for quiz {quiz_id}"}, safe=False)

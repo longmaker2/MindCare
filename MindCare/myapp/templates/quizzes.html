@@ -32,6 +32,9 @@
             color: #333;
             text-align: center;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -45,15 +48,27 @@
 
         <!-- Quiz Categories -->
         <div id="quizContainer" class="row"></div>
+
+        <!-- Quiz Modal (for answering questions) -->
+        <div id="quizModal" class="hidden">
+            <h3 id="quizTitle"></h3>
+            <div id="quizQuestions"></div>
+            <button class="btn btn-primary mt-3" onclick="submitQuiz()">Submit Answers</button>
+            <button class="btn btn-secondary mt-3" onclick="closeQuiz()">Close</button>
+            <div id="quizResults" class="mt-3"></div>
+        </div>
     </div>
 
     <!-- Fetch and Display Quizzes -->
     <script>
+        let selectedQuiz = null;
+        let userAnswers = {};
+
         document.addEventListener("DOMContentLoaded", function () {
             fetch('/api/quizzes/')  // 🔄 Replace with your Django API endpoint
                 .then(response => response.json())
                 .then(data => {
-                    console.log("✅ Loaded Quizzes:", data); // Debugging
+                    console.log("✅ Loaded Quizzes:", data);
                     displayQuizzes(data.quizzes);
                 })
                 .catch(error => console.error("❌ Error fetching quizzes:", error));
@@ -61,41 +76,77 @@
 
         function displayQuizzes(quizzes) {
             let quizContainer = document.getElementById("quizContainer");
-            quizContainer.innerHTML = '';  // Clear existing content
+            quizContainer.innerHTML = '';
 
-            let categoryMap = {};
             quizzes.forEach(quiz => {
-                if (!categoryMap[quiz.category]) {
-                    categoryMap[quiz.category] = [];
-                }
-                categoryMap[quiz.category].push(quiz);
-            });
-
-            Object.keys(categoryMap).forEach(category => {
-                let categorySection = document.createElement("div");
-                categorySection.innerHTML = `<h4 class="category-title">${category}</h4>`;
-                quizContainer.appendChild(categorySection);
-
-                let rowDiv = document.createElement("div");
-                rowDiv.classList.add("row");
-
-                categoryMap[category].forEach(quiz => {
-                    let colDiv = document.createElement("div");
-                    colDiv.classList.add("col-md-4", "mb-4", "quiz-item");
-                    colDiv.innerHTML = `
-                        <div class="card quiz-card">
-                            <div class="card-body">
-                                <h5 class="card-title">${quiz.title}</h5>
-                                <p class="card-text text-muted">${quiz.description}</p>
-                                <a href="/quiz/${quiz.id}/" class="btn btn-primary w-100">Take Quiz</a>
-                            </div>
+                let colDiv = document.createElement("div");
+                colDiv.classList.add("col-md-4", "mb-4", "quiz-item");
+                colDiv.innerHTML = `
+                    <div class="card quiz-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${quiz.title}</h5>
+                            <p class="card-text text-muted">${quiz.description}</p>
+                            <button class="btn btn-primary w-100" onclick="startQuiz(${quiz.id})">Start Quiz</button>
                         </div>
-                    `;
-                    rowDiv.appendChild(colDiv);
-                });
-
-                quizContainer.appendChild(rowDiv);
+                    </div>
+                `;
+                quizContainer.appendChild(colDiv);
             });
+        }
+
+        function startQuiz(quizId) {
+            fetch(`/api/quiz/${quizId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    selectedQuiz = data;
+                    userAnswers = {};
+                    showQuizModal();
+                })
+                .catch(error => console.error("❌ Error loading quiz:", error));
+        }
+
+        function showQuizModal() {
+            let quizModal = document.getElementById("quizModal");
+            let quizTitle = document.getElementById("quizTitle");
+            let quizQuestions = document.getElementById("quizQuestions");
+
+            quizTitle.innerText = selectedQuiz.title;
+            quizQuestions.innerHTML = '';
+
+            selectedQuiz.questions.forEach((question, index) => {
+                let questionDiv = document.createElement("div");
+                questionDiv.classList.add("mb-3");
+
+                let optionsHTML = question.options.map(option => `
+                    <div>
+                        <input type="radio" name="question${index}" value="${option}" onchange="saveAnswer(${index}, '${option}')"> ${option}
+                    </div>
+                `).join("");
+
+                questionDiv.innerHTML = `<p><strong>${index + 1}. ${question.text}</strong></p>${optionsHTML}`;
+                quizQuestions.appendChild(questionDiv);
+            });
+
+            quizModal.classList.remove("hidden");
+        }
+
+        function saveAnswer(questionIndex, answer) {
+            userAnswers[questionIndex] = answer;
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            selectedQuiz.questions.forEach((question, index) => {
+                if (userAnswers[index] === question.correct_answer) {
+                    score++;
+                }
+            });
+
+            document.getElementById("quizResults").innerHTML = `<h4>🎉 Your Score: ${score}/${selectedQuiz.questions.length}</h4>`;
+        }
+
+        function closeQuiz() {
+            document.getElementById("quizModal").classList.add("hidden");
         }
 
         function searchQuizzes() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Chat Room</title>
+    <title>Private & Anonymous Chat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -31,6 +31,16 @@
             border-bottom: 3px solid #4ca5af;
         }
         .chat-box {
+        max-height: 400px;  /* Increase height to make scrolling better */
+        overflow-y: auto;   /* Enable scrolling */
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+        .chat-box {
             max-height: 300px;
             overflow-y: auto;
             padding: 15px;
@@ -47,13 +57,9 @@
             font-size: 14px;
             max-width: 80%;
             word-wrap: break-word;
-            display: flex;
-            align-items: center;
             background: #e1e1e1;
             text-align: left;
             align-self: flex-start;
-            border-radius: 10px;
-            margin-right: auto;
             color: black;
         }
         .timestamp {
@@ -64,12 +70,13 @@
         }
         .message-form {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-top: 10px;
             align-items: center;
         }
-        input[type="text"] {
-            flex: 1;
+        select, input[type="text"] {
+            width: 100%;
             padding: 12px;
             border: 2px solid #4ca5af;
             border-radius: 8px;
@@ -88,62 +95,106 @@
         button:hover {
             background: #1b6b76;
         }
-        .clear-chat {
-            margin-top: 10px;
-            padding: 10px 16px;
-            border: none;
-            background: #dc3545;
-            color: white;
-            cursor: pointer;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-        .clear-chat:hover {
-            background: #b02a37;
-        }
-        @media (max-width: 768px) {
-            .chat-container {
-                width: 100%;
-            }
-            input[type="text"] {
-                font-size: 12px;
-            }
-            button {
-                font-size: 12px;
-                padding: 10px;
-            }
-        }
     </style>
 </head>
 <body>
-    <h2>Anonymous Chat</h2>
-    <p>Your username: <b>Anonymous</b></p>
+    <h2>Private & Anonymous Chat</h2>
+    <p>Your username: <b id="username-display">{{ request.user.username }}</b></p>
+    
     <div class="chat-container">
         <div class="chat-header">Live Chat Room</div>
+
+        <!-- Chat Messages -->
         <div class="chat-box" id="chat-box">
-            {% for message in messages reversed %}
-            <div class="message">
-                <p><b>Anonymous:</b> {{ message.content }}</p>
-                <span class="timestamp">{{ message.timestamp }}</span>
-            </div>
+            {% for message in messages %}
+                <div class="message">
+                    <p><b>{{ message.sender }} to {{ message.recipient }}:</b> {{ message.content }}</p>
+                    <span class="timestamp">{{ message.timestamp }}</span>
+                </div>
             {% endfor %}
         </div>
-        <form method="POST" class="message-form">
+
+        <!-- Message Form -->
+        <form id="message-form" class="message-form">
             {% csrf_token %}
-            <input type="text" name="message" placeholder="Type a message..." required>
+
+            <!-- Select Recipient -->
+            <select name="recipient" id="recipient" required>
+                <option value="all">Send to Everyone</option>
+                <option value="anonymous">Send Anonymously</option>
+                {% for user in users %}
+                    <option value="{{ user.username }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Input Message -->
+            <input type="text" id="message-input" name="message" placeholder="Type a message..." required>
             <button type="submit">Send</button>
         </form>
-        <button class="clear-chat" onclick="clearChat()">Clear Chat</button>
     </div>
+
+    <!-- JavaScript for Sending Messages -->
     <script>
-        function clearChat() {
-            document.getElementById("chat-box").innerHTML = "";
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            var chatBox = document.getElementById("chat-box");
+       
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatBox = document.getElementById("chat-box");
+        const messageForm = document.getElementById("message-form");
+
+        // Scroll to the bottom when chat loads
+        function scrollToBottom() {
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Scroll to the bottom when the page loads
+        scrollToBottom();
+
+        messageForm.addEventListener("submit", function(event) {
+            event.preventDefault(); // Stop normal form submission
+
+            const messageInput = document.getElementById("message-input");
+            const recipientSelect = document.getElementById("recipient");
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            let message = messageInput.value.trim();
+            let recipient = recipientSelect.value;
+
+            if (message === "") {
+                alert("Message cannot be empty.");
+                return;
+            }
+
+            fetch("/send-message/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({
+                    message: message,
+                    recipient: recipient
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let newMessage = document.createElement("div");
+                    newMessage.classList.add("message");
+                    newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${message}</p><span class="timestamp">Now</span>`;
+
+                    // Add the new message at the **bottom** of the chat
+                    chatBox.appendChild(newMessage);
+
+                    // Scroll to the new message automatically
+                    scrollToBottom();
+
+                    messageInput.value = ""; // Clear input field
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
         });
+    });
     </script>
 </body>
 </html>
