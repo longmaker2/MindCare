@@ -1,6 +1,6 @@
 from django.db import models
 from .validators import file_size
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User # type: ignore
 
 
 # Create your models here.
@@ -32,16 +32,12 @@ from django.contrib.auth.models import User
 from django.db import models
 
 class Professional(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="professional_profile")
     name = models.CharField(max_length=255)
     specialty = models.CharField(max_length=255)
     contact_email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, unique=True)
     image = models.ImageField(upload_to='professionals/', null=True, blank=True)
-    available_slots = models.JSONField(default=list)  # Store available slots as a JSON list
-    booked_slots = models.JSONField(default=list)  # Store booked slots as a JSON list
-
-    def __str__(self):
-        return self.name
 
 
 from django.db import models
@@ -250,3 +246,13 @@ class AnonymousPrivateMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender} to {self.recipient}: {self.content[:30]}"
+class Professional(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="professional_profile")
+    name = models.CharField(max_length=255)
+    specialty = models.CharField(max_length=255)
+    contact_email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, unique=True)
+    image = models.ImageField(upload_to='professionals/', null=True, blank=True)
+    available_slots = models.JSONField(default=list)  # Add this if missing
+    booked_slots = models.JSONField(default=list)  # Add this if missing
+

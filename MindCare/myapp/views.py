@@ -520,13 +520,26 @@ def professional_detail(request, professional_id=None):
 
 from django.shortcuts import render
 
+from django.shortcuts import render
+from myapp.models import Professional
+
 def professional_dashboard(request):
-    return render(request, "professional_dashboard.html")
+    professional = None  # Default value
+
+    if request.user.is_authenticated:
+        try:
+            professional = request.user.professional_profile  # Use the related_name
+        except Professional.DoesNotExist:
+            professional = None  # If no profile is found, keep it as None
+
+    return render(request, 'professional_dashboard.html', {'professional': professional})
+
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.urls import reverse
+from .models import Professional
 
 def login_view(request):
     if request.method == 'POST':
@@ -535,16 +548,20 @@ def login_view(request):
         role = request.POST['role']
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
-            
+
             if role == 'professional':
-                return redirect(reverse('professional_home'))  # Ensure this view exists
-            else:
-                return redirect(reverse('index'))  # Ensure this view exists
+                if hasattr(user, 'professional_profile'):  # Check if the user has a Professional profile
+                    return redirect(reverse('professional_home'))
+                else:
+                    messages.error(request, 'No professional profile found. Contact support.')
+                    return redirect('login')
+
+            return redirect(reverse('index'))  # Redirect regular users
         else:
             messages.error(request, 'Invalid username or password.')
-
+    
     return render(request, 'login.html')
 
 
@@ -808,3 +825,14 @@ def get_quizzes(request):
 @csrf_exempt
 def get_quiz_details(request, quiz_id):
     return JsonResponse({"message": f"Details for quiz {quiz_id}"}, safe=False)
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from .models import Professional
+
+@receiver(post_save, sender=User)
+def create_professional_profile(sender, instance, created, **kwargs):
+    if created and instance.is_staff:  # Assuming professionals are staff users
+        Professional.objects.get_or_create(user=instance, name=instance.username, contact_email=instance.email)

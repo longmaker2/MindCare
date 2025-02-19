@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Room, Message
 from django.http import HttpResponse
+from myapp.models import Professional
+
 
 # Create your views here.
 def home(request):
@@ -38,7 +40,6 @@ def send(request):
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Professional
 
 def get_available_slots(request, professional_id, date):
     professional = get_object_or_404(Professional, id=professional_id)
