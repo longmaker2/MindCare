@@ -433,18 +433,23 @@ def get_messages(request):
     messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Get latest 50 messages
     return JsonResponse([{"content": msg.content, "timestamp": msg.timestamp} for msg in messages], safe=False)
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import AnonymousPrivateMessage
+from django.contrib.auth.models import User
+
+@login_required
 def anonymous_chat(request):
-    if request.user.is_authenticated:
-        # Show oldest messages first (so new messages appear at the bottom)
-        messages = Message.objects.filter(recipient__in=["Everyone", request.user.username]).order_by("timestamp")
-    else:
-        messages = Message.objects.filter(recipient="Everyone").order_by("timestamp")
-
-    # Get all users except the currently logged-in user
-    users = User.objects.exclude(username=request.user.username) if request.user.is_authenticated else []
-
-    return render(request, "anonymous_chat.html", {"messages": messages, "users": users})
-
+    # Fetch messages for the logged-in user and for "Everyone", ordered by timestamp in reverse (newest first)
+    messages = AnonymousPrivateMessage.objects.filter(
+        recipient__in=[request.user.username, 'Everyone']
+    ).order_by('-timestamp')  # newest messages first
+    
+    # Pass messages to the template
+    return render(request, 'anonymous_chat.html', {
+        'messages': messages,
+        'users': User.objects.all()
+    })
 
 
 from django.shortcuts import render, redirect

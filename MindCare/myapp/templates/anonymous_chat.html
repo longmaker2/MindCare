@@ -38,7 +38,7 @@
             border-radius: 10px;
             margin-bottom: 15px;
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse; /* Newest message at the top */
         }
         .message {
             padding: 12px;
@@ -97,7 +97,7 @@
         <!-- Chat Messages -->
         <div class="chat-box" id="chat-box">
             {% for message in messages %}
-                <div class="message">
+                <div class="message" id="message-{{ message.id }}">
                     <p><b>{{ message.sender }} to {{ message.recipient }}:</b> {{ message.content }}</p>
                     <span class="timestamp">{{ message.timestamp }}</span>
                 </div>
@@ -107,8 +107,6 @@
         <!-- Message Form -->
         <form id="message-form" class="message-form">
             {% csrf_token %}
-
-            <!-- User Selection List (Dropdown) -->
             <div class="mb-3">
                 <select name="recipient" id="recipient" class="form-select" required>
                     <option value="Everyone">Send to Everyone</option>
@@ -118,8 +116,6 @@
                     {% endfor %}
                 </select>
             </div>
-
-            <!-- Input Message -->
             <input type="text" id="message-input" name="message" placeholder="Type a message..." required>
             <button type="submit">Send</button>
         </form>
@@ -130,14 +126,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             const chatBox = document.getElementById("chat-box");
             const messageForm = document.getElementById("message-form");
-
-            // Scroll to the bottom when chat loads
-            function scrollToBottom() {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-
-            // Scroll to the bottom when the page loads
-            scrollToBottom();
 
             messageForm.addEventListener("submit", function(event) {
                 event.preventDefault(); // Stop normal form submission
@@ -152,11 +140,6 @@
                 if (message === "") {
                     alert("Message cannot be empty.");
                     return;
-                }
-
-                // Fix: Convert "all" to "Everyone"
-                if (recipient === "all") {
-                    recipient = "Everyone";
                 }
 
                 fetch("/send-message/", {
@@ -176,13 +159,7 @@
                         let newMessage = document.createElement("div");
                         newMessage.classList.add("message");
                         newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${message}</p><span class="timestamp">Now</span>`;
-
-                        // Add the new message at the bottom of the chat
-                        chatBox.appendChild(newMessage);
-
-                        // Scroll to the new message automatically
-                        scrollToBottom();
-
+                        chatBox.prepend(newMessage); // Adds the new message at the top
                         messageInput.value = ""; // Clear input field
                     } else {
                         alert("Error: " + data.error);
