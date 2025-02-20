@@ -116,16 +116,16 @@ def home(request):
 def room(request):
     return room(request, 'room.html')
 
-def all(request):
+def all_videos(request):  # ✅ Renamed function
     if request.method == "POST":
-        all_video=Video.objects.all()
-        form=Video_form(data=request.POST, files=request.FILES)
+        all_video = Video.objects.all()
+        form = Video_form(data=request.POST, files=request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponse("<h1>uploaded successfully")
+            return HttpResponse("<h1>uploaded successfully</h1>")
     else:
-        form=Video_form()
-    return render(request,'all.html',{"form":form,"all":all_video})
+        form = Video_form()
+    return render(request, 'all.html', {"form": form, "all": all_video})
 
 def mentorship_application(request):
     if request.method == 'POST':
@@ -214,56 +214,57 @@ def index(request):
 
 def appointment_success(request):
     return render(request, 'appointment_success.html')
-from django.shortcuts import render, redirect
-from django.contrib import messages 
-from .models import Appointment, Professional
-from django.contrib.auth.decorators import login_required 
-
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.contrib import messages
+from django.shortcuts import get_object_or_404
 from .models import Professional, Appointment
+import json
 
 def book_appointment(request):
     if request.method == "POST":
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "You must be logged in to book an appointment."}, status=403)
-
         professional_id = request.POST.get("professional")
         date = request.POST.get("date")
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
-        if not professional_id or not date or not time or not reason:
-            return JsonResponse({"error": "All fields are required."}, status=400)
+        print(f"📢 Received Professional ID: {professional_id}")
 
-        # ✅ Get Professional & Save Name (Instead of Object)
+        # Check if all required fields are present
+        if not (professional_id and date and time and reason):
+            return JsonResponse({"error": "Missing required fields"}, status=400)
+
+        # Fetch the professional
         try:
             professional = Professional.objects.get(id=professional_id)
-            professional_name = professional.name  # Save name as a string
         except Professional.DoesNotExist:
-            return JsonResponse({"error": "Selected professional does not exist."}, status=400)
+            print("❌ Error: Professional not found for ID:", professional_id)
+            return JsonResponse({"error": "Professional not found"}, status=404)
 
-        # ✅ Check Slot Availability
+        # Check if the selected slot is already booked
         if time in professional.booked_slots:
-            return JsonResponse({"error": "Selected time slot is already booked."}, status=400)
+            print(f"❌ Slot {time} is already booked for Professional {professional.name}")
+            return JsonResponse({"error": "Selected slot is already booked."}, status=400)
 
-        # ✅ Book the appointment using `professional_name`
+        # Create the appointment
         appointment = Appointment.objects.create(
-            user=request.user,  # Attach the logged-in user
-            professional_name=professional_name,  # Save the name, not the object
+            user=request.user,
+            professional_name=professional.name,
             date=date,
             time=time,
             reason=reason
         )
 
-        # ✅ Mark slot as booked
-        professional.booked_slots.append(time)
-        professional.save()
+        # Add the booked slot to the professional's booked_slots list
+        booked_slots = professional.booked_slots
+        booked_slots.append(time)  # Update list
+        professional.booked_slots = booked_slots
+        professional.save()  # Save the updated booked_slots
 
-        return render(request, "appointment_success.html", {"appointment": appointment})
+        print(f"✅ Slot {time} booked for {professional.name}")
 
-    return render(request, "appointment_form.html")
+        return JsonResponse({"message": "Appointment successfully booked!", "appointment_id": appointment.id}, status=200)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404

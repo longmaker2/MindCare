@@ -27,6 +27,8 @@
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
 
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </head>
 
@@ -241,39 +243,86 @@
           </ul>
 
          
-         <!-- Appointment Booking Form -->
-         <form method="post" action="{% url 'book_appointment' %}" class="bg-light p-4 rounded shadow-sm">
-          {% csrf_token %}
-      
-          <!-- Store the professional's ID instead of the whole object -->
-          <input type="hidden" name="professional" value="{{ professional.id }}">
+          <form class="appointment-form" method="post" action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+        
+            <!-- Each form now correctly stores the professional's ID -->
+            <input type="hidden" name="professional" value="{{ professional.id }}">
+        
+            <p>Booking with: <strong>{{ professional.name }}</strong></p>
+        
+            <div class="mb-3">
+                <label for="date" class="form-label">Select Date:</label>
+                <input type="date" class="form-control" name="date" required>
+            </div>
+        
+            <div class="mb-3">
+                <label for="time" class="form-label">Select Time:</label>
+                <select class="form-select" name="time" required>
+                    {% for slot in professional.available_slots %}
+                        <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
+                            {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="mb-3">
+                <label for="reason" class="form-label">Reason:</label>
+                <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
+            </div>
+        
+            <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+        </form>
+        
+
+<!-- Success Popup -->
+<div id="success-popup" style="display: none; background: green; color: white; padding: 15px; position: fixed; top: 20px; right: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000;">
+  Your appointment has been successfully booked!
+</div>
+
+<script>
+  $(document).ready(function () {
+      $(".appointment-form").submit(function (event) {
+          event.preventDefault(); // Prevent default form submission
+
+          var formData = $(this).serialize(); // Serialize form data
+          var professionalId = $(this).find("input[name='professional']").val(); // Get professional ID
           
-          <p>Booking with: <strong>{{ professional.name }}</strong></p>
-      
-          <div class="mb-3">
-              <label for="date" class="form-label">Select Date:</label>
-              <input type="date" class="form-control" name="date" required>
-          </div>
-      
-          <div class="mb-3">
-              <label for="time" class="form-label">Select Time:</label>
-              <select class="form-select" name="time" required>
-                  {% for slot in professional.available_slots %}
-                      <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
-                          {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
-                      </option>
-                  {% endfor %}
-              </select>
-          </div>
-      
-          <div class="mb-3">
-              <label for="reason" class="form-label">Reason:</label>
-              <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
-          </div>
-      
-          <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
-      </form>
-      
+          console.log("📢 Sending appointment request for Professional ID:", professionalId);
+
+          // Get CSRF Token from the form
+          var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
+
+          $.ajax({
+              type: "POST",
+              url: $(this).attr("action"),
+              data: formData,
+              headers: { "X-CSRFToken": csrftoken }, // Ensure CSRF token is sent
+              success: function (response) {
+                  console.log("✅ AJAX Response:", response); // Log the response
+
+                  if (response.message) {
+                      console.log("📢 Showing popup with message:", response.message);
+                      
+                      // Show success popup
+                      $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
+
+                      // Clear form fields after submission
+                      $(".appointment-form")[0].reset();
+                  } else {
+                      console.error("❌ Unexpected response format:", response);
+                  }
+              },
+              error: function (xhr, status, error) {
+                  console.error("❌ Error booking appointment:", xhr.responseText);
+                  alert("Error booking appointment. Please try again.");
+              }
+          });
+      });
+  });
+</script>
+
 
         </div>
       </div>
