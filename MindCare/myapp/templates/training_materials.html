@@ -41,7 +41,6 @@
       box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* ✅ Flexbox for better layout */
     .materials-container {
       display: flex;
       flex-wrap: wrap;
@@ -57,7 +56,6 @@
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     }
 
-    /* ✅ Video Grid */
     .video-container {
       display: flex;
       flex-wrap: wrap;
@@ -79,7 +77,6 @@
       border-radius: 5px;
     }
 
-    /* ✅ Book & Article Grid */
     .list-container {
       display: flex;
       flex-wrap: wrap;
@@ -94,7 +91,6 @@
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     }
 
-    /* ✅ Responsive Design */
     @media (max-width: 768px) {
       .material-section, .list-item {
         width: 100%;
@@ -121,108 +117,58 @@
       <a href="{% url 'upload_video' %}" class="admin-upload">Upload Video</a>
       <a href="{% url 'upload_book' %}" class="admin-upload">Upload Book</a>
       <a href="{% url 'upload_article' %}" class="admin-upload">Upload Article</a>
-      <a href="{% url 'upload_course' %}" class="admin-upload">Add Course</a>
     </div>
   {% endif %}
 
   <div class="container">
-    <h3>Filter by Category</h3>
-    <select id="categoryFilter">
-      <option value="All">All</option>
-      <option value="Anxiety">Anxiety</option>
-      <option value="Depression">Depression</option>
-      <option value="PTSD">PTSD</option>
-      <option value="Beginner">Beginner</option>
-      <option value="Intermediate">Intermediate</option>
-      <option value="Advanced">Advanced</option>
-    </select>
-  </div>
-
-  <div class="materials-container">
-
-   <!-- ✅ Books Section -->
-<div class="material-section">
-  <h3>Books</h3>
-  <div class="list-container">
-    {% for book in books %}
-      <div class="list-item">
-        <h4>{{ book.title }} ({{ book.category }})</h4>
-        <p>By {{ book.author }}</p>
-        <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
-      </div>
-    {% empty %}
-      <p>No books available.</p>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- ✅ Articles Section -->
-<div class="material-section">
-  <h3>Articles</h3>
-  <div class="list-container">
-    {% for article in articles %}
-      <div class="list-item">
-        <h4>{{ article.title }} ({{ article.category }})</h4>
-        <p>{{ article.summary }}</p>
-        <a href="{{ article.url }}" target="_blank">Read More</a>
-      </div>
-    {% empty %}
-      <p>No articles available.</p>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- ✅ Courses Section -->
-<div class="material-section">
-  <h3>Courses</h3>
-  <div class="list-container">
-    {% for course in courses %}
-      <div class="list-item">
-        <h4>{{ course.title }} ({{ course.level }})</h4>
-        <p>{{ course.description }}</p>
-        <a href="{{ course.url }}" target="_blank">Start Course</a>
-      </div>
-    {% empty %}
-      <p>No courses available.</p>
-    {% endfor %}
-  </div>
-</div>
-
-
-    <!-- ✅ Video Section -->
-    <div class="material-section" style="width: 100%;">
-      <h3>Videos</h3>
-      <div class="video-container" id="videoList">
-        {% for video in videos %}
-          <div class="video-item" data-category="{{ video.category }}">
-            <h4>{{ video.title }} ({{ video.category }})</h4>
+    <h3>Videos</h3>
+    <div class="video-container" id="videoList">
+      {% for video in videos %}
+        <div class="video-item" data-category="{{ video.category }}">
+          <h4>{{ video.title }} ({{ video.category }})</h4>
+          {% if video.video_file and video.video_file.url %}
             <video controls>
               <source src="{{ video.video_file.url }}" type="video/mp4">
               Your browser does not support the video tag.
             </video>
-          </div>
-        {% empty %}
-          <p>No videos available.</p>
-        {% endfor %}
-      </div>
+          {% else %}
+            <p>No video available.</p>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p>No videos available.</p>
+      {% endfor %}
     </div>
+  </div>
 
+  <div class="container">
+    <h3>Books</h3>
+    <div class="list-container">
+      {% for book in books %}
+        <div class="list-item">
+          <h4>{{ book.title }}</h4>
+          <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
+        </div>
+      {% empty %}
+        <p>No books available.</p>
+      {% endfor %}
+    </div>
+  </div>
 
-
-  <script>
-    document.getElementById("categoryFilter").addEventListener("change", function() {
-      let selectedCategory = this.value;
-      let items = document.querySelectorAll(".list-item, .video-item");
-
-      items.forEach(item => {
-        if (selectedCategory === "All" || item.dataset.category === selectedCategory) {
-          item.style.display = "block";
-        } else {
-          item.style.display = "none";
-        }
-      });
-    });
-  </script>
+  <div class="container">
+    <h3>Articles</h3>
+    <div class="list-container">
+      {% for article in articles %}
+        <div class="list-item">
+          <h4>{{ article.title }}</h4>
+          <p>{{ article.summary }}</p>
+          <a href="{{ article.url }}" target="_blank">Read More</a>
+        </div>
+      {% empty %}
+        <p>No articles available.</p>
+      {% endfor %}
+    </div>
+  </div>
 
 </body>
 </html>
