@@ -836,3 +836,21 @@ from .models import Professional
 def create_professional_profile(sender, instance, created, **kwargs):
     if created and instance.is_staff:  # Assuming professionals are staff users
         Professional.objects.get_or_create(user=instance, name=instance.username, contact_email=instance.email)
+
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Professional, Appointment
+
+@login_required
+def appointments_view(request, professional_id):
+    professional = get_object_or_404(Professional, id=professional_id)
+
+    # Use professional_name (string field) instead of professional (ForeignKey)
+    appointments = Appointment.objects.filter(professional_name=professional.name)
+
+    context = {
+        'professional': professional,
+        'appointments': appointments
+    }
+    return render(request, 'appointments.html', context)

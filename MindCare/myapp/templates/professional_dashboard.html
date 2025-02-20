@@ -93,7 +93,10 @@
         <div class="sidebar">
             <h4 class="text-center text-white">MindCare</h4>
             <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a>
+            <a href="{% url 'appointments' professional.id %}">
+                <i class="fas fa-calendar-alt"></i> Appointments
+            </a>
+            
             <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
             {% if professional %}
     <a href="{% url 'professional_detail' professional.id %}">

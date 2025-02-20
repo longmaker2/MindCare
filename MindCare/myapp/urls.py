@@ -11,6 +11,7 @@ from .views import training_materials, upload_video
 from .views import professional_detail
 from .views import professional_dashboard
 from .views import quizzes_api, quiz_detail 
+from .views import appointments_view
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -64,6 +65,7 @@ urlpatterns = [
     path('api/quizzes/', quizzes_api, name='quizzes_api'),
     path('quiz/<int:quiz_id>/', quiz_detail, name='quiz_detail'),
     path('quizzes/', views.quizzes, name='quizzes'),
+    path('appointments/<int:professional_id>/', appointments_view, name='appointments'),
    
 ] 
 
