@@ -113,18 +113,6 @@
     <a href="{% url 'training_materials' %}" class="back-link">Back to Training Materials</a>
   </div>
 
-  <div class="container book-list">
-    <h2>Uploaded Books</h2>
-    {% if books %}
-      {% for book in books %}
-        <div class="book-item">
-          <span>{{ book.title }}</span>
-          <a href="{{ book.pdf_file.url }}" target="_blank">Download</a>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No books uploaded yet.</p>
-    {% endif %}
-  </div>
+ 
 </body>
 </html>
