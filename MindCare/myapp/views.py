@@ -871,3 +871,36 @@ class QuizDetailView(View):
         quiz = get_object_or_404(Quiz, id=quiz_id)
         questions = list(quiz.questions.values("id", "text", "options", "correct_answer"))
         return JsonResponse({"title": quiz.title, "questions": questions})
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
+from .models import Professional, Message
+
+def message_professional(request, professional_id):
+    professional = get_object_or_404(Professional, id=professional_id)
+    success = False  # Default value for success message
+
+    if request.method == "POST":
+        message_content = request.POST.get("message")
+
+        if not message_content:
+            return render(request, "message_professional.html", {
+                "professional": professional,
+                "error": "Message cannot be empty."
+            })
+
+        # ✅ Ensure `receiver` is a User instance (linked to Professional)
+        receiver_user = professional.user
+
+        # ✅ Create the message with the correct sender and receiver
+        Message.objects.create(
+            sender=request.user,
+            receiver=receiver_user,
+            content=message_content
+        )
+
+        success = True  # ✅ Set success to True when message is sent
+
+    return render(request, "message_professional.html", {
+        "professional": professional,
+        "success": success
+    })

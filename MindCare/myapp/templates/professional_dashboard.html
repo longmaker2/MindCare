@@ -93,9 +93,16 @@
         <div class="sidebar">
             <h4 class="text-center text-white">MindCare</h4>
             <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            {% if professional %}
             <a href="{% url 'appointments' professional.id %}">
                 <i class="fas fa-calendar-alt"></i> Appointments
             </a>
+        {% else %}
+            <a href="#">
+                <i class="fas fa-calendar-alt"></i> Appointments (Unavailable)
+            </a>
+        {% endif %}
+        
             
             <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
             {% if professional %}
@@ -152,6 +159,31 @@
             </div>
         </div>
     </div>
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h4 class="card-title text-primary"><i class="fas fa-comments"></i> Messages & Notifications</h4>
+    
+            <!-- ✅ Success Message (Flashed after sending a message) -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+    
+            <!-- ✅ Display Messages -->
+            <ul class="list-group">
+                {% for message in professional.messages %}
+                    <li class="list-group-item">{{ message.content }}</li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No new messages</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
 
     <!-- Footer -->
     <footer>
