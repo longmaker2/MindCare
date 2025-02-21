@@ -91,21 +91,27 @@
                             <a href="{{ professional.website }}" target="_blank"><i class="fas fa-globe"></i></a>
                         </div>
 
+                        
                         <!-- Available Slots -->
-                        <h3 class="mt-4 text-primary">Available Slots</h3>
-                        <ul class="list-group list-group-flush">
-                            {% for slot in professional.available_slots %}
-                                <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }}</span></li>
-                            {% empty %}
-                                <li class="list-group-item text-danger">No available slots</li>
-                            {% endfor %}
-                        </ul>
+<h3 class="mt-4 text-primary">Available Slots</h3>
+<ul class="list-group list-group-flush">
+    {% for slot in professional.available_slots %}
+        {% if slot in professional.booked_slots %}
+            <li class="list-group-item"><span class="badge bg-danger text-white">{{ slot }} - Booked</span></li>
+        {% else %}
+            <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }} - Available</span></li>
+        {% endif %}
+    {% empty %}
+        <li class="list-group-item text-danger">No available slots</li>
+    {% endfor %}
+</ul>
+
 
                         <!-- Action Buttons -->
                         <div class="action-btns mt-4">
-                            <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-lg btn-success">
-                                <i class="fas fa-calendar-check"></i> Book Appointment
-                            </a>
+                            <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-primary">
+                                Book Appointment
+                            </a>                            
                             <a href="{% url 'message_professional' professional.id %}" class="btn btn-lg btn-primary">
                                 <i class="fas fa-comment-dots"></i> Message
                             </a>
