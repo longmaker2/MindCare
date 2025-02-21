@@ -227,14 +227,12 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 from django.db import models
-class Message(models.Model):
-    sender = models.CharField(max_length=100)
-    recipient = models.CharField(max_length=100, default="Everyone")
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Sender: {self.sender}, Recipient: {self.recipient}, Content: {self.content[:30]}"
+class Message(models.Model):
+    sender = models.CharField(max_length=255, default="System")  # Add a default value
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -256,3 +254,18 @@ class Professional(models.Model):
     available_slots = models.JSONField(default=list)  # Add this if missing
     booked_slots = models.JSONField(default=list)  # Add this if missing
 
+from django.db import models
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=100, default="General")  # ADD CATEGORY
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")  # Ensure related_name exists
+    text = models.CharField(max_length=500)
+    options = models.JSONField()
+    correct_answer = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.text

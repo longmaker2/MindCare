@@ -1,121 +1,52 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MindCare - Professional Dashboard{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
+    <title>Professional Profile</title>
+    {% load static %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    
-    <style>
-        /* Full-Height Layout for Sticky Footer */
-        html, body {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Sidebar Styling */
-        .wrapper {
-            flex: 1;
-            display: flex;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            padding-top: 20px;
-            min-height: 100vh;
-        }
-        .sidebar a {
-            padding: 15px;
-            display: block;
-            color: #ffffff;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .sidebar .active {
-            background-color: #007bff;
-        }
-
-        /* Page Content */
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        /* Custom Card Styles */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: 0.3s;
-        }
-        .card:hover {
-            transform: scale(1.02);
-        }
-
-        /* Footer Styling */
-        footer {
-            background-color: #212529;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            width: 100%;
-            margin-top: auto;
-        }
-    </style>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h4 class="text-center text-white">MindCare</h4>
-            <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a>
-            <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
-            <a href="{% url 'professional_detail' professional.id %}"><i class="fas fa-user"></i> Profile</a>
-            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h1 class="mb-0">{{ professional.name }}</h1>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if professional.image %}
+                            <img src="{{ professional.image.url }}" class="img-fluid rounded-circle mb-3 border border-secondary" 
+                                 alt="{{ professional.name }}" style="width: 200px; height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.png' %}" class="img-fluid rounded-circle mb-3 border border-secondary" 
+                                 alt="Default Profile" style="width: 200px; height: 200px; object-fit: cover;">
+                        {% endif %}
 
-        <!-- Page Content -->
-        <div class="content">
-            <header class="bg-primary text-white text-center py-3 mb-4">
-                <h2>Welcome, {{ professional.user.username }}</h2>
-            </header>
+                        <p class="fw-bold text-secondary"><i class="fas fa-user-md text-success"></i> Specialty: <span class="text-dark">{{ professional.specialty }}</span></p>
+                        <p class="text-muted"><i class="fas fa-info-circle text-primary"></i> {{ professional.bio }}</p>
 
-            <div class="row">
-                <!-- Profile Details -->
-                <div class="col-md-6">
-                    <div class="card p-3 mb-4">
-                        <h4 class="card-title text-primary"><i class="fas fa-user"></i> Profile Information</h4>
-                        <ul class="list-group">
-                            <li class="list-group-item"><strong>Name:</strong> {{ professional.name }}</li>
-                            <li class="list-group-item"><strong>Specialty:</strong> {{ professional.specialty }}</li>
-                            <li class="list-group-item"><strong>Email:</strong> {{ professional.contact_email }}</li>
-                            <li class="list-group-item"><strong>Phone:</strong> {{ professional.phone_number }}</li>
+                        <h2 class="mt-4 text-primary">Available Slots</h2>
+                        <ul class="list-group list-group-flush">
+                            {% for slot in professional.available_slots %}
+                                <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }}</span></li>
+                            {% empty %}
+                                <li class="list-group-item text-danger">No available slots</li>
+                            {% endfor %}
                         </ul>
+
+                        <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-lg btn-success mt-4">
+                            <i class="fas fa-calendar-check"></i> Book Appointment
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 MindCare. All Rights Reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

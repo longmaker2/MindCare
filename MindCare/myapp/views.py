@@ -855,3 +855,19 @@ def appointments_view(request, professional_id):
         'appointments': appointments
     }
     return render(request, 'appointments.html', context)
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views import View
+from .models import Quiz, Question
+
+class QuizListView(View):
+    def get(self, request):
+        quizzes = list(Quiz.objects.values("id", "title", "description"))  # REMOVE 'category'
+        return JsonResponse({"quizzes": quizzes})
+
+class QuizDetailView(View):
+    def get(self, request, quiz_id):
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        questions = list(quiz.questions.values("id", "text", "options", "correct_answer"))
+        return JsonResponse({"title": quiz.title, "questions": questions})
