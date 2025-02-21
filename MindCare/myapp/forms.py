@@ -62,3 +62,10 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ['title', 'description', 'level', 'url']
+from django import forms
+from .models import Book
+
+class BookUploadForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ["title", "pdf_file"]

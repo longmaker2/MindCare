@@ -7,113 +7,106 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: #f9f9f9;
       color: #333;
+      margin: 0;
+      padding: 0;
     }
 
     h1 {
       color: #020b15;
       text-align: center;
+      padding: 20px;
+      background-color: #007bff;
+      color: white;
+      margin: 0;
     }
 
     p {
-      color: #030f1c;
       text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .admin-panel {
+      text-align: center;
+      margin: 20px 0;
     }
 
     .admin-upload {
       background-color: #007bff;
       color: white;
-      padding: 8px 16px;
+      padding: 10px 16px;
       text-decoration: none;
-      border-radius: 4px;
+      border-radius: 5px;
       display: inline-block;
-      margin-bottom: 20px;
+      margin: 5px;
+      font-size: 1em;
     }
 
     .container {
-      border: 1px solid #007bff;
-      padding: 15px;
+      width: 85%;
       margin: 20px auto;
       background-color: white;
-      border-radius: 5px;
-      width: 80%;
-      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .materials-container {
+    .section-title {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #007bff;
+    }
+
+    .video-container, .list-container {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      gap: 20px;
+      justify-content: center;
     }
 
-    .material-section {
-      width: 48%;
-      margin-bottom: 20px;
+    .video-item, .list-item {
       background: white;
       padding: 15px;
-      border-radius: 5px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .video-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .video-item {
-      width: 23%;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       text-align: center;
+      width: 300px;
     }
 
     video {
       width: 100%;
-      height: 150px;
+      height: auto;
       border-radius: 5px;
     }
 
-    .list-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
+    .list-item a {
+      display: block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
     }
 
-    .list-item {
-      width: 45%;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    .list-item a:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 768px) {
-      .material-section, .list-item {
-        width: 100%;
-      }
-      .video-item {
-        width: 48%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .video-item {
-        width: 100%;
+      .video-item, .list-item {
+        width: 90%;
       }
     }
   </style>
 </head>
 <body>
-
   <h1>Training Materials</h1>
-  <p>Explore educational resources including articles, books, videos, and courses categorized by topics and skill levels.</p>
+  <p>Explore educational resources including articles, books, and videos.</p>
 
   {% if user.is_authenticated and user.is_superuser %}
-    <div style="text-align: center;">
+    <div class="admin-panel">
       <a href="{% url 'upload_video' %}" class="admin-upload">Upload Video</a>
       <a href="{% url 'upload_book' %}" class="admin-upload">Upload Book</a>
       <a href="{% url 'upload_article' %}" class="admin-upload">Upload Article</a>
@@ -121,10 +114,10 @@
   {% endif %}
 
   <div class="container">
-    <h3>Videos</h3>
-    <div class="video-container" id="videoList">
+    <h2 class="section-title">Videos</h2>
+    <div class="video-container">
       {% for video in videos %}
-        <div class="video-item" data-category="{{ video.category }}">
+        <div class="video-item">
           <h4>{{ video.title }} ({{ video.category }})</h4>
           {% if video.video_file and video.video_file.url %}
             <video controls>
@@ -142,7 +135,7 @@
   </div>
 
   <div class="container">
-    <h3>Books</h3>
+    <h2 class="section-title">Books</h2>
     <div class="list-container">
       {% for book in books %}
         <div class="list-item">
@@ -156,7 +149,7 @@
   </div>
 
   <div class="container">
-    <h3>Articles</h3>
+    <h2 class="section-title">Articles</h2>
     <div class="list-container">
       {% for article in articles %}
         <div class="list-item">
@@ -169,6 +162,5 @@
       {% endfor %}
     </div>
   </div>
-
 </body>
 </html>
