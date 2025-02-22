@@ -688,7 +688,7 @@ from django.shortcuts import redirect, get_object_or_404
 from .models import Appointment
 
 def cancel_appointment(request, appointment_id):
-    appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+    appointment = get_object_or_404(Appointment, id=appointment_id, client=request.user)
     appointment.status = "Canceled"
     appointment.save()
     return redirect('user_appointments')
