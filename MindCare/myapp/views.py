@@ -221,9 +221,15 @@ from django.core.mail import send_mail
 from .models import Professional, Appointment
 import random
 
+import json
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.core.mail import send_mail
+from .models import Professional, Appointment
+import random
+
 def book_appointment(request):
     if request.method == "GET":
-        # ✅ Handle GET request to show the appointment booking page
         professional_id = request.GET.get("professional")
 
         if not professional_id:
@@ -233,9 +239,8 @@ def book_appointment(request):
         return render(request, "book_appointment.html", {"professional": professional})
 
     elif request.method == "POST":
-        # ✅ Handle POST request to book an appointment
         try:
-            print("📌 Received POST Data:", json.dumps(request.POST.dict(), indent=4))  # ✅ Log incoming data
+            print("📌 Received POST Data:", json.dumps(request.POST.dict(), indent=4))
         except Exception as e:
             print(f"❌ Error Logging Data: {e}")
 
@@ -244,20 +249,11 @@ def book_appointment(request):
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
-        # ✅ Check if any field is missing and return a specific error
-        if not professional_id:
-            return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
-        if not date:
-            return JsonResponse({"error": "Missing 'date' parameter"}, status=400)
-        if not time:
-            return JsonResponse({"error": "Missing 'time' parameter"}, status=400)
-        if not reason:
-            return JsonResponse({"error": "Missing 'reason' parameter"}, status=400)
+        if not all([professional_id, date, time, reason]):
+            return JsonResponse({"error": "All fields are required!"}, status=400)
 
-        # ✅ Ensure professional exists
         professional = get_object_or_404(Professional, id=professional_id)
 
-        # ✅ Check if the selected slot is already booked
         if time in professional.booked_slots:
             return JsonResponse({"error": "This time slot is already booked. Please choose another."}, status=400)
 
@@ -279,9 +275,9 @@ def book_appointment(request):
         # ✅ Generate a Google Meet link
         google_meet_link = f"https://meet.google.com/{random.choice(['abc', 'xyz', 'lmn'])}-{random.randint(100,999)}-{random.randint(100,999)}"
 
-        # ✅ Send an email confirmation with the Meet link
+        # ✅ Send email confirmation to both the user and the professional
         subject = "Your Appointment Confirmation"
-        message = f"""
+        user_message = f"""
         Hello {request.user.username},
 
         Your appointment with {professional.name} has been confirmed.
@@ -292,15 +288,38 @@ def book_appointment(request):
         Join the meeting via Google Meet:
         🔗 {google_meet_link}
 
-        If you have any questions, feel free to contact us.
+        If you have any questions, feel free to contact {professional.name} at {professional.contact_email}.
 
         Best regards,  
         Your Website Team
         """
-        send_mail(subject, message, "your-email@gmail.com", [request.user.email])
+
+        professional_message = f"""
+        Hello {professional.name},
+
+        A new appointment has been booked with you.
+
+        📅 Date: {date}
+        ⏰ Time: {time}
+        👤 Client: {request.user.username} ({request.user.email})
+
+        The meeting will take place via Google Meet:
+        🔗 {google_meet_link}
+
+        Please be prepared for the session.
+
+        Best regards,  
+        Your Website Team
+        """
+
+        # ✅ Send email to the user (client)
+        send_mail(subject, user_message, "your-email@gmail.com", [request.user.email])
+
+        # ✅ Send email to the professional
+        send_mail(f"New Appointment: {request.user.username}", professional_message, "your-email@gmail.com", [professional.contact_email])
 
         return JsonResponse({
-            "message": "Appointment successfully booked! A confirmation email has been sent.",
+            "message": "Appointment successfully booked! A confirmation email has been sent to you",
             "google_meet_link": google_meet_link
         }, status=200)
 
