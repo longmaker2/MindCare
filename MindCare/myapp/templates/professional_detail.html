@@ -9,17 +9,20 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f4f4f4;
         }
         .profile-card {
             border-radius: 15px;
             overflow: hidden;
+            background-color: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
         }
         .profile-header {
             background: linear-gradient(135deg, #007bff, #6610f2);
             color: white;
-            padding: 40px 20px;
-            text-align: center;
+            padding: 50px 20px;
         }
         .profile-img {
             width: 150px;
@@ -27,27 +30,55 @@
             object-fit: cover;
             border: 4px solid white;
             margin-top: -75px;
+            border-radius: 50%;
         }
         .profile-info {
             text-align: center;
+            padding: 20px;
         }
         .info-item {
-            margin-top: 10px;
-            font-size: 1.1rem;
-        }
-        .action-btns {
+            margin: 15px 0;
+            font-size: 1.2rem;
             display: flex;
+            align-items: center;
             justify-content: center;
             gap: 10px;
         }
+        .info-item i {
+            font-size: 1.3rem;
+        }
+        .social-icons {
+            margin-top: 15px;
+        }
         .social-icons a {
-            font-size: 20px;
+            font-size: 24px;
             margin: 0 10px;
             color: #007bff;
             transition: 0.3s;
         }
         .social-icons a:hover {
             color: #6610f2;
+        }
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .action-btns .btn {
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+        .availability {
+            margin-top: 30px;
+        }
+        .availability h3 {
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+        .list-group-item {
+            font-size: 1.1rem;
+            text-align: center;
         }
     </style>
 </head>
@@ -56,68 +87,75 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card shadow-lg profile-card">
+                <div class="card profile-card">
                     
                     <!-- Profile Header -->
                     <div class="profile-header">
-                        <h1 class="mb-0">{{ professional.name }}</h1>
+                        <h1 class="mb-1">{{ professional.name }}</h1>
                         <p class="text-light"><i class="fas fa-user-md"></i> {{ professional.specialty }}</p>
                     </div>
                     
                     <!-- Profile Image -->
-                    <div class="text-center">
+                    <div>
                         {% if professional.image %}
-                            <img src="{{ professional.image.url }}" class="img-fluid rounded-circle profile-img" alt="{{ professional.name }}">
+                            <img src="{{ professional.image.url }}" class="profile-img" alt="{{ professional.name }}">
                         {% else %}
-                            <img src="{% static 'images/default-profile.png' %}" class="img-fluid rounded-circle profile-img" alt="Default Profile">
+                            <img src="{% static 'images/default-profile.png' %}" class="profile-img" alt="Default Profile">
                         {% endif %}
                     </div>
 
                     <!-- Profile Details -->
-                    <div class="card-body profile-info">
-                        <p class="text-muted"><i class="fas fa-info-circle"></i> {{ professional.bio }}</p>
-                        
+                    <div class="profile-info">
                         <div class="info-item">
-                            <i class="fas fa-envelope text-primary"></i> <strong>Email:</strong> {{ professional.email }}
+                            <i class="fas fa-user-md text-info"></i> <strong>Specialty:</strong> {{ professional.specialty }}
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-phone text-success"></i> <strong>Phone:</strong> {{ professional.phone }}
+                            <i class="fas fa-envelope text-primary"></i> <strong>Email:</strong> {{ professional.contact_email }}
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone text-success"></i> <strong>Phone:</strong> {{ professional.phone_number }}
                         </div>
 
                         <!-- Social Media Links -->
-                        <div class="social-icons mt-3">
-                            <a href="{{ professional.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
-                            <a href="{{ professional.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
-                            <a href="{{ professional.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                        <div class="social-icons">
+                            {% if professional.linkedin %}
+                                <a href="{{ professional.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                            {% endif %}
+                            {% if professional.twitter %}
+                                <a href="{{ professional.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                            {% endif %}
+                            {% if professional.website %}
+                                <a href="{{ professional.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                            {% endif %}
                         </div>
 
-                        
                         <!-- Available Slots -->
-<h3 class="mt-4 text-primary">Available Slots</h3>
-<ul class="list-group list-group-flush">
-    {% for slot in professional.available_slots %}
-        {% if slot in professional.booked_slots %}
-            <li class="list-group-item"><span class="badge bg-danger text-white">{{ slot }} - Booked</span></li>
-        {% else %}
-            <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }} - Available</span></li>
-        {% endif %}
-    {% empty %}
-        <li class="list-group-item text-danger">No available slots</li>
-    {% endfor %}
-</ul>
-
+                        <div class="availability">
+                            <h3>Available Slots</h3>
+                            <ul class="list-group">
+                                {% for slot in professional.available_slots %}
+                                    {% if slot in professional.booked_slots %}
+                                        <li class="list-group-item"><span class="badge bg-danger text-white">{{ slot }} - Booked</span></li>
+                                    {% else %}
+                                        <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }} - Available</span></li>
+                                    {% endif %}
+                                {% empty %}
+                                    <li class="list-group-item text-danger">No available slots</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
                         <!-- Action Buttons -->
-                        <div class="action-btns mt-4">
+                        <div class="action-btns">
                             <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-primary">
-                                Book Appointment
-                            </a>                            
-                            <a href="{% url 'message_professional' professional.id %}" class="btn btn-lg btn-primary">
+                                <i class="fas fa-calendar-check"></i> Book Appointment
+                            </a>
+                            <a href="{% url 'message_professional' professional.id %}" class="btn btn-outline-primary">
                                 <i class="fas fa-comment-dots"></i> Message
                             </a>
-                            
                         </div>
-                    </div>
+
+                    </div> <!-- End Profile Info -->
 
                 </div>
             </div>
