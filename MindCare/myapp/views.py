@@ -681,7 +681,7 @@ from django.shortcuts import render
 from .models import Appointment
 
 def user_appointments(request):
-    user_appointments = Appointment.objects.filter(user=request.user).order_by('-date')
+    user_appointments = Appointment.objects.filter(client=request.user).order_by('-date')
     return render(request, 'user_appointments.html', {'appointments': user_appointments})
 
 from django.shortcuts import redirect, get_object_or_404
