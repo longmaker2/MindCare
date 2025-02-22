@@ -900,7 +900,7 @@ def message_professional(request, professional_id):
         # ✅ Create the message with the correct sender and receiver
         Message.objects.create(
             sender=request.user,
-            receiver=receiver_user,
+            receiver=professional,
             content=message_content
         )
 
