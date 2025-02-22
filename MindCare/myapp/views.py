@@ -214,13 +214,18 @@ def index(request):
 
 def appointment_success(request):
     return render(request, 'appointment_success.html')
+import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.core.mail import send_mail
 from .models import Professional, Appointment
+import random
 
 def book_appointment(request):
     if request.method == "GET":
+        # ✅ Handle GET request to show the appointment booking page
         professional_id = request.GET.get("professional")
+
         if not professional_id:
             return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
 
@@ -228,28 +233,35 @@ def book_appointment(request):
         return render(request, "book_appointment.html", {"professional": professional})
 
     elif request.method == "POST":
+        # ✅ Handle POST request to book an appointment
+        try:
+            print("📌 Received POST Data:", json.dumps(request.POST.dict(), indent=4))  # ✅ Log incoming data
+        except Exception as e:
+            print(f"❌ Error Logging Data: {e}")
+
         professional_id = request.POST.get("professional")
         date = request.POST.get("date")
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
-        # 🚀 Log values to check what's missing
-        print(f"📌 Received data: professional_id={professional_id}, date={date}, time={time}, reason={reason}")
-
+        # ✅ Check if any field is missing and return a specific error
         if not professional_id:
-            return JsonResponse({"error": "Missing professional ID"}, status=400)
+            return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
         if not date:
-            return JsonResponse({"error": "Missing appointment date"}, status=400)
+            return JsonResponse({"error": "Missing 'date' parameter"}, status=400)
         if not time:
-            return JsonResponse({"error": "Missing appointment time"}, status=400)
+            return JsonResponse({"error": "Missing 'time' parameter"}, status=400)
         if not reason:
-            return JsonResponse({"error": "Missing appointment reason"}, status=400)
+            return JsonResponse({"error": "Missing 'reason' parameter"}, status=400)
 
+        # ✅ Ensure professional exists
         professional = get_object_or_404(Professional, id=professional_id)
 
+        # ✅ Check if the selected slot is already booked
         if time in professional.booked_slots:
-            return JsonResponse({"error": "Selected slot is already booked."}, status=400)
+            return JsonResponse({"error": "This time slot is already booked. Please choose another."}, status=400)
 
+        # ✅ Create the appointment
         appointment = Appointment.objects.create(
             client=request.user,
             professional_name=professional.name,
@@ -258,12 +270,41 @@ def book_appointment(request):
             reason=reason
         )
 
-        professional.booked_slots.append(time)
-        professional.save()
+        # ✅ Move the slot from `available_slots` to `booked_slots`
+        if time in professional.available_slots:
+            professional.available_slots.remove(time)
+            professional.booked_slots.append(time)
+            professional.save()
 
-        return JsonResponse({"message": "Appointment successfully booked!", "appointment_id": appointment.id}, status=200)
+        # ✅ Generate a Google Meet link
+        google_meet_link = f"https://meet.google.com/{random.choice(['abc', 'xyz', 'lmn'])}-{random.randint(100,999)}-{random.randint(100,999)}"
 
-    return JsonResponse({"error": "Invalid request method"}, status=400)
+        # ✅ Send an email confirmation with the Meet link
+        subject = "Your Appointment Confirmation"
+        message = f"""
+        Hello {request.user.username},
+
+        Your appointment with {professional.name} has been confirmed.
+
+        📅 Date: {date}
+        ⏰ Time: {time}
+
+        Join the meeting via Google Meet:
+        🔗 {google_meet_link}
+
+        If you have any questions, feel free to contact us.
+
+        Best regards,  
+        Your Website Team
+        """
+        send_mail(subject, message, "your-email@gmail.com", [request.user.email])
+
+        return JsonResponse({
+            "message": "Appointment successfully booked! A confirmation email has been sent.",
+            "google_meet_link": google_meet_link
+        }, status=200)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
