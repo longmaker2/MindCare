@@ -528,16 +528,18 @@ from myapp.models import Professional, Appointment, Message
 def professional_dashboard(request):
     professional = request.user.professional_profile
 
+    # ✅ Retrieve upcoming appointments for the professional
     upcoming_appointments = Appointment.objects.filter(
         professional_name=professional.name, status='Upcoming'
     ).order_by('date', 'time')
 
+    # ✅ Retrieve messages where the professional is the receiver
     messages = Message.objects.filter(receiver=professional).order_by('-timestamp')
 
     return render(request, 'professional_dashboard.html', {
         'professional': professional,
         'upcoming_appointments': upcoming_appointments,
-        'messages': messages
+        'messages': messages  # ✅ Ensure messages are passed to the template
     })
 
 
@@ -910,3 +912,18 @@ def message_professional(request, professional_id):
         "professional": professional,
         "success": success
     })
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from myapp.models import Message
+
+@login_required
+def clear_messages(request):
+    if request.method == "POST":
+        try:
+            professional = request.user.professional_profile
+            Message.objects.filter(receiver=professional).delete()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    return JsonResponse({"success": False, "error": "Invalid request method"})

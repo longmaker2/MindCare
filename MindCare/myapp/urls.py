@@ -12,6 +12,7 @@ from .views import professional_detail
 from .views import professional_dashboard
 from .views import quizzes_api, quiz_detail 
 from .views import appointments_view
+from myapp.views import clear_messages
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -67,6 +68,7 @@ urlpatterns = [
     path('quizzes/', views.quizzes, name='quizzes'),
     path('appointments/<int:professional_id>/', appointments_view, name='appointments'),
     path('professionals/<int:professional_id>/message/', views.message_professional, name='message_professional'),
+    path('clear-messages/', clear_messages, name='clear_messages'),
    
 ] 
 
