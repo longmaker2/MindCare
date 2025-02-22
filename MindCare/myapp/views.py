@@ -217,38 +217,39 @@ def appointment_success(request):
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from .models import Professional, Appointment
-import json
 
 def book_appointment(request):
     if request.method == "GET":
-        # Handle GET request: Show the booking form for the selected professional
         professional_id = request.GET.get("professional")
-
         if not professional_id:
             return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
 
         professional = get_object_or_404(Professional, id=professional_id)
-
         return render(request, "book_appointment.html", {"professional": professional})
 
     elif request.method == "POST":
-        # Handle POST request: Save the appointment
         professional_id = request.POST.get("professional")
         date = request.POST.get("date")
         time = request.POST.get("time")
         reason = request.POST.get("reason")
 
-        if not (professional_id and date and time and reason):
-            return JsonResponse({"error": "Missing required fields"}, status=400)
+        # 🚀 Log values to check what's missing
+        print(f"📌 Received data: professional_id={professional_id}, date={date}, time={time}, reason={reason}")
 
-        # Fetch the professional
+        if not professional_id:
+            return JsonResponse({"error": "Missing professional ID"}, status=400)
+        if not date:
+            return JsonResponse({"error": "Missing appointment date"}, status=400)
+        if not time:
+            return JsonResponse({"error": "Missing appointment time"}, status=400)
+        if not reason:
+            return JsonResponse({"error": "Missing appointment reason"}, status=400)
+
         professional = get_object_or_404(Professional, id=professional_id)
 
-        # Check if the slot is already booked
         if time in professional.booked_slots:
             return JsonResponse({"error": "Selected slot is already booked."}, status=400)
 
-        # Create the appointment
         appointment = Appointment.objects.create(
             client=request.user,
             professional_name=professional.name,
@@ -257,14 +258,12 @@ def book_appointment(request):
             reason=reason
         )
 
-        # Update booked slots
         professional.booked_slots.append(time)
         professional.save()
 
         return JsonResponse({"message": "Appointment successfully booked!", "appointment_id": appointment.id}, status=200)
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
-
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404

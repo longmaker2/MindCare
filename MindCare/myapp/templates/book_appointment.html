@@ -18,25 +18,15 @@
             <div class="card-body">
                 
                 <!-- Success Message -->
-                {% if success %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        ✅ Appointment successfully booked!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
+                <div id="success-message" class="alert alert-success d-none"></div>
 
                 <!-- Error Message -->
-                {% if error %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ❌ {{ error }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
+                <div id="error-message" class="alert alert-danger d-none"></div>
 
-                <form class="appointment-form" method="post" action="{% url 'book_appointment' %}">
+                <form id="appointment-form" method="post" action="{% url 'book_appointment' %}">
                     {% csrf_token %}
                 
-                    <!-- Each form now correctly stores the professional's ID -->
+                    <!-- Store the professional's ID -->
                     <input type="hidden" name="professional" value="{{ professional.id }}">
                 
                     <p>Booking with: <strong>{{ professional.name }}</strong></p>
@@ -62,69 +52,66 @@
                         <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
                     </div>
                 
-                    <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+                    <button type="submit" id="submit-btn" class="btn btn-primary w-100">Book Appointment</button>
                 </form>
-                
-        
-        <!-- Success Popup -->
-        <div id="success-popup" style="display: none; background: green; color: white; padding: 15px; position: fixed; top: 20px; right: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000;">
-          Your appointment has been successfully booked!
+            </div>
         </div>
-        
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $(".appointment-form").submit(function (event) {
-                    event.preventDefault(); // Prevent default form submission
-        
-                    var formData = $(this).serialize(); // Serialize form data
-                    var professionalId = $(this).find("input[name='professional']").val(); // Get professional ID
-        
-                    console.log("📢 Sending appointment request for Professional ID:", professionalId);
-        
-                    var csrftoken = $("input[name=csrfmiddlewaretoken]").val(); // Get CSRF Token
-        
-                    $.ajax({
-                        type: "POST",
-                        url: $(this).attr("action"),
-                        data: formData,
-                        headers: { "X-CSRFToken": csrftoken }, // CSRF protection
-                        success: function (response) {
-                            console.log("✅ AJAX Response:", response);
-        
-                            if (response.message) {
-                                console.log("📢 Showing success popup:", response.message);
-        
-                                // Show success popup
-                                $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
-        
-                                // Clear form fields
-                                $(".appointment-form")[0].reset();
-        
-                                // Update messages section
-                                $("#messages").html(`
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        ${response.message}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                `);
-                            }
-                        },
-                        error: function (xhr) {
-                            console.error("❌ Error:", xhr.responseText);
-                            $("#messages").html(`
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    ❌ ${xhr.responseText}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            `);
-                        }
-                    });
-                });
-            });
-        </script>
-        
-     
+    </div>
+
+    <!-- Success Popup -->
+    <div id="success-popup" style="display: none; background: green; color: white; padding: 15px; position: fixed; top: 20px; right: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000;">
+      ✅ Your appointment has been successfully booked!
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+    $("#appointment-form").submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var formData = $(this).serialize(); // Serialize form data
+        var professionalId = $("input[name='professional']").val();
+        var date = $("input[name='date']").val();
+        var time = $("select[name='time']").val();
+        var reason = $("textarea[name='reason']").val();
+
+        console.log("📢 Sending request: ", { professionalId, date, time, reason });
+
+        if (!date || !time || !reason) {
+            alert("⚠️ Please fill out all fields before submitting!");
+            return;
+        }
+
+        var submitBtn = $("#submit-btn");
+        submitBtn.prop("disabled", true).text("Booking...");
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            headers: { "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val() },
+            success: function (response) {
+                console.log("✅ Success: ", response);
+
+                $("#success-popup").fadeIn().delay(3000).fadeOut();
+                $("#success-message").text(response.message).removeClass("d-none");
+
+                $("#appointment-form")[0].reset();
+                submitBtn.prop("disabled", false).text("Book Appointment");
+            },
+            error: function (xhr) {
+                console.error("❌ Error: ", xhr.responseText);
+                $("#error-message").text("❌ " + xhr.responseText).removeClass("d-none");
+                submitBtn.prop("disabled", false).text("Book Appointment");
+            }
+        });
+    });
+});
+
+    </script>
+
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
