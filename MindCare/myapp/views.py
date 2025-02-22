@@ -250,7 +250,7 @@ def book_appointment(request):
 
         # Create the appointment
         appointment = Appointment.objects.create(
-            user=request.user,
+            client=request.user,
             professional_name=professional.name,
             date=date,
             time=time,
