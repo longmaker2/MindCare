@@ -104,8 +104,8 @@
                 <tbody>
                     {% for appointment in appointments %}
                     <tr>
-                        <td>{{ appointment.user.username }}</td>
-                        <td>{{ appointment.user.email }}</td>
+                        <td>{{ appointment.client.username }}</td>
+                        <td>{{ appointment.client.email }}</td>
                         <td>{{ appointment.date }}</td>
                         <td>{{ appointment.time }}</td>
                         <td>

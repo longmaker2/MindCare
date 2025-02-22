@@ -519,21 +519,26 @@ def professional_detail(request, professional_id=None):
     return render(request, "professional_detail.html", {"professional": professional})
 
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from myapp.models import Professional, Appointment, Message
 
 from django.shortcuts import render
-from myapp.models import Professional
+from myapp.models import Professional, Appointment, Message
 
 def professional_dashboard(request):
-    professional = None  # Default value
+    professional = request.user.professional_profile
 
-    if request.user.is_authenticated:
-        try:
-            professional = request.user.professional_profile  # Use the related_name
-        except Professional.DoesNotExist:
-            professional = None  # If no profile is found, keep it as None
+    upcoming_appointments = Appointment.objects.filter(
+        professional_name=professional.name, status='Upcoming'
+    ).order_by('date', 'time')
 
-    return render(request, 'professional_dashboard.html', {'professional': professional})
+    messages = Message.objects.filter(receiver=professional).order_by('-timestamp')
+
+    return render(request, 'professional_dashboard.html', {
+        'professional': professional,
+        'upcoming_appointments': upcoming_appointments,
+        'messages': messages
+    })
 
 
 from django.shortcuts import render, redirect
@@ -847,14 +852,15 @@ from .models import Professional, Appointment
 def appointments_view(request, professional_id):
     professional = get_object_or_404(Professional, id=professional_id)
 
-    # Use professional_name (string field) instead of professional (ForeignKey)
-    appointments = Appointment.objects.filter(professional_name=professional.name)
+    # Fetch appointments using professional_name
+    appointments = Appointment.objects.filter(professional_name=professional.name).select_related('client')
 
     context = {
         'professional': professional,
         'appointments': appointments
     }
     return render(request, 'appointments.html', context)
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404

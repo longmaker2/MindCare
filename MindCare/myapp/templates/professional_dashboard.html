@@ -5,24 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MindCare - Professional Dashboard{% endblock %}</title>
+    <title>MindCare - Professional Dashboard</title>
     
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    
-    <style>
-        /* Full-Height Layout for Sticky Footer */
-        html, body {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
 
+    <style>
         /* Sidebar Styling */
         .wrapper {
-            flex: 1;
             display: flex;
         }
 
@@ -31,7 +23,9 @@
             background-color: #343a40;
             padding-top: 20px;
             min-height: 100vh;
+            position: fixed;
         }
+
         .sidebar a {
             padding: 15px;
             display: block;
@@ -39,38 +33,29 @@
             text-decoration: none;
             transition: 0.3s;
         }
+
         .sidebar a:hover {
             background-color: #495057;
         }
+
         .sidebar .active {
             background-color: #007bff;
         }
 
-        /* Page Content */
         .content {
-            flex: 1;
+            margin-left: 260px;
             padding: 20px;
+            width: 100%;
         }
 
-        /* Custom Card Styles */
         .card {
-            border: none;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: 0.3s;
         }
+
         .card:hover {
             transform: scale(1.02);
-        }
-
-        /* Footer Styling */
-        footer {
-            background-color: #212529;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            width: 100%;
-            margin-top: auto; /* Pushes footer to the bottom */
         }
 
         /* Responsive Adjustments */
@@ -80,6 +65,7 @@
                 height: auto;
                 position: relative;
             }
+
             .content {
                 margin-left: 0;
             }
@@ -88,115 +74,68 @@
 </head>
 <body>
 
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h4 class="text-center text-white">MindCare</h4>
-            <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            {% if professional %}
-            <a href="{% url 'appointments' professional.id %}">
-                <i class="fas fa-calendar-alt"></i> Appointments
-            </a>
-        {% else %}
-            <a href="#">
-                <i class="fas fa-calendar-alt"></i> Appointments (Unavailable)
-            </a>
-        {% endif %}
-        
-            
-            <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
-            {% if professional %}
-    <a href="{% url 'professional_detail' professional.id %}">
-        <i class="fas fa-user"></i> Profile
-    </a>
-{% else %}
-    <a href="#">
-        <i class="fas fa-user"></i> Profile (Not Found)
-    </a>
-{% endif %}
+<div class="wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center text-white">MindCare</h4>
+        <a href="{% url 'professional_dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="{% url 'appointments' professional.id %}"><i class="fas fa-calendar-alt"></i> Appointments</a>
+        <a href="{% url 'anonymous_chat' %}"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="{% url 'professional_detail' professional.id %}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
 
+    <!-- Page Content -->
+    <div class="content">
+        <header class="bg-primary text-white text-center py-3 mb-4">
+            <h2>Welcome, {{ professional.name }}</h2>
+            <p>{{ professional.specialty }}</p>
+        </header>
 
-            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-
-        <!-- Page Content -->
-        <div class="content">
-            <header class="bg-primary text-white text-center py-3 mb-4">
-                <h2>Welcome, {{ professional.name }}</h2>
-            </header>
-
-            <div class="row">
-                <!-- Upcoming Appointments -->
-                <div class="col-md-6">
-                    <div class="card p-3 mb-4">
-                        <h4 class="card-title text-primary"><i class="fas fa-calendar-check"></i> Upcoming Appointments</h4>
-                        <ul class="list-group">
-                            {% for appointment in professional.appointments %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ appointment.date }} - {{ appointment.time }}
-                                    <span class="badge bg-success">Confirmed</span>
-                                </li>
-                            {% empty %}
-                                <li class="list-group-item text-muted">No upcoming appointments</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        <div class="row">
+            <!-- ✅ Upcoming Appointments -->
+            <div class="col-md-6">
+                <div class="card p-3 mb-4">
+                    <h4 class="card-title text-primary"><i class="fas fa-calendar-check"></i> Upcoming Appointments</h4>
+                    <ul class="list-group">
+                        {% for appointment in upcoming_appointments %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>{{ appointment.client.username }}</strong> - {{ appointment.date }} at {{ appointment.time }}
+                                <span class="badge bg-success">Upcoming</span>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No upcoming appointments</li>
+                        {% endfor %}
+                    </ul>
                 </div>
-                
-                <!-- Messages and Notifications -->
-                <div class="col-md-6">
-                    <div class="card p-3 mb-4">
-                        <h4 class="card-title text-primary"><i class="fas fa-comments"></i> Messages & Notifications</h4>
-                        <ul class="list-group">
-                            {% for message in professional.messages %}
-                                <li class="list-group-item">{{ message.content }}</li>
-                            {% empty %}
-                                <li class="list-group-item text-muted">No new messages</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+            </div>
+
+            <!-- ✅ Messages & Notifications -->
+            <div class="col-md-6">
+                <div class="card p-3 mb-4">
+                    <h4 class="card-title text-primary"><i class="fas fa-comments"></i> Messages & Notifications</h4>
+                    <ul class="list-group">
+                        {% for message in messages %}
+                            <li class="list-group-item">
+                                <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+                                <small class="text-muted d-block">{{ message.timestamp|date:"M d, Y H:i A" }}</small>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No new messages</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card p-3 mb-4">
-            <h4 class="card-title text-primary"><i class="fas fa-comments"></i> Messages & Notifications</h4>
-    
-            <!-- ✅ Success Message (Flashed after sending a message) -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-    
-            <!-- ✅ Display Messages -->
-            <ul class="list-group">
-                {% for message in professional.messages %}
-                    <li class="list-group-item">{{ message.content }}</li>
-                {% empty %}
-                    <li class="list-group-item text-muted">No new messages</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    
+</div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 MindCare. All Rights Reserved.</p>
-        <div>
-            <a href="#" class="text-white mx-2"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
-        </div>
-    </footer>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2025 MindCare. All Rights Reserved.</p>
+</footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

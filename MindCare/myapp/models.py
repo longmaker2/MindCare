@@ -159,22 +159,6 @@ class Quiz(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
-class Appointment(models.Model):
-    STATUS_CHOICES = [
-        ('Upcoming', 'Upcoming'),
-        ('Completed', 'Completed'),
-        ('Canceled', 'Canceled'),
-    ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    professional_name = models.CharField(max_length=255, default="Unknown Professional")
-    date = models.DateField()
-    time = models.TimeField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Upcoming')
-    reason = models.TextField(null=True, blank=True)  # Add this if missing
-
-    def __str__(self):
-        return f"{self.user.username} - {self.professional_name} ({self.date})"
 
 from django.db import models
 
@@ -244,15 +228,6 @@ class AnonymousPrivateMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender} to {self.recipient}: {self.content[:30]}"
-class Professional(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="professional_profile")
-    name = models.CharField(max_length=255)
-    specialty = models.CharField(max_length=255)
-    contact_email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=15, unique=True)
-    image = models.ImageField(upload_to='professionals/', null=True, blank=True)
-    available_slots = models.JSONField(default=list)  # Add this if missing
-    booked_slots = models.JSONField(default=list)  # Add this if missing
 
 from django.db import models
 
@@ -273,11 +248,45 @@ class Question(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
+# ✅ Professional Model
+class Professional(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="professional_profile")
+    name = models.CharField(max_length=255)
+    specialty = models.CharField(max_length=255)
+    contact_email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, unique=True)
+    image = models.ImageField(upload_to='professionals/', null=True, blank=True)
+    available_slots = models.JSONField(default=list)
+    booked_slots = models.JSONField(default=list)
+
+    def __str__(self):
+        return self.name
+
+
+# ✅ Message Model (Ensures Messages are sent to Professionals)
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")  # ✅ Ensures ForeignKey
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")  # ✅ Ensures ForeignKey
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
+    receiver = models.ForeignKey(Professional, on_delete=models.CASCADE, related_name="messages")  # 🔥 Change to Professional
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Message from {self.sender} to {self.receiver}"
+        return f"Message from {self.sender.username} to {self.receiver.name}"
+
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('Upcoming', 'Upcoming'),
+        ('Completed', 'Completed'),
+        ('Canceled', 'Canceled'),
+    ]
+
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name="appointments")  # ✅ Keep this
+    professional_name = models.CharField(max_length=255, default="Unknown Professional")  # ✅ Keep only this field
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Upcoming')
+    reason = models.TextField(null=True, blank=True)
+
+    def __str__(self): 
+        return f"{self.client.username} - {self.professional_name} ({self.date})"
