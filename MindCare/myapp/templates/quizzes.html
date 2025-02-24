@@ -61,6 +61,41 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .quiz-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s;
+    overflow-y: auto; /* ✅ Enable scrolling inside modal */
+    padding: 20px;
+}
+
+.quiz-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.quiz-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+    max-height: 80vh; /* ✅ Ensure content does not exceed screen */
+    overflow-y: auto; /* ✅ Enable vertical scrolling */
+}
+
     </style>
 </head>
 <body>
@@ -70,6 +105,10 @@
             <input type="text" class="form-control search-bar" id="quizSearch" placeholder="Search for quizzes..." onkeyup="searchQuizzes()">
         </div>
         <div id="quizContainer" class="row"></div>
+        <div class="text-center mt-4">
+            <h4>Your Progress 📊</h4>
+            <p id="progressReport" class="text-muted">No quizzes taken yet.</p>
+        </div>
     </div>
 
     <div id="quizModal" class="quiz-modal">
@@ -85,16 +124,18 @@
     <script>
         let selectedQuiz = null;
         let userAnswers = {};
+        let quizScores = JSON.parse(localStorage.getItem("quizScores")) || [];
 
         document.addEventListener("DOMContentLoaded", function () {
             fetchQuizzes();
+            updateProgress();
         });
 
         function fetchQuizzes() {
             fetch('/api/quizzes/')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.quizzes.length === 0) {
+                    if (!data.quizzes || data.quizzes.length === 0) {
                         document.getElementById("quizContainer").innerHTML = "<p class='text-muted text-center'>No quizzes available.</p>";
                     } else {
                         displayQuizzes(data.quizzes);
@@ -124,44 +165,71 @@
         }
 
         function startQuiz(quizId) {
-            fetch(`/api/quiz/${quizId}/`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Quiz not found!");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    selectedQuiz = data;
-                    userAnswers = {};
-                    showQuizModal();
-                })
-                .catch(error => {
-                    console.error("Error loading quiz:", error);
-                    alert("Quiz not found. Please try another one.");
-                });
-        }
+    console.log("🔍 Requesting quiz with ID:", quizId);  // Debugging log
 
-        function showQuizModal() {
-            document.getElementById("quizTitle").innerText = selectedQuiz.title;
-            let quizQuestions = document.getElementById("quizQuestions");
-            quizQuestions.innerHTML = '';
+    fetch(`/api/quiz/${quizId}/`)
+        .then(response => {
+            console.log("📡 Response Status:", response.status);
+            return response.json();  // ✅ Always return JSON
+        })
+        .then(data => {
+            console.log("✅ Quiz Data Received:", data);  // Debugging log
 
-            selectedQuiz.questions.forEach((question, index) => {
-                let questionDiv = document.createElement("div");
-                questionDiv.classList.add("mb-3");
-                let optionsHTML = question.options.map(option => `
-                    <div>
-                        <input type="radio" name="question${index}" value="${option}" onchange="saveAnswer(${index}, '${option}')"> ${option}
-                    </div>
-                `).join("");
-                questionDiv.innerHTML = `<p><strong>${index + 1}. ${question.text}</strong></p>${optionsHTML}`;
-                quizQuestions.appendChild(questionDiv);
-            });
+            // Check if quiz exists
+            if (data.error) {
+                console.error("❌ Error from API:", data.error);
+                alert(data.error);
+                return;
+            }
 
-            let quizModal = document.getElementById("quizModal");
-            quizModal.classList.add("show");
-        }
+            selectedQuiz = data;
+            userAnswers = {};
+            showQuizModal();
+        })
+        .catch(error => {
+            console.error("🚨 Error loading quiz:", error);
+            alert(`Quiz with ID ${quizId} not found. Please try another one.`);
+        });
+}
+
+
+
+function showQuizModal() {
+    if (!selectedQuiz) {
+        console.error("❌ No quiz selected.");
+        return;
+    }
+
+    console.log("📌 Showing quiz:", selectedQuiz);  // Debugging log
+    document.getElementById("quizTitle").innerText = selectedQuiz.title;
+
+    let quizQuestions = document.getElementById("quizQuestions");
+    quizQuestions.innerHTML = '';
+
+    if (!selectedQuiz.questions || selectedQuiz.questions.length === 0) {
+        quizQuestions.innerHTML = "<p class='text-muted'>No questions available for this quiz.</p>";
+        return;
+    }
+
+    selectedQuiz.questions.forEach((question, index) => {
+        let questionDiv = document.createElement("div");
+        questionDiv.classList.add("mb-3");
+
+        let optionsHTML = question.options
+            ? question.options.map(option => `
+                <div>
+                    <input type="radio" name="question${index}" value="${option}" onchange="saveAnswer(${index}, '${option}')"> ${option}
+                </div>
+            `).join("")
+            : "<p class='text-danger'>⚠ No options available.</p>";
+
+        questionDiv.innerHTML = `<p><strong>${index + 1}. ${question.text}</strong></p>${optionsHTML}`;
+        quizQuestions.appendChild(questionDiv);
+    });
+
+    document.getElementById("quizModal").classList.add("show");
+}
+
 
         function saveAnswer(questionIndex, answer) {
             userAnswers[questionIndex] = answer;
@@ -174,24 +242,27 @@
                     score++;
                 }
             });
-            document.getElementById("quizResults").innerHTML = `<h4>🎉 Your Score: ${score}/${selectedQuiz.questions.length}</h4>`;
+
+            let resultText = `🎉 Your Score: ${score}/${selectedQuiz.questions.length}`;
+            document.getElementById("quizResults").innerHTML = `<h4>${resultText}</h4>`;
+
+            quizScores.push({ title: selectedQuiz.title, score: `${score}/${selectedQuiz.questions.length}` });
+            localStorage.setItem("quizScores", JSON.stringify(quizScores));
+            updateProgress();
         }
 
         function closeQuiz() {
-            let quizModal = document.getElementById("quizModal");
-            quizModal.classList.remove("show");
+            document.getElementById("quizModal").classList.remove("show");
         }
 
-        function searchQuizzes() {
-            let input = document.getElementById("quizSearch").value.toLowerCase();
-            let items = document.querySelectorAll(".quiz-item");
-
-            items.forEach(item => {
-                let title = item.querySelector(".card-title").innerText.toLowerCase();
-                item.style.display = title.includes(input) ? "block" : "none";
-            });
+        function updateProgress() {
+            let progressReport = document.getElementById("progressReport");
+            if (quizScores.length === 0) {
+                progressReport.innerHTML = "No quizzes taken yet.";
+            } else {
+                progressReport.innerHTML = quizScores.map(q => `<p>${q.title}: <strong>${q.score}</strong></p>`).join("");
+            }
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

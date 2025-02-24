@@ -813,25 +813,28 @@ from .models import Quiz
 def quizzes_api(request):
     quizzes = list(Quiz.objects.values("id", "title", "description", "category"))  # Convert QuerySet to list of dicts
     return JsonResponse({"quizzes": quizzes})  # ✅ JSON response
-from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import Quiz
+from django.shortcuts import get_object_or_404
+from .models import Quiz, Question  # ✅ Ensure Question model is imported
 
 def quiz_detail(request, quiz_id):
-    """Fetches quiz details based on ID"""
-    quiz = get_object_or_404(Quiz, id=quiz_id)
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':  # ✅ If an AJAX request
+    """Fetches quiz details based on ID, including questions"""
+    try:
+        quiz = Quiz.objects.get(id=quiz_id)
+        questions = list(Question.objects.filter(quiz=quiz).values("id", "text", "options", "correct_answer"))
+
         return JsonResponse({
             "id": quiz.id,
             "title": quiz.title,
             "description": quiz.description,
             "category": quiz.category,
-            "progress": quiz.progress
+            "questions": questions  # ✅ Add questions to response
         })
 
-    return render(request, "quiz_detail.html", {"quiz": quiz})  # ✅ Render template for normal request
-from django.http import JsonResponse
+    except Quiz.DoesNotExist:
+        return JsonResponse({"error": f"Quiz with ID {quiz_id} not found."}, status=404)
+
+
 def get_quizzes(request):
     quizzes = [
         {

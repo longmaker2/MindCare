@@ -229,12 +229,15 @@ class AnonymousPrivateMessage(models.Model):
     def __str__(self):
         return f"{self.sender} to {self.recipient}: {self.content[:30]}"
 
-from django.db import models
-
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    category = models.CharField(max_length=100, default="General")  # ADD CATEGORY
+    category = models.CharField(max_length=100, default="General")
+    progress = models.IntegerField(default=0)  # ✅ Add a default value
+
+    def __str__(self):
+        return self.title
+
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")  # Ensure related_name exists

@@ -98,6 +98,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nshimirimanaerica@gmail.com'  # Your Gmail
 EMAIL_HOST_PASSWORD = 'rjef jfgp rrah esqj'  # Paste the App Password here
+GOOGLE_CREDENTIALS_PATH = "myapp/credentials.json"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
