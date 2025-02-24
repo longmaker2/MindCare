@@ -227,20 +227,21 @@
           <p>{{ professional.specialty }}</p>
 
           <!-- Display available slots -->
-          <p><strong>Available Slots:</strong></p>
-          <ul>
-            {% for slot in professional.available_slots %}
-              <li>
-                {% if slot in professional.booked_slots %}
-                  <span style="color: red;">{{ slot }} - Booked</span>
-                {% else %}
-                  <span style="color: green;">{{ slot }}</span>
-                {% endif %}
-              </li>
-            {% empty %}
-              <li style="color: red;">No available slots</li>
-            {% endfor %}
-          </ul>
+          <!-- Display available and booked slots -->
+<p><strong>Available Slots:</strong></p>
+<ul>
+  {% for slot in professional.available_slots %}
+    <li><span style="color: green;">{{ slot }}</span></li>
+  {% endfor %}
+
+  {% for slot in professional.booked_slots %}
+    <li><span style="color: red;">{{ slot }} - Booked</span></li>
+  {% endfor %}
+
+  {% if not professional.available_slots and not professional.booked_slots %}
+    <li style="color: red;">No available slots</li>
+  {% endif %}
+</ul>
 
          
           <form class="appointment-form" method="post" action="{% url 'book_appointment' %}">
@@ -300,20 +301,27 @@
               data: formData,
               headers: { "X-CSRFToken": csrftoken }, // Ensure CSRF token is sent
               success: function (response) {
-                  console.log("✅ AJAX Response:", response); // Log the response
+    console.log("✅ AJAX Response:", response);
 
-                  if (response.message) {
-                      console.log("📢 Showing popup with message:", response.message);
-                      
-                      // Show success popup
-                      $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
+    if (response.message) {
+        $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
 
-                      // Clear form fields after submission
-                      $(".appointment-form")[0].reset();
-                  } else {
-                      console.error("❌ Unexpected response format:", response);
-                  }
-              },
+        var selectedSlot = $("select[name='time']").find("option:selected").val();
+
+        // ✅ Update the slot in the available list
+        $("ul").find("li:contains('" + selectedSlot + "')").html(
+            `<span style="color: red;">${selectedSlot} - Booked</span>`
+        );
+
+        // ✅ Disable the booked slot in the dropdown
+        $("select[name='time']").find("option:selected").prop("disabled", true).css("color", "red").text(selectedSlot + " - Booked");
+
+        // ✅ Clear form fields after submission
+        $(".appointment-form")[0].reset();
+    } else {
+        console.error("❌ Unexpected response format:", response);
+    }
+},
               error: function (xhr, status, error) {
                   console.error("❌ Error booking appointment:", xhr.responseText);
                   alert("Error booking appointment. Please try again.");

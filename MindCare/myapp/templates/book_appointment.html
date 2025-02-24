@@ -28,9 +28,25 @@
                 <!-- Error Message -->
                 <div id="error-message" class="alert alert-danger d-none"></div>
 
+                <!-- Display Available and Booked Slots -->
+                <p><strong>Available Slots:</strong></p>
+                <ul>
+                    {% for slot in all_slots %}
+                        <li>
+                            {% if slot in booked_slots %}
+                                <span style="color: red;">{{ slot }} - Booked</span>
+                            {% else %}
+                                <span style="color: green;">{{ slot }}</span>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li style="color: red;">No available slots</li>
+                    {% endfor %}
+                </ul>
+
                 <form id="appointment-form" method="post" action="{% url 'book_appointment' %}">
                     {% csrf_token %}
-                
+                    
                     <!-- Store the professional's ID -->
                     <input type="hidden" name="professional" value="{{ professional.id }}">
 
@@ -44,13 +60,11 @@
                     <div class="mb-3">
                         <label for="time" class="form-label">Select Time:</label>
                         <select class="form-select" name="time" required>
-                            {% for slot in professional.available_slots %}
-                                {% if slot in professional.booked_slots %}
-                                    <option value="{{ slot }}" disabled style="color: red;">
-                                        {{ slot }} - Booked
-                                    </option>
+                            {% for slot in all_slots %}
+                                {% if slot in booked_slots %}
+                                    <option value="{{ slot }}" disabled class="text-danger">{{ slot }} - Booked</option>
                                 {% else %}
-                                    <option value="{{ slot }}">{{ slot }}</option>
+                                    <option value="{{ slot }}" class="text-success">{{ slot }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
@@ -105,6 +119,15 @@
 
                         // Show the generated Google Meet link
                         $("#meet-link").html(`🔗 <a href="${response.google_meet_link}" target="_blank">Join Google Meet</a>`).removeClass("d-none");
+
+                        // Update the booked slot dynamically in the slot list
+                        var bookedSlot = $("select[name='time']").val();
+                        $("ul").find("li:contains('" + bookedSlot + "')").html(
+                            `<span style="color: red;">${bookedSlot} - Booked</span>`
+                        );
+
+                        // Disable booked slot in dropdown
+                        $("select[name='time']").find("option[value='" + bookedSlot + "']").prop("disabled", true).text(bookedSlot + " - Booked");
 
                         // Reset form
                         $("#appointment-form")[0].reset();

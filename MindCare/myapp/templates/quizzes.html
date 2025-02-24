@@ -27,7 +27,7 @@
             max-width: 400px;
         }
         .quiz-modal {
-            display: none;
+            display: flex;
             position: fixed;
             top: 0;
             left: 0;
@@ -37,18 +37,29 @@
             justify-content: center;
             align-items: center;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s;
+        }
+        .quiz-modal.show {
+            opacity: 1;
+            visibility: visible;
         }
         .quiz-content {
             background: white;
             padding: 20px;
             border-radius: 10px;
-            width: 50%;
+            width: 90%;
             max-width: 600px;
             text-align: center;
+            box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
         }
         .hidden {
             display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -61,7 +72,7 @@
         <div id="quizContainer" class="row"></div>
     </div>
 
-    <div id="quizModal" class="quiz-modal hidden">
+    <div id="quizModal" class="quiz-modal">
         <div class="quiz-content">
             <h3 id="quizTitle"></h3>
             <div id="quizQuestions"></div>
@@ -149,8 +160,7 @@
             });
 
             let quizModal = document.getElementById("quizModal");
-            quizModal.classList.remove("hidden");
-            quizModal.style.opacity = "1";
+            quizModal.classList.add("show");
         }
 
         function saveAnswer(questionIndex, answer) {
@@ -169,8 +179,7 @@
 
         function closeQuiz() {
             let quizModal = document.getElementById("quizModal");
-            quizModal.style.opacity = "0";
-            setTimeout(() => quizModal.classList.add("hidden"), 300);
+            quizModal.classList.remove("show");
         }
 
         function searchQuizzes() {

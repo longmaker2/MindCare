@@ -80,6 +80,17 @@
             font-size: 1.1rem;
             text-align: center;
         }
+        /* ✅ FIX: Display available slots in a vertical line */
+        .slot-list {
+            padding: 0;
+            list-style: none;
+            text-align: center;
+            display: block;
+        }
+        .slot-list li {
+            font-size: 1.2rem;
+            padding: 8px 0;
+        }
     </style>
 </head>
 <body>
@@ -129,21 +140,19 @@
                             {% endif %}
                         </div>
 
-                        <!-- Available Slots -->
-                        <div class="availability">
-                            <h3>Available Slots</h3>
-                            <ul class="list-group">
-                                {% for slot in professional.available_slots %}
-                                    {% if slot in professional.booked_slots %}
-                                        <li class="list-group-item"><span class="badge bg-danger text-white">{{ slot }} - Booked</span></li>
-                                    {% else %}
-                                        <li class="list-group-item"><span class="badge bg-success text-white">{{ slot }} - Available</span></li>
-                                    {% endif %}
-                                {% empty %}
-                                    <li class="list-group-item text-danger">No available slots</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                        <!-- ✅ FIX: Display available and booked slots in vertical order -->
+                        <p><strong>Available Slots:</strong></p>
+                        <ul class="slot-list">
+                            {% for slot in professional.available_slots %}
+                                <li><span style="color: green;">{{ slot }}</span></li>
+                            {% endfor %}
+                            {% for slot in professional.booked_slots %}
+                                <li><span style="color: red;">{{ slot }} - Booked</span></li>
+                            {% endfor %}
+                            {% if not professional.available_slots and not professional.booked_slots %}
+                                <li style="color: red;">No available slots</li>
+                            {% endif %}
+                        </ul>
 
                         <!-- Action Buttons -->
                         <div class="action-btns">

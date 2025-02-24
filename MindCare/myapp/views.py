@@ -222,11 +222,16 @@ from .models import Professional, Appointment
 import random
 
 import json
+import threading
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.core.mail import send_mail
 from .models import Professional, Appointment
 import random
+
+# ✅ Function to send email asynchronously
+def send_email_async(subject, message, recipient):
+    threading.Thread(target=send_mail, args=(subject, message, "your-email@gmail.com", [recipient])).start()
 
 def book_appointment(request):
     if request.method == "GET":
@@ -236,7 +241,15 @@ def book_appointment(request):
             return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
 
         professional = get_object_or_404(Professional, id=professional_id)
-        return render(request, "book_appointment.html", {"professional": professional})
+
+        # Fetch all slots (both available and booked)
+        all_slots = sorted(set(professional.available_slots + professional.booked_slots))
+
+        return render(request, "book_appointment.html", {
+            "professional": professional,
+            "all_slots": all_slots,
+            "booked_slots": professional.booked_slots,  # Ensure booked slots are passed
+        })
 
     elif request.method == "POST":
         try:
@@ -266,16 +279,17 @@ def book_appointment(request):
             reason=reason
         )
 
-        # ✅ Move the slot from `available_slots` to `booked_slots`
+        # ✅ Move the slot to `booked_slots` but keep it visible in all_slots
         if time in professional.available_slots:
             professional.available_slots.remove(time)
-            professional.booked_slots.append(time)
-            professional.save()
+        if time not in professional.booked_slots:
+            professional.booked_slots.append(time)  # Keep it in the list but mark as booked
+        professional.save()
 
         # ✅ Generate a Google Meet link
         google_meet_link = f"https://meet.google.com/{random.choice(['abc', 'xyz', 'lmn'])}-{random.randint(100,999)}-{random.randint(100,999)}"
 
-        # ✅ Send email confirmation to both the user and the professional
+        # ✅ Prepare email content
         subject = "Your Appointment Confirmation"
         user_message = f"""
         Hello {request.user.username},
@@ -312,15 +326,14 @@ def book_appointment(request):
         Your Website Team
         """
 
-        # ✅ Send email to the user (client)
-        send_mail(subject, user_message, "your-email@gmail.com", [request.user.email])
-
-        # ✅ Send email to the professional
-        send_mail(f"New Appointment: {request.user.username}", professional_message, "your-email@gmail.com", [professional.contact_email])
+        # ✅ Send email asynchronously (No delay!)
+        send_email_async(subject, user_message, request.user.email)
+        send_email_async(f"New Appointment: {request.user.username}", professional_message, professional.contact_email)
 
         return JsonResponse({
             "message": "Appointment successfully booked! A confirmation email has been sent to you",
-            "google_meet_link": google_meet_link
+            "google_meet_link": google_meet_link,
+            "booked_slots": professional.booked_slots  # ✅ Send updated booked slots
         }, status=200)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
