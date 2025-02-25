@@ -38,7 +38,7 @@
             border-radius: 10px;
             margin-bottom: 15px;
             display: flex;
-            flex-direction: column-reverse; /* Newest message at the top */
+            flex-direction: column-reverse;
         }
         .message {
             padding: 12px;
@@ -94,7 +94,6 @@
     <div class="chat-container">
         <div class="chat-header">Live Chat Room</div>
 
-        <!-- Chat Messages -->
         <div class="chat-box" id="chat-box">
             {% for message in messages %}
                 <div class="message" id="message-{{ message.id }}">
@@ -104,70 +103,114 @@
             {% endfor %}
         </div>
 
-        <!-- Message Form -->
         <form id="message-form" class="message-form">
             {% csrf_token %}
             <div class="mb-3">
+                <label for="recipient" class="form-label">Send Message To:</label>
                 <select name="recipient" id="recipient" class="form-select" required>
-                    <option value="Everyone">Send to Everyone</option>
-                    <option value="anonymous">Send Anonymously</option>
+                    <option value="Everyone">Everyone</option>
                     {% for user in users %}
                         <option value="{{ user.username }}">{{ user.username }}</option>
                     {% endfor %}
                 </select>
             </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="send-anonymous" class="form-check-input">
+                <label for="send-anonymous" class="form-check-label">Send Anonymously</label>
+            </div>
+
             <input type="text" id="message-input" name="message" placeholder="Type a message..." required>
             <button type="submit">Send</button>
         </form>
     </div>
 
-    <!-- JavaScript for Sending Messages -->
+    <!-- Store logged-in user's username in JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const chatBox = document.getElementById("chat-box");
-            const messageForm = document.getElementById("message-form");
-
-            messageForm.addEventListener("submit", function(event) {
-                event.preventDefault(); // Stop normal form submission
-
-                const messageInput = document.getElementById("message-input");
-                const recipientSelect = document.getElementById("recipient");
-                const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-                let message = messageInput.value.trim();
-                let recipient = recipientSelect.value;
-
-                if (message === "") {
-                    alert("Message cannot be empty.");
-                    return;
-                }
-
-                fetch("/send-message/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        recipient: recipient
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        let newMessage = document.createElement("div");
-                        newMessage.classList.add("message");
-                        newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${message}</p><span class="timestamp">Now</span>`;
-                        chatBox.prepend(newMessage); // Adds the new message at the top
-                        messageInput.value = ""; // Clear input field
-                    } else {
-                        alert("Error: " + data.error);
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-            });
-        });
+        var loggedInUser = "{{ request.user.username }}";  // Store the current user's name
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const chatBox = document.getElementById("chat-box");
+    const messageForm = document.getElementById("message-form");
+    const recipientSelect = document.getElementById("recipient");
+    const messageInput = document.getElementById("message-input");
+    const anonymousCheckbox = document.getElementById("send-anonymous");
+
+    function fetchMessages() {
+        fetch("/get-messages/")
+            .then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML = ""; // ✅ Clear chat before updating
+                
+                // ✅ Loop through messages in reverse order to ensure newest at the bottom
+                data.reverse().forEach(msg => {
+                    let newMessage = document.createElement("div");
+                    newMessage.classList.add("message");
+                    newMessage.innerHTML = `<p><b>${msg.sender} to ${msg.recipient}:</b> ${msg.content}</p>
+                                            <span class="timestamp">${msg.timestamp}</span>`;
+                    chatBox.appendChild(newMessage); // ✅ Append messages at the bottom
+                });
+
+                scrollToBottom(); // ✅ Always scroll to the last message
+            })
+            .catch(error => console.error("Error fetching messages:", error));
+    }
+
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatBox.scrollTop = chatBox.scrollHeight; // ✅ Scroll to latest message
+        }, 200); // ✅ Small delay ensures scrolling works properly
+    }
+
+    messageForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+        let message = messageInput.value.trim();
+        let recipient = recipientSelect.value;
+        let isAnonymous = anonymousCheckbox.checked;
+        let sender = isAnonymous ? "Anonymous" : loggedInUser;
+
+        if (message === "") {
+            alert("Message cannot be empty.");
+            return;
+        }
+
+        fetch("/send-message/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({
+                message: message,
+                recipient: recipient,
+                anonymous: isAnonymous
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let newMessage = document.createElement("div");
+                newMessage.classList.add("message");
+                newMessage.innerHTML = `<p><b>${data.sender} to ${data.recipient}:</b> ${data.content}</p>
+                                        <span class="timestamp">${data.timestamp}</span>`;
+
+                chatBox.appendChild(newMessage); // ✅ Append at the bottom
+                messageInput.value = ""; // ✅ Clear input field
+                scrollToBottom(); // ✅ Scroll to latest message
+            } else {
+                alert("Error: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    fetchMessages(); // ✅ Fetch messages immediately on page load
+    setInterval(fetchMessages, 3000); // ✅ Fetch messages every 3 seconds
+});
+
+</script>
 </body>
 </html>

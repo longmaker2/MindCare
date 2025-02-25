@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             background-color: #f4f4f9;
@@ -14,6 +15,8 @@
             background-color: #2c3e50;
             color: white;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
         .sidebar a {
             color: white;
@@ -25,6 +28,21 @@
         }
         .sidebar a:hover {
             background-color: #34495e;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: auto;
+            transition: 0.3s ease-in-out;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
         }
         .dashboard-content {
             padding: 20px;
@@ -41,7 +59,6 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 sidebar d-flex flex-column">
                 <h3 class="text-center mb-4">Dashboard</h3>
                 <a href="{% url 'training_materials' %}">📚 Training Materials</a>
@@ -51,14 +68,13 @@
                 <a href="{% url 'user_appointments' %}">📆 My Appointments</a>
                 <a href="{% url 'completed_courses' %}">🎓 Completed Courses</a>
                 <a href="{% url 'achievements' %}">🏆 My Achievements</a>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </nav>
-            
-            <!-- Main Content -->
             <main class="col-md-9 col-lg-10 dashboard-content">
                 <h2>Welcome, {{ user.username }}!</h2>
-
                 <div class="row mt-4">
-                    <!-- User Progress -->
                     <div class="col-md-6">
                         <div class="card p-3">
                             <h5>User Progress</h5>
@@ -70,8 +86,6 @@
                             </ul>
                         </div>
                     </div>
-
-                    <!-- Upcoming Appointments -->
                     <div class="col-md-6">
                         <div class="card p-3">
                             <h5>Upcoming Appointments</h5>
@@ -83,92 +97,27 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row mt-4">
-                    <!-- Mental Health Quizzes -->
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5>📝 Mental Health Quizzes</h5>
-                            <p>Test your knowledge on mental health topics:</p>
-                            <ul>
-                                <li><a href="{% url 'quiz_category' 'anxiety' %}">Anxiety Quiz</a></li>
-                                <li><a href="{% url 'quiz_category' 'depression' %}">Depression Quiz</a></li>
-                                <li><a href="{% url 'quiz_category' 'ptsd' %}">PTSD Quiz</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Completed Courses -->
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5>🎓 Completed Courses</h5>
-                            {% if completed_courses %}
-                                <ul>
-                                    {% for course in completed_courses %}
-                                        <li>{{ course.title }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No courses completed yet.</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <!-- Achievements -->
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5>🏆 Achievements</h5>
-                            <p>Earned Badges:</p>
-                            {% if achievements %}
-                                <ul>
-                                    {% for achievement in achievements %}
-                                        <li>🏅 {{ achievement.name }} - {{ achievement.description }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No achievements yet. Keep learning!</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar -->
                     <div class="col-md-6">
                         <div class="card p-3">
                             <h5>📊 Learning Progress</h5>
                             <p>Course Completion Progress:</p>
-
-                            <!-- Debugging Output -->
-<p><strong>Debug:</strong> Progress value is <span id="progress-text">{{ progress|default:0 }}</span>%</p>
-
-<div class="progress">
-    <div class="progress-bar" role="progressbar"
-        id="progress-bar"
-        aria-valuemin="0"
-        aria-valuemax="100">
-        {{ progress|default:0 }}%
-    </div>
-</div>
-
-<script>
-    // Get the progress value from the Django template
-    let progressValue = parseInt(document.getElementById("progress-text").innerText) || 0;
-
-    // Set the width of the progress bar dynamically
-    document.getElementById("progress-bar").style.width = progressValue + "%";
-
-    // Set aria-valuenow dynamically
-    document.getElementById("progress-bar").setAttribute("aria-valuenow", progressValue);
-</script>
-
-                            
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" id="progress-bar" aria-valuemin="0" aria-valuemax="100">
+                                    {{ progress|default:0 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
             </main>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let progressValue = parseInt("{{ progress|default:0 }}") || 0;
+        document.getElementById("progress-bar").style.width = progressValue + "%";
+        document.getElementById("progress-bar").setAttribute("aria-valuenow", progressValue);
+    </script>
 </body>
 </html>

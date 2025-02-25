@@ -394,21 +394,34 @@ def index(request):
 
     return render(request, 'index.html', {'professionals': professionals})
 
-from django.shortcuts import render
 from django.http import JsonResponse
-from .models import ChatMessage
-from django.views.decorators.csrf import csrf_exempt
+from .models import AnonymousPrivateMessage
 
-def get_messages(request, room_id):
-    """ Fetch latest messages for AJAX polling """
-    messages = ChatMessage.objects.filter(room_id=room_id).order_by("timestamp")
-    data = ""
-    
-    for message in messages:
-        alignment = "message-right" if message.username == request.user.username else "message-left"
-        data += f'<div class="message {alignment}"><p>{message.content}</p><span class="timestamp">{message.timestamp}</span></div>'
-    
-    return JsonResponse(data, safe=False)
+def get_messages(request):
+    """Fetch messages in descending order (newest at the bottom)"""
+    user = request.user.username  # Get the logged-in user
+
+    # ✅ Fetch messages meant for Everyone or the logged-in user
+    messages = AnonymousPrivateMessage.objects.filter(
+        recipient__in=["Everyone", user]
+    ).order_by("-timestamp")  # ✅ Order messages from newest to oldest
+
+    # ✅ Convert messages into JSON format
+    message_list = [
+        {
+            "id": msg.id,
+            "sender": msg.sender,
+            "recipient": msg.recipient,
+            "content": msg.content,
+            "timestamp": msg.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for msg in messages
+    ]
+
+    return JsonResponse(message_list[::-1], safe=False)  # ✅ Reverse to show newest at the bottom
+
+
+
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -454,12 +467,13 @@ from django.contrib.auth.models import User
 from .models import Message
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
-from .models import AnonymousPrivateMessage
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
-from django.utils.timezone import now
+from django.db import transaction  # ✅ Force commit messages immediately
+from .models import AnonymousPrivateMessage
 
 @csrf_exempt
 @login_required
@@ -469,41 +483,51 @@ def send_message(request):
             data = json.loads(request.body)
             message_content = data.get("message", "").strip()
             recipient = data.get("recipient", "").strip()
+            is_anonymous = data.get("anonymous", False)
 
             if not message_content:
                 return JsonResponse({"success": False, "error": "Message cannot be empty"}, status=400)
 
-            sender = request.user.username
+            sender = request.user.username  # Default sender
 
-            # Handle Anonymous messaging
-            if recipient == "anonymous":
+            # ✅ Handle Anonymous Messaging
+            if is_anonymous:
                 sender = "Anonymous"
-                recipient = "Everyone"  # Send to everyone anonymously
 
-            # Validate recipient for private messages
-            elif recipient != "Everyone":
+            # ✅ Ensure recipient exists
+            if recipient != "Everyone":
                 try:
-                    user = User.objects.get(username=recipient)
+                    recipient_user = User.objects.get(username=recipient)
                 except User.DoesNotExist:
                     return JsonResponse({"success": False, "error": "Recipient not found"}, status=400)
 
-            # Save message in AnonymousPrivateMessage table
-            message = AnonymousPrivateMessage.objects.create(sender=sender, recipient=recipient, content=message_content, timestamp=now())
-            print("✅ Message saved:", message)
+            # ✅ Force immediate database commit
+            with transaction.atomic():
+                message = AnonymousPrivateMessage.objects.create(
+                    sender=sender,
+                    recipient=recipient,
+                    content=message_content,
+                    timestamp=now()
+                )
 
-            return JsonResponse({"success": True, "sender": sender, "recipient": recipient})
+            return JsonResponse({
+                "success": True,
+                "message_id": message.id,
+                "sender": sender,
+                "recipient": recipient,
+                "content": message_content,
+                "timestamp": message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            })
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "error": "Invalid JSON format"}, status=400)
 
         except Exception as e:
-            print("❌ Error saving message:", str(e))
             return JsonResponse({"success": False, "error": str(e)}, status=400)
 
     return JsonResponse({"success": False, "error": "Invalid request method"}, status=400)
 
 
-from django.shortcuts import render
 from .models import Message
 from django.contrib.auth.models import User
 
@@ -521,10 +545,26 @@ def chat_room(request):
     return render(request, "anonymous_chat.html", {"messages": messages, "users": users})
 
 
+from django.http import JsonResponse
+from .models import AnonymousPrivateMessage
 
 def get_messages(request):
-    messages = ChatMessage.objects.order_by("-timestamp")[:50]  # Get latest 50 messages
-    return JsonResponse([{"content": msg.content, "timestamp": msg.timestamp} for msg in messages], safe=False)
+    """Fetch messages immediately without delay"""
+    messages = AnonymousPrivateMessage.objects.order_by("timestamp")
+    
+    # ✅ Ensure messages are always fresh
+    message_list = [
+        {
+            "sender": msg.sender,
+            "recipient": msg.recipient,
+            "content": msg.content,
+            "timestamp": msg.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for msg in messages
+    ]
+    
+    return JsonResponse(message_list, safe=False, headers={'Cache-Control': 'no-store'})
+
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -533,15 +573,17 @@ from django.contrib.auth.models import User
 
 @login_required
 def anonymous_chat(request):
-    # Fetch messages for the logged-in user and for "Everyone", ordered by timestamp in reverse (newest first)
+    # ✅ Fetch messages for "Everyone" AND private messages sent to the logged-in user
     messages = AnonymousPrivateMessage.objects.filter(
-        recipient__in=[request.user.username, 'Everyone']
-    ).order_by('-timestamp')  # newest messages first
-    
-    # Pass messages to the template
+        recipient__in=["Everyone", request.user.username]
+    ).order_by('-timestamp')  # Show newest messages first
+
+    # ✅ Get all users **except the current logged-in user**
+    users = User.objects.exclude(username=request.user.username)
+
     return render(request, 'anonymous_chat.html', {
         'messages': messages,
-        'users': User.objects.all()
+        'users': users
     })
 
 
