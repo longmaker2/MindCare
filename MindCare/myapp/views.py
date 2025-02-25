@@ -233,6 +233,13 @@ import random
 def send_email_async(subject, message, recipient):
     threading.Thread(target=send_mail, args=(subject, message, "your-email@gmail.com", [recipient])).start()
 
+import json
+import random
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from .models import Professional, Appointment
+from myapp.utils import send_email_async  # ✅ Absolute import
+
 def book_appointment(request):
     if request.method == "GET":
         professional_id = request.GET.get("professional")
@@ -242,13 +249,16 @@ def book_appointment(request):
 
         professional = get_object_or_404(Professional, id=professional_id)
 
+        # ✅ Ensure fresh data
+        professional.refresh_from_db()
+
         # Fetch all slots (both available and booked)
         all_slots = sorted(set(professional.available_slots + professional.booked_slots))
 
         return render(request, "book_appointment.html", {
             "professional": professional,
             "all_slots": all_slots,
-            "booked_slots": professional.booked_slots,  # Ensure booked slots are passed
+            "booked_slots": professional.booked_slots,  # ✅ Ensure booked slots are passed
         })
 
     elif request.method == "POST":
@@ -267,8 +277,25 @@ def book_appointment(request):
 
         professional = get_object_or_404(Professional, id=professional_id)
 
-        if time in professional.booked_slots:
+        # ✅ Ensure fresh data before modifying slots
+        professional.refresh_from_db()
+
+        # ✅ Copy slot lists to avoid modifying shared references
+        updated_available_slots = professional.available_slots.copy()
+        updated_booked_slots = professional.booked_slots.copy()
+
+        if time in updated_booked_slots:
             return JsonResponse({"error": "This time slot is already booked. Please choose another."}, status=400)
+
+        # ✅ Move the slot from available to booked
+        if time in updated_available_slots:
+            updated_available_slots.remove(time)
+        updated_booked_slots.append(time)
+
+        # ✅ Update the professional's slots
+        professional.available_slots = updated_available_slots
+        professional.booked_slots = updated_booked_slots
+        professional.save()
 
         # ✅ Create the appointment
         appointment = Appointment.objects.create(
@@ -278,13 +305,6 @@ def book_appointment(request):
             time=time,
             reason=reason
         )
-
-        # ✅ Move the slot to `booked_slots` but keep it visible in all_slots
-        if time in professional.available_slots:
-            professional.available_slots.remove(time)
-        if time not in professional.booked_slots:
-            professional.booked_slots.append(time)  # Keep it in the list but mark as booked
-        professional.save()
 
         # ✅ Generate a Google Meet link
         google_meet_link = f"https://meet.google.com/{random.choice(['abc', 'xyz', 'lmn'])}-{random.randint(100,999)}-{random.randint(100,999)}"
@@ -333,7 +353,7 @@ def book_appointment(request):
         return JsonResponse({
             "message": "Appointment successfully booked! A confirmation email has been sent to you",
             "google_meet_link": google_meet_link,
-            "booked_slots": professional.booked_slots  # ✅ Send updated booked slots
+            "booked_slots": updated_booked_slots  # ✅ Send updated booked slots
         }, status=200)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
