@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'chat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'eyt.wsgi.application'
 
+ASGI_APPLICATION = "yourproject.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Use Redis in production
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
