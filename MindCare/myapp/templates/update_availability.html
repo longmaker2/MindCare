@@ -1,0 +1,136 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Availability - MindCare</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+        .btn-back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card p-4">
+        <h3 class="card-title text-center text-primary"><i class="fas fa-clock"></i> Update Your Availability</h3>
+        <p class="text-center">Set or remove your available slots for appointments.</p>
+
+        <form id="availability-form" method="POST" action="{% url 'update_availability' %}">
+            {% csrf_token %}
+
+            <label for="available_slots">Your Current Available Slots:</label>
+            <ul class="list-group mb-3" id="available-slots-list">
+                {% for slot in professional.available_slots %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ slot }}
+                        <button type="button" class="btn btn-danger btn-sm remove-slot" data-slot="{{ slot }}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No available slots</li>
+                {% endfor %}
+            </ul>
+
+            <div class="mb-3">
+                <label for="new_slots" class="form-label">Add New Slots:</label>
+                <input type="text" class="form-control" id="new_slots" name="new_slots" placeholder="E.g., 10:00 AM, 2:30 PM">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-save"></i> Save Availability</button>
+        </form>
+
+        <a href="{% url 'professional_dashboard' %}" class="btn btn-secondary w-100 btn-back mt-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- ✅ jQuery to make adding/removing slots dynamic -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // ✅ Remove a slot dynamically
+        $(".remove-slot").click(function () {
+            var slot = $(this).data("slot");
+            var listItem = $(this).closest("li");
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'update_availability' %}",
+                data: {
+                    remove_slot: slot,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function (response) {
+                    listItem.remove();
+                },
+                error: function () {
+                    alert("Error removing slot. Try again.");
+                }
+            });
+        });
+
+        // ✅ Handle form submission dynamically (without page refresh)
+        $("#availability-form").submit(function (event) {
+            event.preventDefault();
+
+            var newSlot = $("#new_slots").val().trim();
+            if (newSlot === "") {
+                alert("Please enter a valid time slot.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'update_availability' %}",
+                data: {
+                    new_slots: newSlot,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function (response) {
+                    $("#available-slots-list").append(`
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${newSlot}
+                            <button type="button" class="btn btn-danger btn-sm remove-slot" data-slot="${newSlot}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </li>
+                    `);
+                    $("#new_slots").val("");  // Clear input field
+                },
+                error: function () {
+                    alert("Error adding slot. Try again.");
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

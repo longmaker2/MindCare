@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import professionals_list, remove_appointment
+from .views import professionals_list, remove_appointment, update_availability
 from .views import index, appointment_success
 from .views import book_appointment
 from django.shortcuts import render
@@ -70,6 +70,8 @@ urlpatterns = [
     path('professionals/<int:professional_id>/message/', views.message_professional, name='message_professional'),
     path('clear-messages/', clear_messages, name='clear_messages'),
     path('remove-appointment/<int:appointment_id>/', remove_appointment, name='remove_appointment'),
+    path('update-availability/', update_availability, name='update_availability'),
+
 
    
 ] 

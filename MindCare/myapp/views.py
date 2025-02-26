@@ -1096,3 +1096,30 @@ def remove_appointment(request, appointment_id):
         return redirect('professional_dashboard')  # ✅ Redirect back to dashboard
 
     return redirect('professional_dashboard')
+
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Professional
+
+@login_required
+def update_availability(request):
+    professional = request.user.professional_profile
+
+    if request.method == "POST":
+        if "remove_slot" in request.POST:
+            slot_to_remove = request.POST.get("remove_slot")
+            if slot_to_remove in professional.available_slots:
+                professional.available_slots.remove(slot_to_remove)
+                professional.save()
+                return JsonResponse({"message": "Slot removed successfully"}, status=200)
+
+        if "new_slots" in request.POST:
+            new_slot = request.POST.get("new_slots").strip()
+            if new_slot and new_slot not in professional.available_slots:
+                professional.available_slots.append(new_slot)
+                professional.save()
+                return JsonResponse({"message": "Slot added successfully"}, status=200)
+
+    return render(request, "update_availability.html", {"professional": professional})
+
