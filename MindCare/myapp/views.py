@@ -854,7 +854,7 @@ def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, client=request.user)
 
     if appointment.status != "Upcoming":
-        return redirect("user_appointments")  # ✅ Redirect to user's appointment list if invalid cancel
+        return redirect("user_appointments")  # ✅ Redirect to user's appointment list if already canceled
 
     # ✅ Mark the appointment as canceled
     appointment.status = "Canceled"
@@ -869,7 +869,11 @@ def cancel_appointment(request, appointment_id):
         message=f"🚨 Your appointment with {request.user.username} on {appointment.date} at {appointment.time} was canceled."
     )
 
-    return redirect("appointments", professional.id)  # ✅ Ensure this matches `urls.py`
+    # ✅ Redirect Based on User Type
+    if hasattr(request.user, "professional_profile"):
+        return redirect("professional_dashboard")  # Redirect professionals to their dashboard
+    else:
+        return redirect("user_appointments")  # Redirect regular users to their appointments list
 
 
 from django.shortcuts import render
