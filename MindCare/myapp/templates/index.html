@@ -283,51 +283,64 @@
 
 <script>
   $(document).ready(function () {
-      $(".appointment-form").submit(function (event) {
-          event.preventDefault(); // Prevent default form submission
+    $(".appointment-form").off("submit").on("submit", function (event) {
+        event.preventDefault(); // Prevent default form submission
 
-          var formData = $(this).serialize(); // Serialize form data
-          var professionalId = $(this).find("input[name='professional']").val(); // Get professional ID
-          
-          console.log("📢 Sending appointment request for Professional ID:", professionalId);
+        var formData = $(this).serialize(); // Serialize form data
+        var professionalId = $(this).find("input[name='professional']").val(); // Get professional ID
 
-          // Get CSRF Token from the form
-          var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
+        console.log("📢 Sending appointment request for Professional ID:", professionalId);
 
-          $.ajax({
-              type: "POST",
-              url: $(this).attr("action"),
-              data: formData,
-              headers: { "X-CSRFToken": csrftoken }, // Ensure CSRF token is sent
-              success: function (response) {
-    console.log("✅ AJAX Response:", response);
+        // Get CSRF Token from the form
+        var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
 
-    if (response.message) {
-        $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
+        var submitBtn = $(this).find("button[type='submit']");
+        if (submitBtn.prop("disabled")) {
+            return;  // Prevent duplicate submission
+        }
 
-        var selectedSlot = $("select[name='time']").find("option:selected").val();
+        submitBtn.prop("disabled", true).text("Booking..."); // Disable button to prevent multiple clicks
 
-        // ✅ Update the slot in the available list
-        $("ul").find("li:contains('" + selectedSlot + "')").html(
-            `<span style="color: red;">${selectedSlot} - Booked</span>`
-        );
+        $.ajax({
+            type: "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            headers: { "X-CSRFToken": csrftoken }, // Ensure CSRF token is sent
+            success: function (response) {
+                console.log("✅ AJAX Response:", response);
 
-        // ✅ Disable the booked slot in the dropdown
-        $("select[name='time']").find("option:selected").prop("disabled", true).css("color", "red").text(selectedSlot + " - Booked");
+                if (response.message) {
+                    $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
 
-        // ✅ Clear form fields after submission
-        $(".appointment-form")[0].reset();
-    } else {
-        console.error("❌ Unexpected response format:", response);
-    }
-},
-              error: function (xhr, status, error) {
-                  console.error("❌ Error booking appointment:", xhr.responseText);
-                  alert("Error booking appointment. Please try again.");
-              }
-          });
-      });
-  });
+                    var selectedSlot = $("select[name='time']").find("option:selected").val();
+
+                    // ✅ Update the slot in the available list
+                    $("ul").find("li:contains('" + selectedSlot + "')").html(
+                        `<span style="color: red;">${selectedSlot} - Booked</span>`
+                    );
+
+                    // ✅ Disable the booked slot in the dropdown
+                    $("select[name='time']").find("option:selected").prop("disabled", true).css("color", "red").text(selectedSlot + " - Booked");
+
+                    // ✅ Clear form fields after submission
+                    $(".appointment-form")[0].reset();
+
+                    setTimeout(() => {
+                        submitBtn.prop("disabled", false).text("Book Appointment");
+                    }, 3000);
+                } else {
+                    console.error("❌ Unexpected response format:", response);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("❌ Error booking appointment:", xhr.responseText);
+                alert("Error booking appointment. Please try again.");
+                submitBtn.prop("disabled", false).text("Book Appointment");
+            }
+        });
+    });
+});
+
 </script>
 
 
