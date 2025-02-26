@@ -1083,3 +1083,16 @@ def clear_messages(request):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Invalid request method"})
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Appointment
+
+@login_required
+def remove_appointment(request, appointment_id):
+    if request.method == "POST":
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        appointment.delete()  # ✅ Remove the appointment
+        return redirect('professional_dashboard')  # ✅ Redirect back to dashboard
+
+    return redirect('professional_dashboard')
