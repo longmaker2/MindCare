@@ -903,9 +903,35 @@ def quiz_category(request, category):
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-@login_required  # Ensures only logged-in users can access it
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from .models import Appointment
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from .models import Appointment
+
+@login_required
 def regular_user_dashboard(request):
-    return render(request, 'regular_user.html')  # ✅ Make sure this template exists
+    # Debugging: Print logged-in user
+    print("DEBUG: Logged-in user →", request.user)
+
+    # Retrieve upcoming appointments
+    appointments = Appointment.objects.filter(
+        client=request.user,  # ✅ Correct field name
+        date__gte=timezone.localdate(),  # ✅ Fetch only future appointments
+        status="Upcoming"  # ✅ Ensure it's filtering by "Upcoming"
+    ).order_by("date", "time")
+
+    # Debugging: Check if any appointments are retrieved
+    print("DEBUG: Retrieved Appointments Count →", appointments.count())
+
+    for appointment in appointments:
+        print(f"DEBUG: Appointment - {appointment.professional_name} on {appointment.date} at {appointment.time}")
+
+    return render(request, 'dashboard.html', {"appointments": appointments})
 
 from django.shortcuts import render
 from .models import Professional  # Ensure Professional model is imported

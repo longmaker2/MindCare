@@ -27,6 +27,178 @@
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
 
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+  <style>
+     /*About Section */
+#about {
+    background: linear-gradient(to right, #ffffff, #e3f2fd); /* Soft gradient */
+    color: #222; /* Darker text for readability */
+    padding: 80px 0;
+    text-align: center;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* About Section Title */
+#about h2 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #0056b3;
+    margin-bottom: 20px; /* Reduce spacing below the title */
+    text-transform: capitalize;
+}
+
+/* Subtitle */
+#about p.subtitle {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #444;
+    max-width: 800px;
+    margin: 0 auto 20px; /* Reduce bottom margin */
+}
+
+
+
+/* Left Text Content */
+#about .text {
+    flex: 1;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+
+
+#about .features li:hover {
+    color: #0056b3;
+    transform: translateX(5px);
+    transition: all 0.3s ease-in-out;
+}
+
+#about .features li::before {
+    content: "✔️";
+    color: #0056b3;
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+/* Adjust About Section Layout */
+#about .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures spacing between text and image */
+    flex-wrap: wrap;
+}
+/* Remove Bullets from Features List */
+#about .features {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+/* Style Emoji Icons */
+#about .features li {
+    font-size: 1.1rem;
+    color: #333;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+#about .features li span {
+    font-size: 1.5rem; /* Increase emoji size */
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Adjust Image Placement */
+#about .about-img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    margin-left: 40px; /* Move image further to the right */
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 768px) {
+    #about .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #about .about-img {
+        margin-left: 0; /* Reset margin for small screens */
+    }
+}
+
+
+#about .about-img:hover {
+    transform: scale(1.05);
+}
+
+/* Call to Action Button */
+#about .btn-learn-more {
+    display: inline-block;
+    background: #0056b3;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#about .btn-learn-more:hover {
+    background: #003f7f;
+    transform: translateY(-2px);
+}
+.subtitle {
+    font-style: italic;
+    font-size: 1rem; /* Slightly smaller */
+    color: #333;
+    margin-top: -5px; /* Adjust spacing */
+    line-height: 1.4; /* Improve readability */
+}
+.about-img {
+    margin-left: 20px; /* Push image to the right */
+    max-width: 460px; /* Slightly larger */
+}
+
+.features li span {
+    font-size: 1.3rem; /* Make emojis slightly bigger */
+    margin-right: 10px; /* Add spacing */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #about h2 {
+        font-size: 2.4rem;
+    }
+
+    #about p.lead {
+        font-size: 1.2rem;
+    }
+
+    #about .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #about .text {
+        text-align: center;
+    }
+
+    #about .btn-learn-more {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}
+
+  </style>
 
 </head>
 
@@ -101,54 +273,43 @@
 
   <main id="main">
 
-    <!-- ======= About Section ======= -->
-    <section id="about" class="about">
-      <div class="container" data-aos="fade-up">
+    <!-- About Section -->
+<section id="about">
+  <div class="container">
+      <h2 class="section-title">About <span>MindCare</span></h2>
+      <p class="subtitle">
+          Your mental well-being matters. MindCare is here to support you with <strong>professional guidance</strong> and <strong>easy-to-use digital tools</strong>.
+      </p>
 
-        <div class="section-title">
-          <h2>About Us</h2>
-          <p>MindCare enhances mental well-being with accessible resources and expert support.</p>
-        </div>
+      <div class="row align-items-center">
+          <!-- Left Side - Text Content -->
+          <div class="col-lg-6 text">
+              <p class="intro">
+                  At <strong>MindCare</strong>, we believe that mental health support should be 
+                  <em>accessible, personalized, and stigma-free</em>. 
+                  Our platform provides <strong>expert resources, self-help tools, and direct connections</strong> to 
+                  mental health professionals to support you in your journey towards emotional well-being.
+              </p>
+              <ul class="features">
+                  <li></i> <strong>24/7 Support:</strong> Get assistance anytime, anywhere.</li>
+                  <li></i> <strong>Personalized Guidance:</strong> Expert recommendations tailored to you.</li>
+                  <li></i> <strong>Interactive Tools:</strong> Assessments, journaling, and self-care activities.</li>
+                  <li></i> <strong>Secure & Confidential:</strong> Your privacy and safety are our top priorities.</li>
+              </ul>
+              <p class="join-us">
+                  Join <span class="highlight">thousands of users</span> who trust MindCare for their mental well-being.
+              </p>
+              <a href="#services" class="btn-learn-more">Get Started</a>
+          </div>
 
-        <div class="row content">
+          <!-- Right Side - Image -->
           <div class="col-lg-6">
-            <p>
-              At MindCare, our mission is to make mental health support accessible to everyone. We strive to provide expert guidance, interactive tools, and a safe digital space where individuals can manage stress, build resilience, and improve their overall well-being. By integrating technology with professional care, we aim to break barriers to mental health support and empower people to take control of their emotional wellness.
-            </p>
+              <img src="{% static 'assets/images/home.png' %}" class="img-fluid about-img" alt="MindCare">
           </div>
-          <div class="col-lg-6 pt-4 pt-lg-0">
-            <img src="{% static 'assets/images/home.png' %}" class="img-fluid" alt="">
-            
-          </div>
-        </div>
-
       </div>
-    </section><!-- End About Section -->
-    
-    
-    <!-- ======= About Video Section ======= -->
-    <section id="about-video" class="about-video">
-      <div class="container" data-aos="fade-up">
+  </div>
+</section>
 
-        <div class="row">
-
-          <div class="col-lg-6 video-box align-self-baseline" data-aos="fade-right" data-aos-delay="100">
-            <img src="{% static 'assets/images/digi.jpg' %}" class="img-fluid" alt="">
-          </div>
-
-          <div class="col-lg-6 pt-3 pt-lg-0 content" data-aos="fade-left" data-aos-delay="100">
-            <h3>What we expext</h3>
-            <p>
-              At MindCare, we expect to create a supportive and accessible platform where individuals can easily access mental health resources, expert guidance, and interactive tools. Our goal is to foster a safe and inclusive space that encourages mental well-being, empowers users to take control of their emotional health, and reduces stigma around mental health challenges. Through innovation and professional care, we aim to make mental health support more approachable and effective for everyone.
-            </p>
-            
-           
-          </div>
-
-        </div>
-
-      </div>
-    </section><!-- End About Video Section -->
 
     <!-- ======= Services Section ======= -->
     <section id="services" class="services section-bg">
