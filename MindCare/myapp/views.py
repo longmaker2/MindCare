@@ -663,14 +663,17 @@ from django.shortcuts import render, get_object_or_404
 from myapp.models import Professional, Appointment, Message
 
 from django.shortcuts import render
+from django.utils.timezone import now
 from myapp.models import Professional, Appointment, Message
 
 def professional_dashboard(request):
     professional = request.user.professional_profile
 
-    # ✅ Retrieve upcoming appointments for the professional
+    # ✅ Retrieve only future appointments (including today)
     upcoming_appointments = Appointment.objects.filter(
-        professional_name=professional.name, status='Upcoming'
+        professional_name=professional.name,
+        date__gte=now().date(),  # Exclude past appointments
+        status='Upcoming'  # Keep only "Upcoming" appointments
     ).order_by('date', 'time')
 
     # ✅ Retrieve messages where the professional is the receiver
@@ -991,18 +994,20 @@ def create_professional_profile(sender, instance, created, **kwargs):
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils.timezone import now
 from .models import Professional, Appointment
 
 @login_required
 def appointments_view(request, professional_id):
     professional = get_object_or_404(Professional, id=professional_id)
 
-    # Fetch appointments using professional_name
+    # ✅ Fetch all appointments for the professional (both past & upcoming)
     appointments = Appointment.objects.filter(professional_name=professional.name).select_related('client')
 
     context = {
         'professional': professional,
-        'appointments': appointments
+        'appointments': appointments,
+        'today': now().date()  # ✅ Pass today's date to the template
     }
     return render(request, 'appointments.html', context)
 

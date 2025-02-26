@@ -109,9 +109,13 @@
                         <td>{{ appointment.date }}</td>
                         <td>{{ appointment.time }}</td>
                         <td>
-                            <span class="badge {% if appointment.status == 'Confirmed' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                                {{ appointment.status }}
-                            </span>
+                            {% if appointment.date < today %}
+                                <span class="badge bg-secondary">Past</span>
+                            {% else %}
+                                <span class="badge {% if appointment.status == 'Confirmed' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                    {{ appointment.status }}
+                                </span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
