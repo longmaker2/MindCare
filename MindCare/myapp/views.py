@@ -672,8 +672,10 @@ from myapp.models import Professional, Appointment, Message
 
 from django.shortcuts import render
 from django.utils.timezone import now
-from myapp.models import Professional, Appointment, Message
+from django.contrib.auth.decorators import login_required
+from myapp.models import Professional, Appointment, Message, Notification
 
+@login_required
 def professional_dashboard(request):
     professional = request.user.professional_profile
 
@@ -687,10 +689,16 @@ def professional_dashboard(request):
     # ✅ Retrieve messages where the professional is the receiver
     messages = Message.objects.filter(receiver=professional).order_by('-timestamp')
 
+    # ✅ Retrieve unread notifications
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at")
+
     return render(request, 'professional_dashboard.html', {
         'professional': professional,
         'upcoming_appointments': upcoming_appointments,
-        'messages': messages  # ✅ Ensure messages are passed to the template
+        'messages': messages,  # ✅ Ensure messages are passed to the template
+        'notifications': notifications  # ✅ Pass notifications for display
     })
 
 
@@ -837,14 +845,32 @@ def user_appointments(request):
     user_appointments = Appointment.objects.filter(client=request.user).order_by('-date')
     return render(request, 'user_appointments.html', {'appointments': user_appointments})
 
-from django.shortcuts import redirect, get_object_or_404
-from .models import Appointment
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from myapp.models import Appointment, Notification, Professional
 
+@login_required
 def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, client=request.user)
+
+    if appointment.status != "Upcoming":
+        return redirect("user_appointments")  # ✅ Redirect to user's appointment list if invalid cancel
+
+    # ✅ Mark the appointment as canceled
     appointment.status = "Canceled"
     appointment.save()
-    return redirect('user_appointments')
+
+    # ✅ Find the professional related to this appointment
+    professional = get_object_or_404(Professional, name=appointment.professional_name)
+
+    # ✅ Send a notification to the professional
+    Notification.objects.create(
+        recipient=professional.user,
+        message=f"🚨 Your appointment with {request.user.username} on {appointment.date} at {appointment.time} was canceled."
+    )
+
+    return redirect("appointments", professional.id)  # ✅ Ensure this matches `urls.py`
+
 
 from django.shortcuts import render
 from .models import CompletedCourse
@@ -1123,3 +1149,7 @@ def update_availability(request):
 
     return render(request, "update_availability.html", {"professional": professional})
 
+@login_required
+def clear_notifications(request):
+    request.user.notifications.all().delete()
+    return redirect("professional_dashboard")

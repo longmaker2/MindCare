@@ -71,6 +71,8 @@ urlpatterns = [
     path('clear-messages/', clear_messages, name='clear_messages'),
     path('remove-appointment/<int:appointment_id>/', remove_appointment, name='remove_appointment'),
     path('update-availability/', update_availability, name='update_availability'),
+    path('appointments/<int:professional_id>/', views.appointments_view, name='appointments'),
+    path('clear-notifications/', views.clear_notifications, name='clear_notifications'),
 
 
    
