@@ -1,4 +1,17 @@
+from django.core.mail import send_mail
+from django.conf import settings
+
 def send_email_async(subject, message, recipient_email):
-    print(f"📧 Simulating email to {recipient_email} with subject: {subject}")
-    # Actual email sending logic (e.g., using Django's EmailBackend)
-print("✅ utils.py is being imported!")
+    print(f"📧 Sending email to {recipient_email} with subject: {subject}")
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[recipient_email],
+            fail_silently=False  # Set to False to catch errors
+        )
+        print("✅ Email sent successfully!")
+    except Exception as e:
+        print(f"❌ Email sending failed: {e}")
