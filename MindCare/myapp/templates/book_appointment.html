@@ -90,68 +90,78 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-       $(document).ready(function () {
-    $("#appointment-form").submit(function (event) {
-        event.preventDefault(); // Prevent default form submission
+        $(document).ready(function () {
+            $("#appointment-form").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
 
-        var submitBtn = $("#submit-btn");
-        submitBtn.prop("disabled", true).text("Booking..."); // ✅ Disable button to prevent multiple clicks
+                var submitBtn = $("#submit-btn");
+                submitBtn.prop("disabled", true).text("Booking..."); // ✅ Disable button to prevent multiple clicks
 
-        var formData = {
-            professional: $("input[name='professional']").val(),
-            date: $("input[name='date']").val(),
-            time: $("select[name='time']").val(),
-            reason: $("textarea[name='reason']").val(),
-            csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
-        };
+                var formData = {
+                    professional: $("input[name='professional']").val(),
+                    date: $("input[name='date']").val(),
+                    time: $("select[name='time']").val(),
+                    reason: $("textarea[name='reason']").val(),
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                };
 
-        console.log("📌 Sending Appointment Data:", formData);
+                console.log("📌 Sending Appointment Data:", formData);
 
-        $.ajax({
-            type: "POST",
-            url: $(this).attr("action"),
-            data: formData,
-            success: function (response) {
-                console.log("✅ Success: ", response);
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr("action"),
+                    data: formData,
+                    success: function (response) {
+                        console.log("✅ Success: ", response);
 
-                $("#success-popup").fadeIn().delay(3000).fadeOut();
-                $("#success-message").text("✅ Appointment booked successfully! Check your email for the Google Meet link.").removeClass("d-none");
+                        $("#success-popup").fadeIn().delay(3000).fadeOut();
+                        $("#success-message").text("✅ Appointment booked successfully! Check your email for the Google Meet link.").removeClass("d-none");
 
-                $("#meet-link").html(`🔗 <a href="${response.google_meet_link}" target="_blank">Join Google Meet</a>`).removeClass("d-none");
+                        $("#meet-link").html(`🔗 <a href="${response.google_meet_link}" target="_blank">Join Google Meet</a>`).removeClass("d-none");
 
-                // Update booked slot
-                var bookedSlot = $("select[name='time']").val();
-                $("ul").find("li:contains('" + bookedSlot + "')").html(
-                    `<span style="color: red;">${bookedSlot} - Booked</span>`
-                );
+                        // Update booked slot
+                        var bookedSlot = $("select[name='time']").val();
+                        $("ul").find("li:contains('" + bookedSlot + "')").html(
+                            `<span style="color: red;">${bookedSlot} - Booked</span>`
+                        );
 
-                $("select[name='time']").find("option[value='" + bookedSlot + "']").prop("disabled", true).text(bookedSlot + " - Booked");
+                        $("select[name='time']").find("option[value='" + bookedSlot + "']").prop("disabled", true).text(bookedSlot + " - Booked");
 
-                $("#appointment-form")[0].reset();
-                submitBtn.prop("disabled", false).text("Book Appointment");
-                
-                setTimeout(() => location.reload(), 2000);
-            },
-            error: function (xhr) {
-                console.error("❌ Error: ", xhr.responseText);
-                
-                let errorMessage = "❌ An error occurred while booking. Please try again.";
-                try {
-                    let responseJson = JSON.parse(xhr.responseText);
-                    if (responseJson.error) {
-                        errorMessage = "❌ " + responseJson.error;
+                        $("#appointment-form")[0].reset();
+                        submitBtn.prop("disabled", false).text("Book Appointment");
+                        
+                        setTimeout(() => location.reload(), 2000);
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error: ", xhr.responseText);
+                        
+                        let errorMessage = "❌ An error occurred while booking. Please try again.";
+                        try {
+                            let responseJson = JSON.parse(xhr.responseText);
+                            if (responseJson.error) {
+                                errorMessage = "❌ " + responseJson.error;
+                            }
+                        } catch (e) {
+                            console.error("❌ JSON Parse Error: ", e);
+                        }
+
+                        $("#error-message").text(errorMessage).removeClass("d-none");
+                        submitBtn.prop("disabled", false).text("Book Appointment");
                     }
-                } catch (e) {
-                    console.error("❌ JSON Parse Error: ", e);
-                }
+                });
+            });
+        });
 
-                $("#error-message").text(errorMessage).removeClass("d-none");
-                submitBtn.prop("disabled", false).text("Book Appointment");
+        // ✅ Prevent booking past dates
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+            
+            // ✅ Apply min attribute to the date input field
+            let dateInput = document.querySelector("#appointment-form input[name='date']");
+            if (dateInput) {
+                dateInput.setAttribute("min", today);
             }
         });
-    });
-});
-
     </script>
 
     <!-- Bootstrap JavaScript -->

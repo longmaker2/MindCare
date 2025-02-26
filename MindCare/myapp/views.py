@@ -226,6 +226,7 @@ import random
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now  # ✅ Import for date validation
 from .models import Professional, Appointment
 from myapp.utils import send_email_async  # ✅ Absolute import
 
@@ -275,6 +276,12 @@ def book_appointment(request):
         if not all([professional_id, date, time, reason]):
             print("❌ Missing fields in request!")
             return JsonResponse({"error": "All fields are required!"}, status=400)
+
+        # ✅ Prevent booking past dates
+        today_date = now().date()  # Get today's date
+        if date < today_date.isoformat():  # Convert to string for comparison
+            print("❌ Cannot book past date!")
+            return JsonResponse({"error": "You cannot book an appointment for a past date."}, status=400)
 
         # ✅ Validate professional exists
         try:
@@ -363,6 +370,7 @@ def book_appointment(request):
         }, status=200)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
