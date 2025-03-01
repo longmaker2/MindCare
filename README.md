@@ -24,25 +24,7 @@ https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
 https://youtu.be/sGepfbtpCOo
 
-# Link to the github Repository
-
-https://github.com/Ericanshimir/MindCare
-## Technologies Used
-
-Backend: Django (Python)
-
-Frontend: HTML, CSS, JavaScript
-
-Database: PostgreSQL
-
-## Installation and Setup
-### Prerequisites
-Ensure you have the following installed on your system:
-- Python 3.x
-- PostgreSQL
-- Docker (optional for containerized deployment)
-
-### Steps to Install
+### Steps to Run the App
 1. **Clone the Repository**
    ```sh
    git clone https://github.com/Ericanshimir/MindCare.git
@@ -82,6 +64,11 @@ Ensure you have the following installed on your system:
 
 **Appointment Booking**: Schedule a session with a professional.
 
+**Training Materials**: Access training materials.
+
+**Community Forum**: This is where the users and professional they will interact.
+
+
 ## Usage Guide
 - **Sign up/Login** to access mental health resources.
 - **Schedule appointment** with professionals.
@@ -92,164 +79,6 @@ Ensure you have the following installed on your system:
 # Database Schema:
  ![database image](https://github.com/user-attachments/assets/1003a339-3ea5-478d-b4e7-53446eecc30b)
 
-# API Endpoints
-
-# Get All Quizzes
-
-URL: /api/quizzes/
-
-Method: GET
-
-# Response Example:
-{
-
-  "quizzes": [
-  
-      {
-          "id": 1,
-      
-      "title": "General Anxiety Quiz",
-      
-      "description": "Assess your anxiety levels."
-    },
-    {
-      "id": 2,
-      
-      "title": "Depression Quiz",
-      
-      "description": "Evaluate your depression symptoms."
-    }
-  ]
-}
-
-# Get a Single Quiz
-
-URL: /api/quiz/<quiz_id>/
-
-Method: GET
-
-# Response Example:
-
-{
-  "id": 1,
-  
-  "title": "General Anxiety Quiz",
-  
-  "questions": [
-  
-    {
-    
-      "text": "Do you often feel nervous?",
-      
-      "options": ["Yes", "No"]
-      
-    },
-    
-    {
-    
-      "text": "Do you have trouble sleeping?",
-      
-      "options": ["Yes", "No", "Sometimes"]
-      
-    }
-    
-  ]
-  
-}
-
-# Book an Appointment
-
-URL: /api/appointments/
-
-Method: POST
-
-# Request Example (JSON Body):
-
-{
-
-  "user_id": 1,
-  
-  "professional_id": 3,
-  
-  "date": "2024-06-20"
-  
-}
-
-# Response Example:
-
-{
-
-  "message": "Appointment booked successfully!"
-  
-}
-
-
-# Deployment Plan for MindCare
-
-# Overview
-
-This deployment plan outlines the steps to deploy the MindCare application, which consists of a Django backend and a JavaScript (HTML, CSS) frontend. The chosen deployment stack ensures scalability, security, and ease of maintenance.
-
-# Deployment Stack
-
-**Backend (Django + API)**: Render provides a simple and scalable hosting solution with a free-tier PostgreSQL database, making it ideal for deploying and managing Django applications.
-
-**Frontend (HTML, JavaScript, and CSS)**: Vercel offers fast, reliable, and free static hosting, making it the best choice for deploying the MindCare frontend efficiently.
-
-**Database (PostgreSQL)**: Render also manages PostgreSQL databases, ensuring secure and optimized database performance for the backend.
-
-# Step-by-Step Deployment Plan
-
-# Common Setup Issues & Solutions
-
-Database connection error? Ensure that the PostgreSQL service is running and the correct credentials are set in DATABASE_URL.
-
-Static files not loading? Run **python manage.py collectstatic** and ensure STATIC_URL is configured properly.
-
-CORS issues? Add the frontend URL to CORS_ALLOWED_ORIGINS in settings.py.
-
-**Step 1**: Deploy Backend on Render
-
-1️. Sign up on Render
-
-2️. Create a New Project → Click Deploy from GitHub
-
-3️. Select Your MindCare Backend Repo (Django)
-
-4️. Add Environment Variables:
-```bash
-DJANGO_SECRET_KEY=my-secret-key
-DATABASE_URL=my-postgres-url
-ALLOWED_HOSTS=my-railway-app-url
-```
-5️. Run Migrations:
-```bash
-python manage.py migrate
-```
-6️. Run the Server:
-```bash
-python manage.py runserver
-```
-7️. Copy the Render Backend URL for frontend use.
-
-**Step 2**: Deploy Frontend on Vercel
-
-1️. Sign up on Vercel
-
-2️. Click 'New Site from Git' → Select Frontend GitHub Repo
-
-3️. Set API URL in Frontend (fetch() calls should use your Render backend URL)
-
-4️. Deploy & Test:
-```bash
-Simply upload static HTML, CSS, and JavaScript files
-```
-
-# Final Steps
-
-1. Test API Calls from Frontend → Backend
-2. Ensure CORS is Configured in Django (settings.py)
-3. Monitor Performance & Logs on Render and Vercel
 
 ## Contribution
 To contribute:
