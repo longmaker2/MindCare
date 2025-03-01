@@ -45,7 +45,7 @@ html {
 
 /* Header */
 #header {
-    background: #0056b3; /* Royal Blue */
+    background: #1f4870; /* Royal Blue */
     padding: 15px 0;
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -80,7 +80,7 @@ html {
 .btn-get-started {
     display: inline-block;
     background: white;
-    color: #0056b3;
+    color: #1f4870;
     padding: 12px 30px;
     font-size: 1.2rem;
     font-weight: bold;
@@ -92,9 +92,26 @@ html {
 
 .btn-get-started:hover {
     background: #f8f9fa;
-    color: #0056b3;
+    color: #1f4870;;
     transform: translateY(-3px);
     box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Remove unnecessary margins added by Google Translate */
+body {
+    top: 0px !important;
+}
+.goog-logo-link, .goog-te-gadget {
+    display: none !important;
+}
+/* Hide Google Translate Toolbar */
+.goog-te-banner-frame, .goog-te-gadget-simple, .goog-te-balloon-frame {
+    display: none !important;
+}
+
+/* Remove Google Translate margin shift */
+body {
+    top: 0px !important;
 }
 
 /* About Section */
@@ -112,7 +129,7 @@ html {
 #about h2 {
     font-size: 2.8rem;
     font-weight: bold;
-    color: #0056b3;
+    color: #1f4870;;
     margin-bottom: 20px; /* Reduce spacing below the title */
     text-transform: capitalize;
 }
@@ -139,14 +156,14 @@ html {
 
 
 #about .features li:hover {
-    color: #0056b3;
+    color: #1f4870;
     transform: translateX(5px);
     transition: all 0.3s ease-in-out;
 }
 
 #about .features li::before {
     content: "✔️";
-    color: #0056b3;
+    color: #1f4870;;
     font-size: 1.2rem;
     margin-right: 10px;
 }
@@ -208,9 +225,11 @@ html {
 }
 
 /* Call to Action Button */
+
+
 #about .btn-learn-more {
     display: inline-block;
-    background: #0056b3;
+    background: #1f4870;
     color: white;
     padding: 12px 25px;
     font-size: 1.2rem;
@@ -235,6 +254,7 @@ html {
 .about-img {
     margin-left: 20px; /* Push image to the right */
     max-width: 460px; /* Slightly larger */
+    margin-top: -50px;
 }
 
 .features li span {
@@ -277,7 +297,7 @@ html {
 #services h2 {
     font-size: 2.8rem;
     font-weight: bold;
-    color: #0056b3;
+    color: #1f4870;
     margin-bottom: 30px;
 }
 
@@ -308,7 +328,7 @@ html {
 /* Form Labels */
 .appointment-form .form-label {
     font-weight: 600;
-    color: #004080;
+    color: #1f4870;
     margin-bottom: 5px;
 }
 
@@ -324,7 +344,7 @@ html {
 
 .appointment-form .form-control:focus,
 .appointment-form .form-select:focus {
-    border-color: #004080;
+    border-color: #1f4870;
     box-shadow: 0px 0px 8px rgba(0, 64, 128, 0.2);
 }
 
@@ -336,7 +356,7 @@ html {
 
 /* Booking Button */
 .appointment-form button {
-    background: #078fff;
+    background: #1f4870;
     color: #333;
     font-weight: bold;
     padding: 12px 20px;
@@ -347,7 +367,7 @@ html {
 }
 
 .appointment-form button:hover {
-    background: #0088ff;
+    background: #003f7f;
     color: white;
     transform: translateY(-2px);
 }
@@ -377,6 +397,21 @@ html {
 }
 
 
+#custom-language-selector {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+#language-dropdown {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+}
 
 
 </style>
@@ -384,7 +419,6 @@ html {
 </head>
 
 <body>
-
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center justify-content-between">
@@ -394,309 +428,379 @@ html {
       
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
-          {% if user.is_authenticated %}
-          <li><a class="nav-link scrollto" href="#services">Services</a></li>
-          <li><a class="nav-link scrollto" href="#professionals">Help & Support</a></li>
-          {% endif %}
-          
-          
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
-          {% if user.is_authenticated %}
-          <li><a class="getstarted scrollto" href="logout">Logout</a></li>
-          {% else %}
-          <li><a class="getstarted scrollto" href="login">Login or signup</a></li>
-          {% endif %}
-        </ul>
-        <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav><!-- .navbar -->
+            <li><a class="nav-link scrollto active" href="#hero" data-translate>Home</a></li>
+<li><a class="nav-link scrollto" href="#about" data-translate>About</a></li>
+{% if user.is_authenticated %}
+<li><a class="nav-link scrollto" href="#services" data-translate>Services</a></li>
+<li><a class="nav-link scrollto" href="#professionals" data-translate>Help & Support</a></li>
+{% endif %}
+<li><a class="nav-link scrollto" href="#contact" data-translate>Contact</a></li>
+<div id="google_translate_element"></div>
 
-    </div>
+{% if user.is_authenticated %}
+<li><a class="getstarted scrollto" href="logout" data-translate>Logout</a></li>
+{% else %}
+<li><a class="getstarted scrollto" href="login" data-translate>Login or Signup</a></li>
+{% endif %}
+<div id="custom-language-selector">
+    <select id="language-dropdown" onchange="changeLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+        <option value="sw">Swahili</option>
+    </select>
+</div>
+
+
+        </div>
   </header><!-- End Header -->
   
 
-  <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
     <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
-      <div class="row justify-content-center">
-        <div class="col-xl-7 col-lg-9 text-center">
-          {% if user.is_authenticated %}
-          <h1>Welcome, {{user.username}}</h1>
-          {% else %}
-          <h2>We are a team that is dedicated to make Mental health support accessible to everyone</h2>
-          {% endif %}
+        <div class="row justify-content-center">
+            <div class="col-xl-7 col-lg-9 text-center">
+                {% if user.is_authenticated %}
+                    <h1 data-translate>Welcome, {{user.username}}</h1>
+                {% else %}
+                    <h2 data-translate>We are a team that is dedicated to making Mental Health support accessible to everyone</h2>
+                {% endif %}
+            </div>
         </div>
-      </div>
-      <div class="text-center">
-        {% if user.is_authenticated %}
-        <a href="#professionals" class="btn-get-started scrollto">Get Support</a>
-        {% else %}
-        <a href="#about" class="btn-get-started scrollto">Start Now</a>
-        {% endif %}
-      </div>
-
-      <div class="row icon-boxes">
-          
-        {% for feature in features %}
-        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="200">
-          <div class="icon-box">
-            <div class="icon"><i class="ri-stack-line"></i></div>
-            <h4 class="title"><a href="">{{feature.name}}</a></h4>
-            <p class="description">{{feature.details}}</p>
-          </div>
+        <div class="text-center">
+            {% if user.is_authenticated %}
+                <a href="#professionals" class="btn-get-started scrollto" data-translate>Get Support</a>
+            {% else %}
+                <a href="#about" class="btn-get-started scrollto" data-translate>Start Now</a>
+            {% endif %}
         </div>
-        {% endfor %}
-
-      </div>
     </div>
-  </section><!-- End Hero -->
+</section>
 
   <main id="main">
 
    <!-- About Section -->
-<section id="about">
-  <div class="container">
-      <h2 class="section-title">About <span>MindCare</span></h2>
-      <p class="subtitle">
-          Your mental well-being matters. MindCare is here to support you with <strong>professional guidance</strong> and <strong>easy-to-use digital tools</strong>.
-      </p>
+   <!-- About Section -->
+<section id="about" class="about-section">
+    <div class="container">
+        <div class="section-title text-center">
+            <h2 class="section-title animate__animated animate__fadeInDown" data-translate>
+                About <span>Us</span>
+            </h2>
+            <p class="sub-text" data-translate>Empowering minds, transforming lives.</p>
+        </div>
 
-      <div class="row align-items-center">
-          <!-- Left Side - Text Content -->
-          <div class="col-lg-6 text">
-              <p class="intro">
-                  At <strong>MindCare</strong>, we believe that mental health support should be 
-                  <em>accessible, personalized, and stigma-free</em>. 
-                  Our platform provides <strong>expert resources, self-help tools, and direct connections</strong> to 
-                  mental health professionals to support you in your journey towards emotional well-being.
-              </p>
-              <ul class="features">
-                  <li></i> <strong>24/7 Support:</strong> Get assistance anytime, anywhere.</li>
-                  <li></i> <strong>Personalized Guidance:</strong> Expert recommendations tailored to you.</li>
-                  <li></i> <strong>Interactive Tools:</strong> Assessments, journaling, and self-care activities.</li>
-                  <li></i> <strong>Secure & Confidential:</strong> Your privacy and safety are our top priorities.</li>
-              </ul>
-              <p class="join-us">
-                  Join <span class="highlight">thousands of users</span> who trust MindCare for their mental well-being.
-              </p>
-              <a href="#services" class="btn-learn-more">Get Started</a>
-          </div>
+        <!-- Animated Sliding Container -->
+        <div class="content-slider">
+            <div class="content-slide active">
+                <!-- Vision -->
+                <div class="slide-box">
+                    <h3><i class="fas fa-eye"></i> Our Vision</h3>
+                    <p data-translate>
+                        To create a world where mental health support is readily available, 
+                        empowering individuals to lead fulfilling lives with emotional resilience.
+                    </p>
+                </div>
+            </div>
 
-          <!-- Right Side - Image -->
-          <div class="col-lg-6">
-              <img src="{% static 'assets/images/home.png' %}" class="img-fluid about-img" alt="MindCare">
-          </div>
-      </div>
-  </div>
+            <div class="content-slide">
+                <!-- Mission -->
+                <div class="slide-box">
+                    <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                    <p data-translate>
+                        To provide a secure and user-friendly platform that connects individuals 
+                        with mental health resources, professionals, and self-care tools to 
+                        enhance their emotional and psychological well-being.
+                    </p>
+                </div>
+            </div>
+
+            <div class="content-slide">
+                <!-- Key Features -->
+                <div class="slide-box">
+                    <ul class="features">
+                        <li data-translate><i class="fas fa-clock"></i> <strong>24/7 Support:</strong> Get assistance anytime, anywhere.</li>
+                        <li data-translate><i class="fas fa-user-md"></i> <strong>Personalized Guidance:</strong> Expert recommendations tailored to you.</li>
+                        <li data-translate><i class="fas fa-heart"></i> <strong>Interactive Tools:</strong> Assessments, journaling, and self-care activities.</li>
+                        <li data-translate><i class="fas fa-shield-alt"></i> <strong>Secure & Confidential:</strong> Your privacy and safety are our top priorities.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content-slide">
+                <!-- Call to Action -->
+                <div class="slide-box cta-box">
+                    <h3>Join Us Today!</h3>
+                    <p class="join-us" data-translate>
+                        Join <span class="highlight">thousands of users</span> who trust MindCare for their mental well-being.
+                    </p>
+                    <a href="{% url 'login' %}" class="btn-learn-more animate__animated animate__pulse" data-translate>Get Started</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
+<!-- Styles -->
+<style>
+    .about-section {
+        background: linear-gradient(to right, #f9f9f9, #ffffff);
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+    }
+    .section-title h2 {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+    .section-title .sub-text {
+        font-size: 1.4rem;
+        color: #555;
+        margin-bottom: 30px;
+    }
+    .highlight {
+        color: #1f4870;
+        font-weight: bold;
+    }
     
+    /* Sliding Content */
+    /* Heading styles */
+.content-slide h1 {
+    font-size: 3rem; /* Large and impactful */
+    font-weight: 700; /* Bold for emphasis */
+    color: #222; /* Slightly darker than body text */
+    margin-bottom: 20px;
+    text-transform: capitalize; /* Professional touch with consistent capitalization */
+    letter-spacing: 0.5px; /* Slight spacing for elegance */
+}
 
+.content-slide h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #555; /* Lighter gray for subheadings */
+    margin-bottom: 15px;
+}
 
-    <!-- ======= Services Section ======= -->
-    <section id="services" class="services section-bg">
-      <div class="container" data-aos="fade-up">
-        {% if user.is_authenticated %}
+/* Paragraph text styles */
+.content-slide p {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 25px;
+    color: #666; /* Neutral gray that’s easy on the eyes */
+}
+
+/* Link styles */
+.content-slide a {
+    font-size: 1rem;
+    color: #007BFF; /* Professional blue tone */
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.content-slide a:hover {
+    color: #0056b3; /* Slightly darker on hover */
+}
+
+/* Additional spacing and alignment */
+.content-slide h1, .content-slide h2 {
+    margin-top: 10px;
+}
+
+.content-slide p + p {
+    margin-top: 15px;
+}
+    /* Sliding Content */
+.content-slider {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+    height: 400px;
+}
+
+.content-slide {
+    min-width: 100%;
+    opacity: 0;
+    transform: translateX(-100%); /* Start off-screen to the right */
+    transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 100%;
+    font-size: 1.5rem;
+    padding: 20px;
+}
+
+.content-slide.active {
+    opacity: 1;
+    transform: translateX(0); /* Move into the visible area */
+}
+
+    
+    /* Slide Box */
+    .slide-box {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        width: 80%;
+        margin: auto;
+        height: 80%;
+    }
+    .slide-box h3 {
+        color: #1f4870;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    
+    /* Features */
+    .features {
+        list-style: none;
+        padding: 0;
+        font-size: 1.2rem;
+    }
+    .features li {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        font-size: 1.2rem;
+    }
+    .features li i {
+        color: #1f4870;
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+
+    /* CTA Button */
+    .btn-learn-more {
+        display: inline-block;
+        background: #1f4870;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    .btn-learn-more:hover {
+        background: #16a085;
+        transform: scale(1.1);
+    }
+
+</style>
+
+<!-- Auto-Sliding Sections -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let slides = document.querySelectorAll(".content-slide");
+        let currentIndex = 0;
+
+        function showNextSlide() {
+            slides[currentIndex].classList.remove("active");
+            currentIndex = (currentIndex + 1) % slides.length;
+            slides[currentIndex].classList.add("active");
+        }
+
+        setInterval(showNextSlide, 5000); // Change section every 5 seconds
+    });
+</script>
+
+<!-- Include Animation Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+  <section id="services" class="services section-bg">
+    <div class="container" data-aos="fade-up">
         <div class="section-title">
-          <h2>Sevices</h2>
-          <p>
-            We aim to make mental health support accessible and empowering for all.</p>
+            <h2 data-translate>Features</h2>
+            <p data-translate>We aim to make mental health support accessible and empowering for all.</p>
         </div>
 
         <div class="row">
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-            <div class="icon-box iconbox-blue">
-              <div class="icon">
-                <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke="none" stroke-width="0" fill="#f5f5f5" d="M300,521.0016835830174C376.1290562159157,517.8887921683347,466.0731472004068,529.7835943286574,510.70327084640275,468.03025145048787C554.3714126377745,407.6079735673963,508.03601936045806,328.9844924480964,491.2728898941984,256.3432110539036C474.5976632858925,184.082847569629,479.9380746630129,96.60480741107993,416.23090153303,58.64404602377083C348.86323505073057,18.502131276798302,261.93793281208167,40.57373210992963,193.5410806939664,78.93577620505333C130.42746243093433,114.334589627462,98.30271207620316,179.96522072025542,76.75703585869454,249.04625023123273C51.97151888228291,328.5150500222984,13.704378332031375,421.85034740162234,66.52175969318436,486.19268352777647C119.04800174914682,550.1803526380478,217.28368757567262,524.383925680826,300,521.0016835830174"></path>
-                </svg>
-                <i class="bx bxl-dribbble"></i>
-              </div>
-              <h4><a href="dashboard">User Dashboard</a></h4>
-              <p>section displaying the user's progress, completed courses,achievements, etc.</p>
+            <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                <div class="icon-box iconbox-blue">
+                    <div class="icon">
+                        <i class="bx bxl-dribbble"></i>
+                    </div>
+                    <h4><a  data-translate>Personalized Mental Health Support</a></h4>
+                    <p data-translate>MindCare adapts to your needs by offering personalized mental health strategies based on your emotions, lifestyle, and mental wellness goals.</p>
+                </div>
             </div>
-          </div>
 
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-            <div class="icon-box iconbox-orange ">
-              <div class="icon">
-                <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke="none" stroke-width="0" fill="#f5f5f5" d="M300,582.0697525312426C382.5290701553225,586.8405444964366,449.9789794690241,525.3245884688669,502.5850820975895,461.55621195738473C556.606425686781,396.0723002908107,615.8543463187945,314.28637112970534,586.6730223649479,234.56875336149918C558.9533121215079,158.8439757836574,454.9685369536778,164.00468322053177,381.49747125262974,130.76875717737553C312.15926192815925,99.40240125094834,248.97055460311594,18.661163978235184,179.8680185752513,50.54337015887873C110.5421016452524,82.52863877960104,119.82277516462835,180.83849132639028,109.12597500060166,256.43424936330496C100.08760227029461,320.3096726198365,92.17705696193138,384.0621239912766,124.79988738764834,439.7174275375508C164.83382741302287,508.01625554203684,220.96474134820875,577.5009287672846,300,582.0697525312426"></path>
-                </svg>
-                <i class="bx bx-file"></i>
-              </div>
-              <h4><a href="{% url 'anonymous_chat' %}">Mental Health Support Space</a></h4>
-              <p>A chat system or messaging platform for communication between people and mental health proffesional and anonymous chart.</p>
+            <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
+                <div class="icon-box iconbox-orange">
+                    <div class="icon">
+                        <i class="bx bx-file"></i>
+                    </div>
+                    <h4><a data-translate>Community-Oriented</a></h4>
+                    <p data-translate>A supportive community to share experiences, gain insights, and uplift each other on your wellness journey. .</p>
+                </div>
             </div>
-          </div>
 
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
-            <div class="icon-box iconbox-pink">
-              <div class="icon">
-                <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke="none" stroke-width="0" fill="#f5f5f5" d="M300,541.5067337569781C382.14930387511276,545.0595476570109,479.8736841581634,548.3450877840088,526.4010558755058,480.5488172755941C571.5218469581645,414.80211281144784,517.5187510058486,332.0715597781072,496.52539010469104,255.14436215662573C477.37192572678356,184.95920475031193,473.57363656557914,105.61284051026155,413.0603344069578,65.22779650032875C343.27470386102294,18.654635553484475,251.2091493199835,5.337323636656869,175.0934190732945,40.62881213300186C97.87086631185822,76.43348514350839,51.98124368387456,156.15599469081315,36.44837278890362,239.84606092416172C21.716077023791087,319.22268207091537,43.775223500013084,401.1760424656574,96.891909868211,461.97329694683043C147.22146801428983,519.5804099606455,223.5754009179313,538.201503339737,300,541.5067337569781"></path>
-                </svg>
-                <i class="bx bx-tachometer"></i>
-              </div>
-              <h4><a href="training_materials">MindCare Resource Center</a></h4>
-              <p> Pages displaying articles, videos, courses, or other learning materials categorized by topics or skill levels.</p>
+            <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
+                <div class="icon-box iconbox-pink">
+                    <div class="icon">
+                        <i class="bx bx-tachometer"></i>
+                    </div>
+                    <h4><a href="training_materials" data-translate>Interactive & Engaging Content</a></h4>
+                    <p data-translate>MindCare provides interactive exercises, thought-provoking prompts, engaging challenges, and self-reflection activities to enhance mental well-being.</p>
+                </div>
             </div>
-          </div>
+        </div>
+    </div>
+</section>
+
 
           
 <!-- Professionals Section -->
 <section id="professionals" class="professionals">
   <div class="container" data-aos="fade-up">
     <div class="section-title">
-      <h2>Meet Our Professionals</h2>
-      <p>Connect with experienced mental health professionals ready to support you.</p>
+      <h2 data-translate>Meet Our Professionals</h2>
+      <p data-translate>Connect with experienced mental health professionals ready to support you.</p>
     </div>
 
     <div class="row">
       {% for professional in professionals %}
       <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
         <div class="member">
-          <!-- Show professional's image -->
           {% if professional.image %}
             <img src="{{ professional.image.url }}" class="img-fluid" alt="{{ professional.name }}">
           {% else %}
             <img src="{% static 'assets/images/default.png' %}" class="img-fluid" alt="Default Image">
           {% endif %}
 
-          <!-- Show professional details with a link to their page -->
           <h4><a href="{% url 'professional_detail' professional.id %}">{{ professional.name }}</a></h4>
           <p>{{ professional.specialty }}</p>
 
-          <!-- Display available and booked slots -->
-<p><strong>Available Slots:</strong></p>
-<ul>
+          {% if user.is_authenticated %}
+          <p data-translate><strong>Available Slots:</strong></p>
+<ul id="available-slots-{{ professional.id }}">
   {% for slot in professional.available_slots %}
-    <li><span style="color: green;">{{ slot }}</span></li>
+    {% if slot not in professional.booked_slots %}  {# ✅ Hide booked slots #}
+      <li><span style="color: green;">{{ slot }}</span></li>
+    {% endif %}
+  {% empty %}
+    <p class="text-muted">No available slots</p>
   {% endfor %}
-
-  {% for slot in professional.booked_slots %}
-    <li><span style="color: red;">{{ slot }} - Booked</span></li>
-  {% endfor %}
-
-  {% if not professional.available_slots and not professional.booked_slots %}
-    <li style="color: red;">No available slots</li>
-  {% endif %}
 </ul>
 
-         
-<form class="appointment-form" method="post" action="{% url 'book_appointment' %}">
-  {% csrf_token %}
+<button class="btn btn-primary book-appointment-btn" 
+data-professional-id="{{ professional.id }}" 
+data-professional-name="{{ professional.name }}" 
+data-specialty="{{ professional.specialty }}"
+data-available-slots="{{ professional.available_slots|join:',' }}"
+data-booked-slots="{{ professional.booked_slots|join:',' }}">  <!-- ✅ Add booked slots -->
+Book Appointment
+</button>
 
-  <!-- Each form now correctly stores the professional's ID -->
-  <input type="hidden" name="professional" value="{{ professional.id }}">
-
-  <p>Booking with: <strong>{{ professional.name }}</strong></p>
-
-  <div class="mb-3">
-      <label for="date" class="form-label">Select Date:</label>
-      <input type="date" class="form-control" name="date" id="appointment-date" required>
-  </div>
-
-  <div class="mb-3">
-      <label for="time" class="form-label">Select Time:</label>
-      <select class="form-select" name="time" required>
-          {% for slot in professional.available_slots %}
-              <option value="{{ slot }}" {% if slot in professional.booked_slots %}disabled style="color: red;"{% endif %}>
-                  {{ slot }} {% if slot in professional.booked_slots %} - Booked {% endif %}
-              </option>
-          {% endfor %}
-      </select>
-  </div>
-
-  <div class="mb-3">
-      <label for="reason" class="form-label">Reason:</label>
-      <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
-  </div>
-
-  <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
-</form>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-      let today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
-      
-      // ✅ Apply to ALL appointment forms on the page
-      document.querySelectorAll(".appointment-form input[name='date']").forEach(function (dateInput) {
-          dateInput.setAttribute("min", today);
-      });
-  });
-</script>
-
-
-<!-- Success Popup -->
-<div id="success-popup" style="display: none; background: green; color: white; padding: 15px; position: fixed; top: 20px; right: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1000;">
-  Your appointment has been successfully booked!
-</div>
-
-<script>
-  $(document).ready(function () {
-    $(".appointment-form").off("submit").on("submit", function (event) {
-        event.preventDefault(); // Prevent default form submission
-
-        var formData = $(this).serialize(); // Serialize form data
-        var professionalId = $(this).find("input[name='professional']").val(); // Get professional ID
-
-        console.log("📢 Sending appointment request for Professional ID:", professionalId);
-
-        // Get CSRF Token from the form
-        var csrftoken = $("input[name=csrfmiddlewaretoken]").val();
-
-        var submitBtn = $(this).find("button[type='submit']");
-        if (submitBtn.prop("disabled")) {
-            return;  // Prevent duplicate submission
-        }
-
-        submitBtn.prop("disabled", true).text("Booking..."); // Disable button to prevent multiple clicks
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr("action"),
-            data: formData,
-            headers: { "X-CSRFToken": csrftoken }, // Ensure CSRF token is sent
-            success: function (response) {
-                console.log("✅ AJAX Response:", response);
-
-                if (response.message) {
-                    $("#success-popup").text(response.message).fadeIn().delay(3000).fadeOut();
-
-                    var selectedSlot = $("select[name='time']").find("option:selected").val();
-
-                    // ✅ Update the slot in the available list
-                    $("ul").find("li:contains('" + selectedSlot + "')").html(
-                        `<span style="color: red;">${selectedSlot} - Booked</span>`
-                    );
-
-                    // ✅ Disable the booked slot in the dropdown
-                    $("select[name='time']").find("option:selected").prop("disabled", true).css("color", "red").text(selectedSlot + " - Booked");
-
-                    // ✅ Clear form fields after submission
-                    $(".appointment-form")[0].reset();
-
-                    setTimeout(() => {
-                        submitBtn.prop("disabled", false).text("Book Appointment");
-                    }, 3000);
-                } else {
-                    console.error("❌ Unexpected response format:", response);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("❌ Error booking appointment:", xhr.responseText);
-                alert("Error booking appointment. Please try again.");
-                submitBtn.prop("disabled", false).text("Book Appointment");
-            }
-        });
-    });
-});
-
-</script>
-
-
+          {% endif %}
         </div>
       </div>
       {% empty %}
@@ -705,7 +809,246 @@ html {
     </div>
   </div>
 </section>
-{% endif %}
+
+<!-- Appointment Booking Modal -->
+<div id="appointment-modal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Book Appointment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="appointment-form">
+          {% csrf_token %}
+          <input type="hidden" name="professional" id="modal-professional-id">
+
+          <p>Booking with: <strong id="modal-professional-name"></strong></p>
+          <p>Specialty: <span id="modal-specialty"></span></p>
+
+          <div class="mb-3">
+            <label for="date" class="form-label">Select Date:</label>
+            <input type="date" class="form-control" name="date" id="appointment-date" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="time" class="form-label">Select Time:</label>
+            <select class="form-select" name="time" id="appointment-time" required>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="reason" class="form-label">Reason:</label>
+            <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Confirm Appointment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Message -->
+<div id="success-popup" style="display: none; background: green; color: white; padding: 15px; position: fixed; top: 20px; right: 20px; border-radius: 5px; z-index: 1000;">
+  Appointment confirmed! A Google Meet link has been sent to your email.  
+  <br>
+  <a id="meet-link" href="#" style="color: yellow; font-weight: bold;" target="_blank"></a>
+</div>
+
+<!-- JavaScript for Modal & AJAX Booking -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let today = new Date().toISOString().split("T")[0];
+    document.getElementById("appointment-date").setAttribute("min", today);
+
+    document.querySelectorAll(".book-appointment-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let professionalId = this.getAttribute("data-professional-id");
+            let professionalName = this.getAttribute("data-professional-name");
+            let specialty = this.getAttribute("data-specialty");
+            let availableSlots = this.getAttribute("data-available-slots").split(",");
+
+            document.getElementById("modal-professional-id").value = professionalId;
+            document.getElementById("modal-professional-name").textContent = professionalName;
+            document.getElementById("modal-specialty").textContent = specialty;
+
+            let timeSelect = document.getElementById("appointment-time");
+            timeSelect.innerHTML = "";
+            availableSlots.forEach(slot => {
+                if (slot.trim() !== "") {
+                    let option = document.createElement("option");
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
+                }
+            });
+
+            let modalElement = document.getElementById("appointment-modal");
+let modalInstance = new bootstrap.Modal(modalElement);
+modalInstance.show();
+
+        });
+    });
+
+    document.getElementById("appointment-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+        let professionalId = formData.get("professional");
+        let selectedSlot = formData.get("time");
+        let submitButton = this.querySelector("button[type='submit']");
+        
+        submitButton.disabled = true;
+        submitButton.textContent = "Booking...";
+
+        fetch("{% url 'book_appointment' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                let meetLink = data.google_meet_link;
+                document.getElementById("success-popup").style.display = "block";
+                document.getElementById("meet-link").href = meetLink;
+                document.getElementById("meet-link").textContent = "Join Google Meet";
+
+                setTimeout(() => document.getElementById("success-popup").style.display = "none", 5000);
+
+                let slotList = document.getElementById(`available-slots-${professionalId}`);
+                if (slotList) {
+                    let slotElements = slotList.querySelectorAll("li");
+                    slotElements.forEach(li => {
+                        if (li.textContent.trim() === selectedSlot) {
+                            li.remove();
+                        }
+                    });
+                }
+
+                document.getElementById("appointment-form").reset();
+            }
+        })
+        .catch(error => {
+            console.error("Error booking appointment:", error);
+            alert("Error booking appointment. Please try again.");
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.textContent = "Confirm Appointment";
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let today = new Date().toISOString().split("T")[0];
+    document.getElementById("appointment-date").setAttribute("min", today);
+
+    document.querySelectorAll(".book-appointment-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let professionalId = this.getAttribute("data-professional-id");
+            let professionalName = this.getAttribute("data-professional-name");
+            let specialty = this.getAttribute("data-specialty");
+            
+            let availableSlots = this.getAttribute("data-available-slots") ? this.getAttribute("data-available-slots").split(",") : [];
+            let bookedSlots = this.getAttribute("data-booked-slots") ? this.getAttribute("data-booked-slots").split(",") : [];
+
+            // ✅ Filter out booked slots from available slots
+            let filteredSlots = availableSlots.filter(slot => !bookedSlots.includes(slot.trim()));
+
+            document.getElementById("modal-professional-id").value = professionalId;
+            document.getElementById("modal-professional-name").textContent = professionalName;
+            document.getElementById("modal-specialty").textContent = specialty;
+
+            let timeSelect = document.getElementById("appointment-time");
+            timeSelect.innerHTML = "";
+
+            if (filteredSlots.length === 0) {
+                let option = document.createElement("option");
+                option.textContent = "No available slots";
+                option.disabled = true;
+                option.selected = true;
+                timeSelect.appendChild(option);
+            } else {
+                filteredSlots.forEach(slot => {
+                    let option = document.createElement("option");
+                    option.value = slot.trim();
+                    option.textContent = slot.trim();
+                    timeSelect.appendChild(option);
+                });
+            }
+
+            let modal = new bootstrap.Modal(document.getElementById("appointment-modal"));
+            modal.show();
+        });
+    });
+
+    // ✅ Prevent Page Refresh After Booking
+    document.getElementById("appointment-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+        let professionalId = formData.get("professional");
+        let selectedSlot = formData.get("time");
+        let submitButton = this.querySelector("button[type='submit']");
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Booking...";
+
+        fetch("{% url 'book_appointment' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                let meetLink = data.google_meet_link;
+
+                // ✅ Keep the Success Popup Visible
+                let successPopup = document.getElementById("success-popup");
+                successPopup.style.display = "block";
+                document.getElementById("meet-link").href = meetLink;
+                document.getElementById("meet-link").textContent = "Join Google Meet";
+
+                // ✅ Properly Hide the Modal
+                let modalElement = document.getElementById("appointment-modal");
+                let modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // ✅ Remove the Bootstrap backdrop overlay (Fixes gray screen issue)
+                document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+                    backdrop.remove();
+                });
+
+                // ✅ Ensure the body scrolls normally after closing the modal
+                document.body.classList.remove("modal-open");
+
+                // ✅ Reset the Form
+                document.getElementById("appointment-form").reset();
+            }
+        })
+        .catch(error => {
+            console.error("Error booking appointment:", error);
+            alert("Error booking appointment. Please try again.");
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.textContent = "Confirm Appointment";
+        });
+    });
+});
+
+</script>
+
   <!-- Success and Error Message Display (Django Messages Framework) -->
   {% if messages %}
   <div>
@@ -719,12 +1062,11 @@ html {
 
 <!-- Success Popup -->
 <div id="success-popup">Message sent successfully!</div>
-
     <!-- Contact Section -->
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">
           <div class="section-title">
-              <h2>Contact</h2>
+            <h2 data-translate>Contact</h2>
           </div>
           <style>
             .alert-success {
@@ -740,7 +1082,7 @@ html {
                 margin-bottom: 10px;
             }
             .alert-info {
-                background-color: blue;
+                background-color: #1f4870;
                 color: white;
                 padding: 10px;
                 margin-bottom: 10px;
@@ -767,17 +1109,17 @@ html {
                   <div class="info">
                       <div class="address">
                           <i class="bi bi-geo-alt"></i>
-                          <h4>Location:</h4>
+                          <h4 data-translate>Location:</h4>
                           <p>Bibare, Kimironko, Rwanda</p>
                       </div>
                       <div class="email">
                           <i class="bi bi-envelope"></i>
-                          <h4>Email:</h4>
+                          <h4 data-translate>Email:</h4>
                           <p>nshimirimanaerica@gmail.com</p>
                       </div>
                       <div class="phone">
                           <i class="bi bi-phone"></i>
-                          <h4>Call:</h4>
+                          <h4 data-translate>Call:</h4>
                           <p>+250790135783</p>
                       </div>
                   </div>
@@ -790,7 +1132,8 @@ html {
                       <input type="email" name="email" class="form-control" placeholder="Your Email" required>
                       <input type="text" name="subject" class="form-control" placeholder="Subject" required>
                       <textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea>
-                      <button type="submit">Send Message</button>
+                      <button type="submit" data-translate>Send Message</button>
+
                   </form>
               </div>
           </div>
@@ -886,6 +1229,8 @@ html {
         <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
       </div>
     </div>
+    <div id="google_translate_element" style="display: none;"></div>
+
   </footer><!-- End Footer -->
 
   <div id="preloader"></div>
@@ -902,7 +1247,139 @@ html {
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+    function saveLanguage(language) {
+        localStorage.setItem("selectedLanguage", language);
+        document.cookie = "language=" + language + ";path=/";
+    }
 
+    function getSavedLanguage() {
+        let savedLang = localStorage.getItem("selectedLanguage");
+        let cookieLang = document.cookie.split("; ").find(row => row.startsWith("language="));
+        return savedLang || (cookieLang ? cookieLang.split("=")[1] : "en");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let savedLanguage = getSavedLanguage();
+        document.getElementById("language-selector").value = savedLanguage;
+        translatePage(savedLanguage, true);
+    });
+
+    function getCSRFToken() {
+        let csrfToken = document.cookie.split("; ").find(row => row.startsWith("csrftoken="));
+        return csrfToken ? csrfToken.split("=")[1] : "";
+    }
+
+    function translatePage() {
+    let selectedLanguage = document.getElementById("language-selector").value;
+    let elements = document.querySelectorAll("[data-translate]");
+
+    if (!selectedLanguage) {
+        alert("Please select a language first!");
+        return;
+    }
+
+    let texts = [];
+    elements.forEach(element => texts.push(element.textContent.trim()));
+
+    console.log("📢 Sending for translation:", texts); // ✅ Debugging: Check what's being sent
+
+    let textArray = texts.join("|");
+
+    fetch("/translate/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: new URLSearchParams({
+            "text": textArray,
+            "language": selectedLanguage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("✅ Translation API Response:", data); // ✅ Debugging: Check response
+
+        if (data.translated_text) {
+            let translatedTexts = data.translated_text.split("|");
+
+            elements.forEach((element, index) => {
+                console.log("🔄 Replacing:", element.textContent, "➡", translatedTexts[index]); // ✅ Debugging
+                element.textContent = translatedTexts[index] || element.textContent;
+            });
+        } else {
+            console.error("❌ Translation error:", data.error);
+        }
+    })
+    .catch(error => console.error("❌ Translation failed:", error));
+}
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+            var bannerFrame = document.querySelector(".goog-te-banner-frame");
+            if (bannerFrame) {
+                bannerFrame.style.display = "none";
+            }
+        }, 1000); // Delay to allow the frame to load before hiding it
+    });
+    </script>
+    
+    </script>
+    <script>function getCSRFToken() {
+        let csrfToken = document.cookie.split("; ").find(row => row.startsWith("csrftoken="));
+        return csrfToken ? csrfToken.split("=")[1] : "";
+    }
+    </script>
+<script>
+    function changeLanguage(selectedLang) {
+        localStorage.setItem("selectedLanguage", selectedLang);
+        document.cookie = "language=" + selectedLang + ";path=/";
+    
+        // Wait until Google Translate is fully loaded
+        let googleTranslateFrame = document.querySelector(".goog-te-combo");
+        if (googleTranslateFrame) {
+            googleTranslateFrame.value = selectedLang;
+            googleTranslateFrame.dispatchEvent(new Event("change"));
+        } else {
+            console.warn("Google Translate not initialized yet. Retrying...");
+            setTimeout(() => changeLanguage(selectedLang), 500);
+        }
+    }
+    
+    // Ensure the saved language is applied when the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+        let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
+        document.getElementById("language-dropdown").value = savedLanguage;
+        changeLanguage(savedLanguage);
+    });
+    </script>
+    
+</script>
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false  // ✅ Prevents automatic toolbar from showing
+        }, 'google_translate_element');
+    }
+    </script>
+    
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                { pageLanguage: 'en', autoDisplay: false }, 
+                'google_translate_element'
+            );
+        }
+        </script>
+        
+    
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
 </html>

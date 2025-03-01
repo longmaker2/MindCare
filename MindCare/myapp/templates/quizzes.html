@@ -22,10 +22,6 @@
             transform: translateY(-5px);
             box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
         }
-        .search-bar {
-            width: 100%;
-            max-width: 400px;
-        }
         .quiz-modal {
             display: flex;
             position: fixed;
@@ -39,6 +35,8 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s;
+            overflow-y: auto;
+            padding: 20px;
         }
         .quiz-modal.show {
             opacity: 1;
@@ -52,62 +50,63 @@
             max-width: 600px;
             text-align: center;
             box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.3s ease-in-out;
+            max-height: 80vh;
+            overflow-y: auto;
         }
-        .hidden {
-            display: none;
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .progress-bar {
+            height: 20px;
+            width: 0%;
+            background-color: #007bff;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            line-height: 20px;
+            transition: width 0.5s ease-in-out;
         }
-        .quiz-modal {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s;
-    overflow-y: auto; /* ✅ Enable scrolling inside modal */
-    padding: 20px;
-}
-
-.quiz-modal.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.quiz-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 600px;
-    text-align: center;
-    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.3s ease-in-out;
-    max-height: 80vh; /* ✅ Ensure content does not exceed screen */
-    overflow-y: auto; /* ✅ Enable vertical scrolling */
-}
-
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .failed {
+            background-color: red !important;
+        }
+        .passed {
+            background-color: green !important;
+        }
     </style>
 </head>
 <body>
     <div class="container py-4">
         <h2 class="text-center mb-4">📝 Take a Quiz</h2>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
+
         <div class="d-flex justify-content-center mb-4">
             <input type="text" class="form-control search-bar" id="quizSearch" placeholder="Search for quizzes..." onkeyup="searchQuizzes()">
         </div>
+
         <div id="quizContainer" class="row"></div>
+
         <div class="text-center mt-4">
             <h4>Your Progress 📊</h4>
             <p id="progressReport" class="text-muted">No quizzes taken yet.</p>
+            <div class="progress-bar-container">
+                <div id="overallProgressBar" class="progress-bar">0%</div>
+            </div>
         </div>
     </div>
 
@@ -115,154 +114,195 @@
         <div class="quiz-content">
             <h3 id="quizTitle"></h3>
             <div id="quizQuestions"></div>
-            <button class="btn btn-primary mt-3" onclick="submitQuiz()">Submit Answers</button>
+            <div class="progress-bar-container">
+                <div id="quizProgressBar" class="progress-bar">0%</div>
+            </div>
+            <button id="submitBtn" class="btn btn-primary mt-3" onclick="submitQuiz()">Submit Answers</button>
+            <button id="retakeBtn" class="btn btn-warning mt-3 d-none" onclick="retakeQuiz()">Retake Quiz</button>
             <button class="btn btn-secondary mt-3" onclick="closeQuiz()">Close</button>
             <div id="quizResults" class="mt-3"></div>
         </div>
     </div>
 
     <script>
-        let selectedQuiz = null;
-        let userAnswers = {};
-        let quizScores = JSON.parse(localStorage.getItem("quizScores")) || [];
+       let selectedQuiz = null;
+let userAnswers = {};
+let quizScores = JSON.parse(localStorage.getItem("quizScores")) || {};
+const PASSING_SCORE = 70;
 
-        document.addEventListener("DOMContentLoaded", function () {
-            fetchQuizzes();
-            updateProgress();
-        });
+document.addEventListener("DOMContentLoaded", function () {
+    fetchQuizzes();
+    updateProgress();
+});
 
-        function fetchQuizzes() {
-            fetch('/api/quizzes/')
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.quizzes || data.quizzes.length === 0) {
-                        document.getElementById("quizContainer").innerHTML = "<p class='text-muted text-center'>No quizzes available.</p>";
-                    } else {
-                        displayQuizzes(data.quizzes);
-                    }
-                })
-                .catch(error => console.error("❌ Error fetching quizzes:", error));
-        }
+function fetchQuizzes() {
+    fetch('/api/quizzes/')
+        .then(response => response.json())
+        .then(data => displayQuizzes(data.quizzes || []))
+        .catch(error => console.error("Error fetching quizzes:", error));
+}
 
-        function displayQuizzes(quizzes) {
-            let quizContainer = document.getElementById("quizContainer");
-            quizContainer.innerHTML = '';  
+function displayQuizzes(quizzes) {
+    let quizContainer = document.getElementById("quizContainer");
+    quizContainer.innerHTML = '';
 
-            quizzes.forEach(quiz => {
-                let colDiv = document.createElement("div");
-                colDiv.classList.add("col-md-4", "mb-4", "quiz-item");
-                colDiv.innerHTML = `
-                    <div class="card quiz-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${quiz.title}</h5>
-                            <p class="card-text text-muted">${quiz.description}</p>
-                            <button class="btn btn-primary w-100" onclick="startQuiz(${quiz.id})">Start Quiz</button>
-                        </div>
-                    </div>
-                `;
-                quizContainer.appendChild(colDiv);
-            });
-        }
+    quizzes.forEach(quiz => {
+        let colDiv = document.createElement("div");
+        colDiv.classList.add("col-md-4", "mb-4");
+        colDiv.innerHTML = `
+            <div class="card quiz-card">
+                <div class="card-body">
+                    <h5 class="card-title">${quiz.title}</h5>
+                    <p class="card-text text-muted">${quiz.description}</p>
+                    <button class="btn btn-primary w-100" onclick="startQuiz(${quiz.id})">Start Quiz</button>
+                </div>
+            </div>
+        `;
+        quizContainer.appendChild(colDiv);
+    });
+}
 
-        function startQuiz(quizId) {
-    console.log("🔍 Requesting quiz with ID:", quizId);  // Debugging log
-
+function startQuiz(quizId) {
     fetch(`/api/quiz/${quizId}/`)
-        .then(response => {
-            console.log("📡 Response Status:", response.status);
-            return response.json();  // ✅ Always return JSON
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log("✅ Quiz Data Received:", data);  // Debugging log
-
-            // Check if quiz exists
-            if (data.error) {
-                console.error("❌ Error from API:", data.error);
-                alert(data.error);
-                return;
-            }
-
             selectedQuiz = data;
             userAnswers = {};
             showQuizModal();
         })
-        .catch(error => {
-            console.error("🚨 Error loading quiz:", error);
-            alert(`Quiz with ID ${quizId} not found. Please try another one.`);
-        });
+        .catch(error => alert("Error loading quiz."));
 }
 
-
-
 function showQuizModal() {
-    if (!selectedQuiz) {
-        console.error("❌ No quiz selected.");
-        return;
-    }
-
-    console.log("📌 Showing quiz:", selectedQuiz);  // Debugging log
     document.getElementById("quizTitle").innerText = selectedQuiz.title;
-
     let quizQuestions = document.getElementById("quizQuestions");
-    quizQuestions.innerHTML = '';
+    quizQuestions.innerHTML = ''; // ✅ Clear previous quiz questions
 
-    if (!selectedQuiz.questions || selectedQuiz.questions.length === 0) {
-        quizQuestions.innerHTML = "<p class='text-muted'>No questions available for this quiz.</p>";
-        return;
-    }
+    // ✅ Clear previous quiz feedback when opening a new quiz
+    document.getElementById("quizResults").innerHTML = "";
+
+    let storedData = quizScores[selectedQuiz.id] || {};
+    let previousAnswers = storedData.userAnswers || {};
 
     selectedQuiz.questions.forEach((question, index) => {
         let questionDiv = document.createElement("div");
         questionDiv.classList.add("mb-3");
 
-        let optionsHTML = question.options
-            ? question.options.map(option => `
-                <div>
-                    <input type="radio" name="question${index}" value="${option}" onchange="saveAnswer(${index}, '${option}')"> ${option}
-                </div>
-            `).join("")
-            : "<p class='text-danger'>⚠ No options available.</p>";
+        let optionsHTML = question.options.map(option => `
+            <div>
+                <input type="radio" name="question${index}" value="${option}" 
+                    onchange="saveAnswer(${index}, '${option}')"
+                    ${previousAnswers[index] === option ? "checked" : ""} 
+                    ${storedData.feedback ? "disabled" : ""}> <!-- Disable if feedback exists -->
+                ${option}
+            </div>
+        `).join("");
 
-        questionDiv.innerHTML = `<p><strong>${index + 1}. ${question.text}</strong></p>${optionsHTML}`;
+        questionDiv.innerHTML = `<p><strong>Q${index + 1}: ${question.text}</strong></p>${optionsHTML}`;
         quizQuestions.appendChild(questionDiv);
     });
+
+    // ✅ Restore previous results if available
+    if (storedData.feedback) {
+        document.getElementById("quizResults").innerHTML = storedData.feedback;
+        document.getElementById("submitBtn").classList.add("d-none");
+        document.getElementById("retakeBtn").classList.remove("d-none");
+    } else {
+        document.getElementById("submitBtn").classList.remove("d-none");
+        document.getElementById("retakeBtn").classList.add("d-none");
+    }
 
     document.getElementById("quizModal").classList.add("show");
 }
 
 
-        function saveAnswer(questionIndex, answer) {
-            userAnswers[questionIndex] = answer;
-        }
+function saveAnswer(questionIndex, answer) {
+    userAnswers[questionIndex] = answer;
+}
 
-        function submitQuiz() {
-            let score = 0;
-            selectedQuiz.questions.forEach((question, index) => {
-                if (userAnswers[index] === question.correct_answer) {
-                    score++;
-                }
-            });
+function submitQuiz() {
+    let score = 0;
+    let feedback = "";
+    let totalQuestions = selectedQuiz.questions.length;
 
-            let resultText = `🎉 Your Score: ${score}/${selectedQuiz.questions.length}`;
-            document.getElementById("quizResults").innerHTML = `<h4>${resultText}</h4>`;
+    selectedQuiz.questions.forEach((question, index) => {
+        let userAnswer = userAnswers[index] || "No Answer";
+        let isCorrect = userAnswer === question.correct_answer;
+        feedback += `<p class="${isCorrect ? 'correct' : 'incorrect'}">
+            Q${index + 1}: ${question.text} - Your Answer: ${userAnswer}
+            ${!isCorrect ? `<br> ✅ Correct Answer: ${question.correct_answer}` : ""}
+        </p>`;
 
-            quizScores.push({ title: selectedQuiz.title, score: `${score}/${selectedQuiz.questions.length}` });
-            localStorage.setItem("quizScores", JSON.stringify(quizScores));
-            updateProgress();
-        }
+        if (isCorrect) score++;
+    });
 
-        function closeQuiz() {
-            document.getElementById("quizModal").classList.remove("show");
-        }
+    let percentage = (score / totalQuestions) * 100;
+    let resultMessage = `<h4>Your Score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)</h4>${feedback}`;
 
-        function updateProgress() {
-            let progressReport = document.getElementById("progressReport");
-            if (quizScores.length === 0) {
-                progressReport.innerHTML = "No quizzes taken yet.";
-            } else {
-                progressReport.innerHTML = quizScores.map(q => `<p>${q.title}: <strong>${q.score}</strong></p>`).join("");
-            }
-        }
-    </script>
+    if (percentage >= PASSING_SCORE) {
+        resultMessage += `<p class="text-success"><strong>🎉 Congratulations! You passed!</strong></p>`;
+        document.getElementById("retakeBtn").classList.remove("d-none");
+    } else {
+        resultMessage += `<p class="text-danger"><strong>❌ You failed. Please retake the quiz.</strong></p>`;
+        document.getElementById("retakeBtn").classList.remove("d-none");
+    }
+
+    document.getElementById("quizResults").innerHTML = resultMessage;
+
+    // Disable all radio buttons after submission
+    document.querySelectorAll("input[type=radio]").forEach(input => {
+        input.disabled = true;
+    });
+
+    // Hide Submit button after submission
+    document.getElementById("submitBtn").classList.add("d-none");
+
+    // ✅ Save answers and feedback in localStorage
+    quizScores[selectedQuiz.id] = { 
+        score, 
+        feedback: resultMessage, 
+        userAnswers 
+    };
+    localStorage.setItem("quizScores", JSON.stringify(quizScores));
+}
+
+function retakeQuiz() {
+    if (!selectedQuiz) return;
+
+    // ✅ Clear stored user answers
+    userAnswers = {};
+
+    // ✅ Enable radio buttons for a new attempt
+    document.querySelectorAll("input[type=radio]").forEach(input => {
+        input.disabled = false; // Allow selection
+        input.checked = false; // Clear previous selections
+    });
+
+    // ✅ Clear previous results
+    document.getElementById("quizResults").innerHTML = "";
+
+    // ✅ Hide Retake button and show Submit button again
+    document.getElementById("retakeBtn").classList.add("d-none");
+    document.getElementById("submitBtn").classList.remove("d-none");
+
+    // ✅ Remove previous stored attempt from localStorage (optional)
+    if (quizScores[selectedQuiz.id]) {
+        delete quizScores[selectedQuiz.id]; // Clear previous attempt
+        localStorage.setItem("quizScores", JSON.stringify(quizScores));
+    }
+
+    // ✅ Reload quiz modal for a new attempt
+    showQuizModal();
+}
+
+
+function closeQuiz() {
+    let quizModal = document.getElementById("quizModal");
+
+    // ✅ Hide modal, but DO NOT clear results so user sees score on reopening
+    quizModal.classList.remove("show");
+}
+
+            </script>
 </body>
 </html>

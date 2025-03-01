@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title id="dashboard-title">User Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             background-color: #f4f4f9;
+            font-family: 'Arial', sans-serif;
         }
         .sidebar {
             height: 100vh;
-            background-color: #2c3e50;
+            background-color: #1f4870;
             color: white;
             padding: 20px;
             display: flex;
             flex-direction: column;
+            border-radius: 10px;
         }
         .sidebar a {
             color: white;
             text-decoration: none;
             display: block;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             transition: 0.3s;
         }
         .sidebar a:hover {
-            background-color: #34495e;
+            background-color: #1abc9c;
+            transform: scale(1.05);
         }
         .logout-btn {
             background-color: #e74c3c;
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
             text-decoration: none;
             margin-top: auto;
-            transition: 0.3s ease-in-out;
+            transition: 0.3s;
         }
         .logout-btn:hover {
             background-color: #c0392b;
@@ -50,9 +53,48 @@
         .card {
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             border: none;
+            border-radius: 10px;
+            padding: 20px;
         }
         .progress-bar {
             background-color: #28a745;
+        }
+        #notifications-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+        .alert {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .alert i {
+            color: #dc3545;
+            font-size: 20px;
+        }
+        .alert:hover {
+            background: #f1c6c6;
+        }
+        .alert strong {
+            font-weight: 600;
+        }
+        #clear-notifications {
+            width: 100%;
+            text-align: left;
+            transition: 0.3s;
+        }
+        #clear-notifications:hover {
+            background-color: #e74c3c;
+            color: white;
         }
     </style>
 </head>
@@ -60,66 +102,40 @@
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 sidebar d-flex flex-column">
-                <h3 class="text-center mb-4">Dashboard</h3>
-                <a href="{% url 'training_materials' %}">📚 Training Materials</a>
-                <a href="{% url 'index' %}">📅 Book Appointment</a>
-                <a href="{% url 'anonymous_chat' %}">💬 User & Professionals</a>
-                <a href="{% url 'quizzes' %}">📝 Mental Health Quizzes</a>
-                <a href="{% url 'user_appointments' %}">📆 My Appointments</a>
-                <a href="{% url 'completed_courses' %}">🎓 Completed Courses</a>
-                <a href="{% url 'achievements' %}">🏆 My Achievements</a>
-                <a href="{% url 'logout' %}" class="logout-btn">
+                <h3 id="dashboard-header" class="text-center mb-4">Dashboard</h3>
+                <a href="{% url 'training_materials' %}" id="training-materials">📚 Training Materials</a>
+                <a href="{% url 'index' %}#professionals" class="btn-learn-more">📅 Book Appointment</a>
+                <a href="{% url 'anonymous_chat' %}" id="anonymous-chat">💬 User & Professionals</a>
+                <a href="{% url 'quizzes' %}" id="mental-health-quizzes">📝 Mental Health Quizzes</a>
+                <a href="{% url 'user_appointments' %}" id="my-appointments">📆 My Appointments</a>
+                <a href="{% url 'completed_courses' %}" id="completed-courses">🎓 Completed Courses</a>
+                <a href="{% url 'achievements' %}" id="my-achievements">🏆 My Achievements</a>
+                <a href="{% url 'settings' %}" id="settings-link">⚙️ Settings</a>
+                <a href="{% url 'index' %}" id="explore-link">🌍 Explore</a>
+                <a href="{% url 'logout' %}" class="logout-btn" id="logout-button">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </nav>
             <main class="col-md-9 col-lg-10 dashboard-content">
-                <h2>Welcome, {{ user.username }}!</h2>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5>User Progress</h5>
-                            <p>Recent Activities:</p>
-                            <ul>
-                                <li>Completed Module 1: Introduction</li>
-                                <li>Booked an Appointment</li>
-                                <li>Joined Anonymous Chat</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5>📊 Learning Progress</h5>
-                            <p>Course Completion Progress:</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" id="progress-bar" aria-valuemin="0" aria-valuemax="100">
-                                    {{ progress|default:0 }}%
+                <h2 id="welcome-message">Welcome, {{ user.username }}!</h2>
+                <div class="card p-3">
+                    <div class="card p-3">
+                        <h5 class="text-primary">Notifications</h5>
+                        <button class="btn btn-danger btn-sm mb-2" id="clear-notifications">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </button>
+                        <div id="notifications-container">
+                            {% for notification in notifications %}
+                                <div class="alert">
+                                    <i class="fas fa-bell me-3"></i>
+                                    <div>
+                                        <strong>{{ notification.message }}</strong><br>
+                                        <small class="text-muted">{{ notification.created_at|date:"M d, Y H:i A" }}</small>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card p-3">
-                                <h5>🔔 Notifications</h5>
-                                {% if notifications %}
-                                    <button class="btn btn-danger btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#clearNotifications">
-                                        <i class="fas fa-trash-alt"></i> Clear All
-                                    </button>
-                                {% endif %}
-                                <ul class="list-group">
-                                    {% for notification in notifications %}
-                                        <li class="list-group-item">
-                                            {{ notification.message }}
-                                            <small class="text-muted d-block">{{ notification.created_at|date:"M d, Y H:i A" }}</small>
-                                        </li>
-                                    {% empty %}
-                                        <li class="list-group-item text-muted">No new notifications</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                            {% empty %}
+                                <p class="text-muted">No notifications available.</p>
+                            {% endfor %}
                         </div>
                     </div>
                     
@@ -127,11 +143,71 @@
             </main>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let progressValue = parseInt("{{ progress|default:0 }}") || 0;
-        document.getElementById("progress-bar").style.width = progressValue + "%";
-        document.getElementById("progress-bar").setAttribute("aria-valuenow", progressValue);
+        
+    function fetchNotifications() {
+        fetch("{% url 'fetch_notifications' %}?nocache=" + new Date().getTime())  // ✅ Prevent caching
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched Notifications:", data);  // ✅ Debugging log
+                const container = document.getElementById("notifications-container");
+                container.innerHTML = "";  // Clear old notifications
+
+                if (data.notifications.length > 0) {
+                    data.notifications.forEach(notif => {
+                        container.innerHTML += `
+                            <div class="alert">
+                                <i class="fas fa-bell me-3"></i>
+                                <div>
+                                    <strong>${notif.message}</strong><br>
+                                    <small class="text-muted">${notif.created_at}</small>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = "<p class='text-muted'>No notifications available.</p>";
+                }
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+    }
+
+    // ✅ Fetch new notifications every 5 seconds
+    setInterval(fetchNotifications, 5000);
+    document.addEventListener("DOMContentLoaded", fetchNotifications);
+
+
+        function clearNotifications() {
+            console.log("Clear Notifications button clicked.");  // ✅ Check if the function runs
+    
+            fetch("{% url 'clear_notificationsss' %}", {  // ✅ Ensure this URL is correct
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server Response:", data);  // ✅ Log response from server
+    
+                if (data.success) {
+                    console.log("Notifications cleared from backend.");
+                    document.getElementById("notifications-container").innerHTML = "<p class='text-muted'>No notifications available.</p>";
+                } else {
+                    console.error("Failed to clear notifications:", data.message);
+                }
+            })
+            .catch(error => console.error("Error clearing notifications:", error));
+        }
+    
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    
+        document.getElementById("clear-notifications").addEventListener("click", clearNotifications);
     </script>
+    
+
 </body>
 </html>

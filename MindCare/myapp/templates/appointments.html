@@ -22,9 +22,9 @@
     }
 
     h2 {
-        font-size: 2.2em;
+        font-size: 2em;
         font-weight: bold;
-        color: #007bff;
+        color: #1f4870;
         text-align: center;
         margin-bottom: 20px;
     }
@@ -38,7 +38,7 @@
     }
 
     .table thead {
-        background: #007bff;
+        background: #1f4870;
         color: white;
         font-size: 1.1em;
     }
@@ -52,10 +52,14 @@
         transform: scale(1.02);
     }
 
-    .badge {
-        font-size: 1em;
-        padding: 10px 14px;
-        border-radius: 20px;
+    /* ✅ Simple Colored Text for Status */
+    .status-past {
+        color: red;
+        font-weight: bold;
+    }
+
+    .status-upcoming {
+        color: green;
         font-weight: bold;
     }
 
@@ -70,9 +74,9 @@
         display: block;
         width: 200px;
         margin: 20px auto;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
-        background: #007bff;
+        background: #1f4870;
         color: white;
         font-size: 1em;
         border-radius: 5px;
@@ -84,9 +88,28 @@
         background: #0056b3;
         transform: scale(1.05);
     }
+    .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves it to the left */
+    background-color: #1f4870;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
 </style>
 
 <div class="container mt-4">
+
     <h2><i class="fas fa-calendar-check"></i> My Appointments</h2>
 
     {% if appointments %}
@@ -110,11 +133,9 @@
                         <td>{{ appointment.time }}</td>
                         <td>
                             {% if appointment.date < today %}
-                                <span class="badge bg-secondary">Past</span>
+                                <span class="status-past">Past</span>
                             {% else %}
-                                <span class="badge {% if appointment.status == 'Confirmed' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                                    {{ appointment.status }}
-                                </span>
+                                <span class="status-upcoming">Upcoming</span>
                             {% endif %}
                         </td>
                     </tr>

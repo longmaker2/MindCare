@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        .settings-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4ca5af;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1b6b76;
+        }
+        .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves the button to the left */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+    </style>
+</head>
+<body>
+    <a href="{% url 'dashboard' %}" class="back-button"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="settings-container">
+        <h2>Language Settings</h2>
+        <select id="language-selector">
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="sw">Swahili</option>
+        </select>
+        <button onclick="saveLanguage()">Save Language</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
+            document.getElementById("language-selector").value = savedLanguage;
+        });
+
+        function saveLanguage() {
+            let selectedLanguage = document.getElementById("language-selector").value;
+            localStorage.setItem("selectedLanguage", selectedLanguage);
+
+            // ✅ Fetch and store translations for instant use
+            fetchTranslations(selectedLanguage);
+
+            alert("Language saved successfully! The entire system will now reflect this language.");
+            location.reload(); // ✅ Reload settings to apply changes
+        }
+
+        function fetchTranslations(language) {
+            fetch("/translate_all/", {  // ✅ Server route to translate all text
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ language: language })
+            })
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem("translations", JSON.stringify(data)); // ✅ Store translations
+                localStorage.setItem("languageChanged", "true"); // ✅ Notify all pages
+            })
+            .catch(error => console.error("Error fetching translations:", error));
+        }
+    </script>
+</body>
+</html>

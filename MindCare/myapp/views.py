@@ -16,6 +16,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
+from googletrans import Translator
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -230,90 +235,80 @@ from django.utils.timezone import now  # ✅ Import for date validation
 from .models import Professional, Appointment
 from myapp.utils import send_email_async  # ✅ Absolute import
 
-@csrf_exempt  # ⚠️ Remove if using CSRF protection in production
+import smtplib
+from django.core.mail import send_mail
+from django.conf import settings
+
+def send_email(subject, message, recipient_email):
+    """Send email synchronously to ensure it's sent properly."""
+    try:
+        print(f"📧 Sending email to {recipient_email}...")
+        send_mail(
+            subject, 
+            message, 
+            settings.EMAIL_HOST_USER, 
+            [recipient_email], 
+            fail_silently=False
+        )
+        print(f"✅ Email successfully sent to {recipient_email}")
+    except smtplib.SMTPException as smtp_error:
+        print(f"❌ SMTP error: {smtp_error}")
+    except Exception as e:
+        print(f"❌ Email sending failed: {e}")
+
+@csrf_exempt  
 def book_appointment(request):
+
     if request.method == "GET":
+        # ✅ Get professional details for the booking form
         professional_id = request.GET.get("professional")
-
-        if not professional_id:
-            return JsonResponse({"error": "Missing 'professional' parameter"}, status=400)
-
         professional = get_object_or_404(Professional, id=professional_id)
-        professional.refresh_from_db()  # ✅ Ensure fresh data
+        form = AppointmentForm()
 
-        all_slots = sorted(set(professional.available_slots + professional.booked_slots))
-
-        return render(request, "book_appointment.html", {
-            "professional": professional,
-            "all_slots": all_slots,
-            "booked_slots": professional.booked_slots,
-        })
+        return render(request, "book_appointment.html", {"form": form, "professional": professional})
 
     elif request.method == "POST":
-        # ✅ Debugging - Print content type and raw request body
-        print("📌 Received Content-Type:", request.content_type)
-        print("📌 Raw Body:", request.body)  
-
-        # ✅ Detect whether request contains JSON or form data
         try:
             if request.content_type == "application/json":
-                data = json.loads(request.body)  # Parse JSON data
+                data = json.loads(request.body)  
             else:
-                data = request.POST.dict()  # Parse form data
+                data = request.POST.dict()  
         except json.JSONDecodeError:
-            print("❌ JSON Parse Error")
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
 
-        print("📌 Parsed Data:", json.dumps(data, indent=4))
-
-        # ✅ Extract required fields
         professional_id = data.get("professional")
         date = data.get("date")
         time = data.get("time")
         reason = data.get("reason")
 
-        # ✅ Validate required fields
         if not all([professional_id, date, time, reason]):
-            print("❌ Missing fields in request!")
             return JsonResponse({"error": "All fields are required!"}, status=400)
 
-        # ✅ Prevent booking past dates
-        today_date = now().date()  # Get today's date
-        if date < today_date.isoformat():  # Convert to string for comparison
-            print("❌ Cannot book past date!")
+        today_date = now().date()
+        if date < today_date.isoformat():
             return JsonResponse({"error": "You cannot book an appointment for a past date."}, status=400)
 
-        # ✅ Validate professional exists
-        try:
-            professional = Professional.objects.get(id=professional_id)
-        except Professional.DoesNotExist:
-            print("❌ Professional not found!")
-            return JsonResponse({"error": "Professional not found"}, status=400)
+        professional = get_object_or_404(Professional, id=professional_id)
+        professional.refresh_from_db()
 
-        professional.refresh_from_db()  # ✅ Ensure fresh data before modifying slots
-
-        # ✅ Ensure slot is available
         if time in professional.booked_slots:
-            print("❌ Time slot already booked!")
             return JsonResponse({"error": "This time slot is already booked. Please choose another."}, status=400)
 
-        # ✅ Move the slot from available to booked
         updated_available_slots = professional.available_slots.copy()
         updated_booked_slots = professional.booked_slots.copy()
 
         if time in updated_available_slots:
             updated_available_slots.remove(time)
-        updated_booked_slots.append(time)
+            updated_booked_slots.append(time)
 
-        # ✅ Update Professional's slots
         professional.available_slots = updated_available_slots
         professional.booked_slots = updated_booked_slots
         professional.save()
 
-        # ✅ Create the Appointment
+        # ✅ Save appointment using `professional_name`
         appointment = Appointment.objects.create(
-            client=request.user,
-            professional_name=professional.name,
+            client=request.user,  
+            professional_name=professional.name,  
             date=date,
             time=time,
             reason=reason
@@ -322,8 +317,8 @@ def book_appointment(request):
         # ✅ Generate Google Meet link
         google_meet_link = f"https://meet.google.com/{random.choice(['abc', 'xyz', 'lmn'])}-{random.randint(100,999)}-{random.randint(100,999)}"
 
-        # ✅ Prepare email content
-        subject = "Your Appointment Confirmation"
+        # ✅ Prepare email content for the client
+        subject_client = "Your Appointment Confirmation"
         user_message = f"""
         Hello {request.user.username},
 
@@ -338,33 +333,38 @@ def book_appointment(request):
         If you have any questions, feel free to contact {professional.name} at {professional.contact_email}.
 
         Best regards,  
-        Your Website Team
+        MindCare Team
         """
 
+        # ✅ Prepare email content for the professional
+        subject_professional = f"New Appointment: {request.user.username}"
         professional_message = f"""
         Hello {professional.name},
 
-        A new appointment has been booked with you.
+        A new appointment has been booked.
 
         📅 Date: {date}
         ⏰ Time: {time}
         👤 Client: {request.user.username} ({request.user.email})
 
-        The meeting will take place via Google Meet:
+        Google Meet Link:
         🔗 {google_meet_link}
 
         Please be prepared for the session.
 
         Best regards,  
-        Your Website Team
+        MindCare Team
         """
 
-        # ✅ Send exactly 2 emails
-        send_email_async(subject, user_message, request.user.email)
-        send_email_async(f"New Appointment: {request.user.username}", professional_message, professional.contact_email)
+        # ✅ Send emails synchronously (not in a thread)
+        print("📨 Sending email to client:", request.user.email)
+        send_email(subject_client, user_message, request.user.email)
+
+        print("📨 Sending email to professional:", professional.contact_email)
+        send_email(subject_professional, professional_message, professional.contact_email)
 
         return JsonResponse({
-            "message": "Appointment successfully booked! A confirmation email has been sent to you",
+            "message": "Appointment successfully booked! A confirmation email with a Google Meet link has been sent.",
             "google_meet_link": google_meet_link,
             "booked_slots": updated_booked_slots
         }, status=200)
@@ -675,15 +675,33 @@ from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
 from myapp.models import Professional, Appointment, Message, Notification
 
+from django.utils.timezone import now
+from datetime import datetime
+
+from django.utils.timezone import now
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Message, Notification
+
 @login_required
 def professional_dashboard(request):
     professional = request.user.professional_profile
+    current_datetime = now()  # Get current date and time
 
-    # ✅ Retrieve only future appointments (including today)
+    # ✅ Retrieve only future appointments (including today, but checking time as well)
     upcoming_appointments = Appointment.objects.filter(
         professional_name=professional.name,
-        date__gte=now().date(),  # Exclude past appointments
-        status='Upcoming'  # Keep only "Upcoming" appointments
+        status='Upcoming'
+    ).filter(
+        date__gt=current_datetime.date()  # Appointments in future dates
+    ).union(
+        Appointment.objects.filter(
+            professional_name=professional.name,
+            status='Upcoming',
+            date=current_datetime.date(),  # Include today's appointments
+            time__gt=current_datetime.time()  # Only future times
+        )
     ).order_by('date', 'time')
 
     # ✅ Retrieve messages where the professional is the receiver
@@ -697,8 +715,44 @@ def professional_dashboard(request):
     return render(request, 'professional_dashboard.html', {
         'professional': professional,
         'upcoming_appointments': upcoming_appointments,
-        'messages': messages,  # ✅ Ensure messages are passed to the template
-        'notifications': notifications  # ✅ Pass notifications for display
+        'messages': messages,
+        'notifications': notifications,
+        'current_datetime': current_datetime  # ✅ Pass the current timestamp
+    })
+
+
+# ✅ API View for Real-time Updates (AJAX)
+@login_required
+def fetch_updates(request):
+    professional = request.user.professional_profile
+    current_datetime = now()
+
+    upcoming_appointments = list(Appointment.objects.filter(
+        professional_name=professional.name,
+        status='Upcoming'
+    ).filter(
+        date__gt=current_datetime.date()
+    ).union(
+        Appointment.objects.filter(
+            professional_name=professional.name,
+            status='Upcoming',
+            date=current_datetime.date(),
+            time__gt=current_datetime.time()
+        )
+    ).order_by('date', 'time').values('client__username', 'date', 'time'))
+
+    messages = list(Message.objects.filter(receiver=professional)
+                    .order_by('-timestamp')
+                    .values('sender__username', 'content', 'timestamp'))
+
+    notifications = list(Notification.objects.filter(recipient=request.user)
+                        .order_by('-created_at')
+                        .values('message', 'created_at'))
+
+    return JsonResponse({
+        'appointments': upcoming_appointments,
+        'messages': messages,
+        'notifications': notifications
     })
 
 
@@ -720,12 +774,12 @@ def login_view(request):
 
             if role == 'professional':
                 if hasattr(user, 'professional_profile'):  # Check if the user has a Professional profile
-                    return redirect(reverse('professional_home'))
+                    return redirect(reverse('professional_dashboard'))
                 else:
                     messages.error(request, 'No professional profile found. Contact support.')
                     return redirect('login')
 
-            return redirect(reverse('index'))  # Redirect regular users
+            return redirect(reverse('dashboard'))  # Redirect regular users
         else:
             messages.error(request, 'Invalid username or password.')
     
@@ -847,6 +901,7 @@ def user_appointments(request):
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from myapp.models import Appointment, Notification, Professional
 
 @login_required
@@ -1144,12 +1199,31 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Appointment
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Appointment, Notification
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Notification
+
 @login_required
 def remove_appointment(request, appointment_id):
     if request.method == "POST":
         appointment = get_object_or_404(Appointment, id=appointment_id)
+        client = appointment.client  # Get the client of the appointment
+
+        # ✅ Create a notification for the client
+        Notification.objects.create(
+            recipient=client,
+            message=f"Your appointment with {appointment.professional_name} on {appointment.date} at {appointment.time} was canceled."
+        )
+
         appointment.delete()  # ✅ Remove the appointment
-        return redirect('professional_dashboard')  # ✅ Redirect back to dashboard
+        
+        # ✅ Redirect to the professional dashboard instead of returning JSON
+        return redirect('professional_dashboard')
 
     return redirect('professional_dashboard')
 
@@ -1183,3 +1257,184 @@ def update_availability(request):
 def clear_notifications(request):
     request.user.notifications.all().delete()
     return redirect("professional_dashboard")
+from django.http import JsonResponse
+from myapp.utils.translate import translate_text  # ✅ Correct
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from myapp.utils.translate import translate_text
+
+@csrf_exempt
+def translate_view(request):
+    if request.method == "POST":
+        text = request.POST.get("text", "")
+        target_language = request.POST.get("language", "en")  # Default to English
+
+        if not text:
+            return JsonResponse({"error": "No text provided"}, status=400)
+
+        try:
+            translator = Translator()
+            translated = translator.translate(text, dest=target_language)
+
+            logger.info(f"Translated text: {translated.text}")  # ✅ Debug log
+
+            return JsonResponse({"translated_text": translated.text})
+        except Exception as e:
+            logger.error(f"Translation Error: {str(e)}")  # ✅ Log errors
+            return JsonResponse({"error": str(e)}, status=500)
+
+def translate_page(request):
+    return render(request, 'translate.html')
+
+# ✅ Use absolute import
+from myapp.utils.email_utils import send_email_async
+
+def some_function():
+    from myapp.utils.email_utils import send_email_async  # ✅ Import inside function
+    send_email_async("user@example.com", "Test Subject", "Hello World!")
+
+from django.http import JsonResponse
+from googletrans import Translator
+
+def translate_text(text, target_language):
+    """
+    Function to translate text using Google Translate API or another translation method.
+    """
+    from googletrans import Translator  # Ensure googletrans is installed (`pip install googletrans==4.0.0-rc1`)
+    
+    translator = Translator()
+    translated = translator.translate(text, dest=target_language)
+    
+    return translated.text
+
+
+def settings_view(request):
+    return render(request, 'settings.html') 
+from django.shortcuts import render
+
+def settings_professional(request):
+    return render(request, 'settings_professional.html')
+
+import logging
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from myapp.models import Appointment, Notification
+
+logger = logging.getLogger(__name__)
+
+import logging
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from myapp.models import Appointment, Notification
+from django.db import transaction
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def cancel_appointment_by_professional(request, appointment_id):
+    """
+    Allows a professional to cancel an appointment and notifies the user.
+    """
+    print(f"🔍 Attempting to cancel appointment {appointment_id} by {request.user.username}")  # ✅ Force print to server
+
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+
+    # ✅ Ensure only the assigned professional can cancel the appointment
+    if request.user != appointment.professional:
+        messages.error(request, "You are not authorized to cancel this appointment.")
+        print(f"❌ Unauthorized attempt by {request.user.username} to cancel appointment {appointment.id}")  # ✅ Force print
+        return redirect("professional_dashboard")
+
+    # ✅ Prevent re-canceling an already canceled/completed appointment
+    if appointment.status != "Upcoming":
+        messages.warning(request, "This appointment has already been canceled or completed.")
+        print(f"⚠️ Attempt to cancel an already canceled appointment {appointment.id}")  # ✅ Force print
+        return redirect("professional_dashboard")
+
+    # ✅ Mark appointment as canceled
+    with transaction.atomic():  # Ensure database consistency
+        appointment.status = "Canceled"
+        appointment.save()
+        print(f"✅ Appointment {appointment.id} was successfully marked as canceled.")  # ✅ Force print
+
+        # ✅ Ensure the client exists before creating a notification
+        if appointment.client:
+            print(f"🔔 Creating notification for {appointment.client.username}")  # ✅ Force print
+
+            notification = Notification(
+                recipient=appointment.client,
+                message=f"🚨 Your appointment with {appointment.professional.username} on {appointment.date} at {appointment.time} was canceled."
+            )
+            notification.save(force_insert=True)  # Explicitly save the notification
+
+            print(f"📌 [SUCCESS] Notification Created: {notification.message}")  # ✅ Force print
+            messages.success(request, "Appointment canceled successfully. The user has been notified.")
+        else:
+            print(f"❌ [ERROR] No client assigned to appointment {appointment.id}")  # ✅ Force print
+            messages.error(request, "Error: No client is assigned to this appointment.")
+
+    return redirect("professional_dashboard")
+
+@login_required
+def user_dashboard(request):
+    """
+    Displays the user dashboard with notifications.
+    """
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by('-created_at')
+
+    return render(request, 'dashboard.html', {'notifications': notifications})
+
+@login_required
+def fetch_notifications(request):
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at").values("message", "created_at")
+
+    return JsonResponse({"notifications": list(notifications)})
+
+
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+import logging
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+import logging
+
+logger = logging.getLogger(__name__)  # Enable logging
+
+@login_required
+def clear_notificationsss(request):
+    """
+    Deletes all notifications for the logged-in user.
+    """
+    notifications = Notification.objects.filter(recipient=request.user)
+    
+    # Log before deletion
+    logger.info(f"Attempting to delete {notifications.count()} notifications for user {request.user.username}")
+
+    deleted_count, _ = notifications.delete()
+    
+    # Log after deletion
+    logger.info(f"Deleted {deleted_count} notifications for user {request.user.username}")
+
+    return JsonResponse({'success': True, 'message': 'Notifications cleared.'})
+

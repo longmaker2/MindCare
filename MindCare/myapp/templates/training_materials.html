@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Training Materials</title>
+  <title id="training-title">Training Materials</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
       color: #020b15;
       text-align: center;
       padding: 20px;
-      background-color: #007bff;
+      background-color: #1f4870;
       color: white;
       margin: 0;
     }
@@ -34,7 +34,7 @@
     }
 
     .admin-upload {
-      background-color: #007bff;
+      background-color: #1f4870;
       color: white;
       padding: 10px 16px;
       text-decoration: none;
@@ -57,7 +57,7 @@
       text-align: center;
       font-size: 1.5em;
       margin-bottom: 15px;
-      color: #007bff;
+      color: #1f6f70;
     }
 
     .video-container, .list-container {
@@ -85,7 +85,7 @@
     .list-item a {
       display: block;
       margin-top: 10px;
-      color: #007bff;
+      color: #1f4870;
       text-decoration: none;
       font-weight: bold;
     }
@@ -99,68 +99,147 @@
         width: 90%;
       }
     }
+
+    /* Language Selection Container */
+    .language-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px; /* Moved to the left side */
+      background-color: #1f4870;
+      color: white;
+      padding: 10px 16px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1em;
+      transition: 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
   </style>
 </head>
 <body>
-  <h1>Training Materials</h1>
-  <p>Explore educational resources including articles, books, and videos.</p>
+
+  <h1 id="training-title">Training Materials</h1>
+  <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+
+  <p id="training-desc">Explore educational resources including articles, books, and videos.</p>
 
   {% if user.is_authenticated and user.is_superuser %}
     <div class="admin-panel">
-      <a href="{% url 'upload_video' %}" class="admin-upload">Upload Video</a>
-      <a href="{% url 'upload_book' %}" class="admin-upload">Upload Book</a>
-      <a href="{% url 'upload_article' %}" class="admin-upload">Upload Article</a>
+      <a href="{% url 'upload_video' %}" class="admin-upload" id="upload-video">Upload Video</a>
+      <a href="{% url 'upload_book' %}" class="admin-upload" id="upload-book">Upload Book</a>
+      <a href="{% url 'upload_article' %}" class="admin-upload" id="upload-article">Upload Article</a>
     </div>
   {% endif %}
 
   <div class="container">
-    <h2 class="section-title">Videos</h2>
+    <h2 class="section-title" id="video-section">Videos</h2>
     <div class="video-container">
       {% for video in videos %}
         <div class="video-item">
-          <h4>{{ video.title }} ({{ video.category }})</h4>
+          <h4 id="video-title-{{ video.id }}">{{ video.title }} ({{ video.category }})</h4>
           {% if video.video_file and video.video_file.url %}
             <video controls>
               <source src="{{ video.video_file.url }}" type="video/mp4">
               Your browser does not support the video tag.
             </video>
           {% else %}
-            <p>No video available.</p>
+            <p id="no-video">No video available.</p>
           {% endif %}
         </div>
       {% empty %}
-        <p>No videos available.</p>
+        <p id="no-videos">No videos available.</p>
       {% endfor %}
     </div>
   </div>
 
   <div class="container">
-    <h2 class="section-title">Books</h2>
+    <h2 class="section-title" id="book-section">Books</h2>
     <div class="list-container">
       {% for book in books %}
         <div class="list-item">
-          <h4>{{ book.title }}</h4>
-          <a href="{{ book.pdf_file.url }}" target="_blank">Download PDF</a>
+          <h4 id="book-title-{{ book.id }}">{{ book.title }}</h4>
+          <a href="{{ book.pdf_file.url }}" target="_blank" id="download-book">Download PDF</a>
         </div>
       {% empty %}
-        <p>No books available.</p>
+        <p id="no-books">No books available.</p>
       {% endfor %}
     </div>
   </div>
 
   <div class="container">
-    <h2 class="section-title">Articles</h2>
+    <h2 class="section-title" id="article-section">Articles</h2>
     <div class="list-container">
       {% for article in articles %}
         <div class="list-item">
-          <h4>{{ article.title }}</h4>
-          <p>{{ article.summary }}</p>
-          <a href="{{ article.url }}" target="_blank">Read More</a>
+          <h4 id="article-title-{{ article.id }}">{{ article.title }}</h4>
+          <p id="article-summary-{{ article.id }}">{{ article.summary }}</p>
+          <a href="{{ article.url }}" target="_blank" id="read-more">Read More</a>
         </div>
       {% empty %}
-        <p>No articles available.</p>
+        <p id="no-articles">No articles available.</p>
       {% endfor %}
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
+        translatePage(savedLanguage, true);
+    });
+
+    function translatePage(selectedLanguage, isPageLoad = false) {
+        var keys = [
+            "training-title", "training-desc", "upload-video", "upload-book", "upload-article",
+            "video-section", "book-section", "article-section", "no-video", "no-videos",
+            "no-books", "no-articles", "download-book", "read-more", "language-label"
+        ];
+
+        var texts = {};
+        keys.forEach(key => {
+            let element = document.getElementById(key);
+            if (element) {
+                texts[key] = element.textContent.trim();
+            }
+        });
+
+        // ✅ Include dynamic video, book, and article titles
+        let elements = document.querySelectorAll("[id^='video-title-'], [id^='book-title-'], [id^='article-title-'], [id^='article-summary-']");
+        elements.forEach(el => {
+            texts[el.id] = el.textContent.trim();
+        });
+
+        fetch("/translate/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ "text": Object.values(texts).join("|"), "language": selectedLanguage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let translatedTextArray = data.translated_text.split("|");
+            keys.forEach((key, index) => {
+                let element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translatedTextArray[index] || texts[key];
+
+                    // ✅ Update the <title> tag separately
+                    if (key === "training-title") {
+                        document.title = translatedTextArray[index] || texts[key];
+                    }
+                }
+            });
+        })
+        .catch(error => console.error("Translation failed:", error));
+    }
+  </script>
+
 </body>
 </html>

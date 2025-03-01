@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import professionals_list, remove_appointment, update_availability
+from .views import cancel_appointment_by_professional, clear_notificationsss, fetch_notifications, fetch_updates, professionals_list, remove_appointment, translate_page, translate_text, translate_view, update_availability
 from .views import index, appointment_success
 from .views import book_appointment
 from django.shortcuts import render
@@ -73,6 +73,14 @@ urlpatterns = [
     path('update-availability/', update_availability, name='update_availability'),
     path('appointments/<int:professional_id>/', views.appointments_view, name='appointments'),
     path('clear-notifications/', views.clear_notifications, name='clear_notifications'),
+    path('translate/', translate_view, name='translate'),
+    path('translate-page/', translate_page, name='translate_page'),
+    path('settings/', views.settings_view, name='settings'), 
+    path('settings/', views.settings_professional, name='settings_professional'),
+    path('clear-notifications/', clear_notificationsss, name='clear_notificationsss'),
+    path('cancel-appointment/<int:appointment_id>/', cancel_appointment_by_professional, name="cancel_appointment_by_professional"),
+    path('fetch-updates/', fetch_updates, name='fetch_updates'),
+    path('fetch-notifications/', fetch_notifications, name="fetch_notifications"),
 
 
    

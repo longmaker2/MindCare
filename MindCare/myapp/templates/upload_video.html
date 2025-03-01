@@ -1,13 +1,14 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Video</title>
+  <title>{% trans "Upload Video" %}</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #6a11cb, #2575fc);
+      background: #1f4870;
       color: #333;
       margin: 0;
       padding: 0;
@@ -46,7 +47,7 @@
     }
 
     .upload-button {
-      background: #007bff;
+      background: #1f4870;
       color: white;
       padding: 12px;
       font-size: 1.1em;
@@ -64,25 +65,40 @@
       display: block;
       margin-top: 15px;
       text-decoration: none;
-      color: #007bff;
+      color: #1f4870;
       font-weight: bold;
       transition: color 0.3s ease;
     }
 
     .back-link:hover {
-      color: #0056b3;
+      color: #1f4870;
+    }
+
+    /* Language Selector */
+    .language-selector {
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Upload a Video</h1>
+    <h1>{% trans "Upload a Video" %}</h1>
     <form action="." method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <button class="upload-button" type="submit">Upload</button>
+      <button class="upload-button" type="submit">{% trans "Upload" %}</button>
     </form>
-    <a href="{% url 'training_materials' %}" class="back-link">Back to Videos</a>
+    <a href="{% url 'training_materials' %}" class="back-link">{% trans "Back to Videos" %}</a>
+
+    <!-- Language Selector -->
+    <form action="{% url 'set_language' %}" method="post" class="language-selector">
+      {% csrf_token %}
+      <select name="language" onchange="this.form.submit()">
+        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+        <option value="fr" {% if LANGUAGE_CODE == 'fr' %}selected{% endif %}>Français</option>
+        <option value="sw" {% if LANGUAGE_CODE == 'sw' %}selected{% endif %}>Swahili</option>
+      </select>
+    </form>
   </div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,11 +35,31 @@
             background-color: #dc3545;
             color: white;
         }
+        .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves it to the left */
+    background-color: #393c40;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #444d57;
+    transform: scale(1.05);
+}
+
     </style>
 </head>
 <body>
     <div class="container py-4">
         <h2 class="text-center mb-4">📆 My Appointments</h2>
+        <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+
 
         <!-- Appointment Table -->
         <div class="table-responsive">

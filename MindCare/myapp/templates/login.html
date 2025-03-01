@@ -1,95 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Login Page</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    h3 {
-      color: red;
-      text-align: center;
-    }
-    form {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      max-width: 350px;
-      margin: 0 auto;
-    }
-    p {
-      margin-bottom: 10px;
-    }
-    input[type="text"],
-    input[type="password"],
-    select,
-    input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    input[type="submit"] {
-      background-color: #4ca2af;
-      color: white;
-      cursor: pointer;
-    }
-    input[type="submit"]:hover {
-      background-color: #4562a0;
-    }
-    a {
-      text-decoration: none;
-      color: blue;
-    }
-    h4 {
-      margin-top: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | MindCare</title>
+
+    <!-- ✅ Google Fonts for Better Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- ✅ FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* ✅ Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ✅ Background */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #1f4870;
+        }
+
+        /* ✅ Container */
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        /* ✅ Heading */
+        h1 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* ✅ Labels */
+        p {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        /* ✅ Input Fields */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #1f4870;
+            outline: none;
+            box-shadow: 0 0 5px #1f4870;
+        }
+
+        /* ✅ Login Button */
+        input[type="submit"] {
+            background: #1f4870;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #1f4870;
+            transform: scale(1.05);
+        }
+
+        /* ✅ Sign-Up Link */
+        .signup-container {
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #2575fc;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            color: #1f4870;
+            text-decoration: underline;
+        }
+
+        /* ✅ Language Selector */
+        .language-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+        select, button {
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #1f4870;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #1d0244;
+            transform: scale(1.05);
+        }
+
+        /* ✅ Responsive Design */
+        @media (max-width: 450px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Login Now</h1>
+    <div class="container">
+        <h1><i class="fas fa-user-circle"></i> Login</h1>
 
-  {% for message in messages %}
-    <h3>{{ message }}</h3>
-  {% endfor %}
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
 
-  <form action="{% url 'login' %}" method="POST">
-    {% csrf_token %}
-    <p>Username:</p>
-    <input type="text" name="username" required />
+            <p><i class="fas fa-user"></i> Username:</p>
+            <input type="text" name="username" placeholder="Enter your username" required />
 
-    <p>Password:</p>
-    <input type="password" name="password" required /><br>
+            <p><i class="fas fa-lock"></i> Password:</p>
+            <input type="password" name="password" placeholder="Enter your password" required />
 
-    <!-- User Role Selection -->
-    <p>Login as:</p>
-    <select name="role">
-      <option value="user">Regular User</option>
-      <option value="professional">Professional</option>
-    </select>
+            <p><i class="fas fa-user-tag"></i> Login as:</p>
+            <select name="role">
+                <option value="user">Regular User</option>
+                <option value="professional">Professional</option>
+            </select>
 
-    <input type="submit" value="Login" />
+            <input type="submit" value="Login" />
+        </form>
 
-    <p>If you don't have an account, sign up below</p>
-    <h4><a href="{% url 'register' %}">Sign Up</a></h4>
-  </form>
-  <script>
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
-  </script>
-  
+        <div class="signup-container">
+            <p>Don't have an account? <a href="{% url 'register' %}">Sign Up</a></p>
+        </div>
+
+        <!-- ✅ Language Selection -->
+        <div class="language-container">
+            <p>Choose Language:</p>
+            <select id="language-selector">
+                <option value="en">English</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+                <option value="de">German</option>
+                <option value="sw">Swahili</option>
+            </select>
+            <button onclick="translatePage()">Translate</button>
+        </div>
+    </div>
+
+    <script>
+        function saveLanguage(language) {
+            localStorage.setItem("selectedLanguage", language);
+            document.cookie = "language=" + language + ";path=/"; 
+        }
+
+        function getSavedLanguage() {
+            let savedLang = localStorage.getItem("selectedLanguage");
+            let cookieLang = document.cookie.split("; ").find(row => row.startsWith("language="));
+            return savedLang || (cookieLang ? cookieLang.split("=")[1] : "en");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let savedLanguage = getSavedLanguage();
+            document.getElementById("language-selector").value = savedLanguage;
+            translatePage(savedLanguage, true);
+        });
+
+        function translatePage(selectedLanguage = null, isPageLoad = false) {
+            if (!selectedLanguage) {
+                selectedLanguage = document.getElementById("language-selector").value;
+            }
+
+            saveLanguage(selectedLanguage);
+
+            let keys = ["login-title", "username-label", "password-label", "role-label", "signup-text"];
+
+            let texts = {};
+            keys.forEach(key => {
+                let element = document.getElementById(key);
+                if (element) {
+                    texts[key] = element.textContent.trim();
+                }
+            });
+
+            let textArray = keys.map(key => texts[key]).join("|");
+
+            fetch("/translate/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    "text": textArray,
+                    "language": selectedLanguage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.translated_text) {
+                    let translatedTextArray = data.translated_text.split("|");
+                    keys.forEach((key, index) => {
+                        let element = document.getElementById(key);
+                        if (element) {
+                            element.textContent = translatedTextArray[index] || texts[key];
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error("Translation failed:", error));
+        }
+    </script>
+
 </body>
 </html>

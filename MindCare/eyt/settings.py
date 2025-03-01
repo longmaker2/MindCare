@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'chat',
-  
 ]
 
 MIDDLEWARE = [
@@ -77,15 +76,15 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'eyt.wsgi.application'
+WSGI_APPLICATION = 'myapp.wsgi.application'
 
-#ASGI_APPLICATION = "yourproject.asgi.application"
+ASGI_APPLICATION = "myapp.asgi.application"
 
-#CHANNEL_LAYERS = {
-    ##"default": {
-      #  "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Use Redis in production
-    #},
-#}
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Use Redis in production
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -138,6 +137,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+from django.utils.translation import gettext_lazy as _
 
 
 # Static files (CSS, JavaScript, Images)

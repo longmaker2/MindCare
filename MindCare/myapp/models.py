@@ -3,6 +3,7 @@ from .validators import file_size
 from django.contrib.auth.models import User # type: ignore
 
 
+
 # Create your models here.
 class Feature(models.Model):
     name = models.CharField(max_length=100)
@@ -28,8 +29,6 @@ class MentorshipApplication(models.Model):
         return self.field1
      
 
-from django.contrib.auth.models import User
-from django.db import models
 
 class Professional(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="professional_profile")
@@ -305,3 +304,4 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.recipient.username} - {self.message[:30]}..."
+    

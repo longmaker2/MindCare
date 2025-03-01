@@ -1,0 +1,272 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="dashboard-title">MindCare - Professional Dashboard</title>
+    
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Sidebar Styling */
+        .wrapper {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            min-height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar a {
+            padding: 15px;
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar .active {
+            background-color: #007bff;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .cancel-btn {
+            color: white;
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background-color: darkred;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+        .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves the button to the left */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+    </style>
+</head>
+<body>
+    <a href="{% url 'dashboard' %}" class="back-button"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+<div class="wrapper">
+    <!-- ✅ Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center text-white mt-3">MindCare</h4>
+        
+        <a href="{% url 'professional_dashboard' %}" class="active" id="dashboard-header"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="{% url 'appointments' professional.id %}" id="appointments-link"><i class="fas fa-calendar-alt"></i> Appointments</a>
+        <a href="{% url 'anonymous_chat' %}" id="messages-link"><i class="fas fa-envelope"></i> Messages</a>
+        <a href="{% url 'professional_detail' professional.id %}" id="profile-link"><i class="fas fa-user"></i> Profile</a>
+        <a href="{% url 'update_availability' %}" id="manage-availability-link"><i class="fas fa-clock"></i> Manage Availability</a>
+        <a href="{% url 'settings_professional' %}" id="settings-link"><i class="fas fa-cogs"></i> Settings</a>
+        <a href="{% url 'logout' %}" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content">
+        <header class="bg-primary text-white text-center py-3 mb-4 rounded">
+            <h2 id="welcome-message">Welcome, {{ professional.name }}</h2>
+            <p id="professional-specialty">{{ professional.specialty }}</p>
+        </header>
+
+        <div class="row">
+            <!-- ✅ Upcoming Appointments on the Left -->
+            <div class="col-lg-6">
+                <div class="card p-3 mb-4">
+                    <h4 class="card-title text-primary" id="upcoming-appointments-title"><i class="fas fa-calendar-check"></i> Upcoming Appointments</h4>
+                    <ul class="list-group">
+                        {% for appointment in upcoming_appointments %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>{{ appointment.client.username }}</strong> - {{ appointment.date }} at {{ appointment.time }}
+                                <div>
+                                    <span class="badge bg-success">Upcoming</span>
+                                    <form method="POST" action="{% url 'remove_appointment' appointment.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="cancel-btn" id="cancel-appointment-btn">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted" id="no-upcoming-appointments">No upcoming appointments</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Messages & Notifications -->
+            <div class="col-lg-6">
+                <div class="card p-3 mb-4">
+                    <h4 class="card-title text-primary" id="messages-title"><i class="fas fa-comments"></i> Messages</h4>
+                    {% if messages %}
+                        <button class="btn btn-danger btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#clearMessages" id="clear-messages-btn">
+                            <i class="fas fa-trash-alt"></i> Clear Messages
+                        </button>
+                    {% endif %}
+                    <ul class="list-group">
+                        {% for message in messages %}
+                            <li class="list-group-item">
+                                <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+                                <small class="text-muted d-block">{{ message.timestamp|date:"M d, Y H:i A" }}</small>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted" id="no-messages">No new messages</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="card p-3 mb-4">
+                    <h4 class="card-title text-primary" id="notifications-title"><i class="fas fa-bell"></i> Notifications</h4>
+                    {% if notifications %}
+                        <button class="btn btn-danger btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#clearNotifications" id="clear-notifications-btn">
+                            <i class="fas fa-trash-alt"></i> Clear All
+                        </button>
+                    {% endif %}
+                    <ul class="list-group">
+                        {% for notification in notifications %}
+                            <li class="list-group-item">
+                                {{ notification.message }}
+                                <small class="text-muted d-block">{{ notification.created_at|date:"M d, Y H:i A" }}</small>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted" id="no-notifications">No new notifications</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Language Selector -->
+<div class="language-container">
+    <p id="language-label">Choose Language:</p>
+    <select id="language-selector">
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="sw">Swahili</option>
+    </select>
+    <button onclick="translatePage()">Translate</button>
+</div>
+
+<!-- ✅ Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
+        document.getElementById("language-selector").value = savedLanguage;
+        translatePage(savedLanguage, true);
+    });
+
+    function translatePage(selectedLanguage = null, isPageLoad = false) {
+        if (!selectedLanguage) {
+            selectedLanguage = document.getElementById("language-selector").value;
+        }
+
+        localStorage.setItem("selectedLanguage", selectedLanguage);
+
+        var keys = [
+            "dashboard-title", "dashboard-header", "training-materials", "book-appointment",
+            "anonymous-chat", "mental-health-quizzes", "my-appointments", "completed-courses",
+            "my-achievements", "logout-button", "welcome-message", "user-progress-title",
+            "recent-activities-label", "learning-progress-title", "course-completion-label",
+            "notifications-title", "no-notifications", "language-label"
+        ];
+
+        var texts = {};
+        keys.forEach(key => {
+            let element = document.getElementById(key);
+            if (element) {
+                texts[key] = element.textContent.trim();
+            }
+        });
+
+        var textArray = Object.values(texts).join("|");
+
+        fetch("/translate/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                "text": textArray,
+                "language": selectedLanguage
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let translatedTextArray = data.translated_text.split("|");
+            keys.forEach((key, index) => {
+                let element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translatedTextArray[index] || texts[key];
+                }
+            });
+        })
+        .catch(error => console.error("Translation failed:", error));
+    }
+</script>
+
+</body>
+</html>

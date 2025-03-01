@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Translate Text</title>
+    <script>
+        async function translateText() {
+            let text = document.getElementById("text").value;
+            let language = document.getElementById("language").value;
+
+            let response = await fetch('/translate/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ text: text, language: language })
+            });
+
+            let result = await response.json();
+            document.getElementById("result").innerText = result.translated_text || result.error;
+        }
+    </script>
+</head>
+<body>
+    <h2>Translate Text</h2>
+    <textarea id="text" placeholder="Enter text here"></textarea><br>
+    <select id="language">
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="sw">Swahili</option>
+    </select>
+    <button onclick="translateText()">Translate</button>
+    <p id="result"></p>
+</body>
+</html>

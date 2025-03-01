@@ -1,51 +1,58 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Profile</title>
-    {% load static %}
+    <title id="profile-title">Professional Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body {
             background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
         }
         .profile-card {
             border-radius: 15px;
-            overflow: hidden;
             background-color: white;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            padding: 20px;
+            padding: 30px;
+            margin-top: 20px;
         }
         .profile-header {
-            background: linear-gradient(135deg, #007bff, #6610f2);
+            background: #1f4870;
             color: white;
             padding: 50px 20px;
+            border-radius: 15px 15px 0 0;
         }
         .profile-img {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             object-fit: cover;
             border: 4px solid white;
-            margin-top: -75px;
+            margin-top: -70px;
             border-radius: 50%;
+            transition: transform 0.3s ease-in-out;
+        }
+        .profile-img:hover {
+            transform: scale(1.05);
         }
         .profile-info {
-            text-align: center;
             padding: 20px;
         }
         .info-item {
             margin: 15px 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            color: #555;
         }
         .info-item i {
             font-size: 1.3rem;
+            color: #1f4870;
         }
         .social-icons {
             margin-top: 15px;
@@ -53,11 +60,11 @@
         .social-icons a {
             font-size: 24px;
             margin: 0 10px;
-            color: #007bff;
+            color: #1f4870;
             transition: 0.3s;
         }
         .social-icons a:hover {
-            color: #6610f2;
+            color: #1f4870;
         }
         .action-btns {
             display: flex;
@@ -68,19 +75,11 @@
         .action-btns .btn {
             padding: 10px 20px;
             font-size: 1.1rem;
+            transition: 0.3s;
         }
-        .availability {
-            margin-top: 30px;
+        .action-btns .btn:hover {
+            transform: scale(1.05);
         }
-        .availability h3 {
-            font-size: 1.5rem;
-            color: #007bff;
-        }
-        .list-group-item {
-            font-size: 1.1rem;
-            text-align: center;
-        }
-        /* ✅ FIX: Display available slots in a vertical line */
         .slot-list {
             padding: 0;
             list-style: none;
@@ -88,22 +87,43 @@
             display: block;
         }
         .slot-list li {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             padding: 8px 0;
+            font-weight: bold;
         }
+        .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves the button to the left */
+    background-color: #1f4870;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
     </style>
 </head>
 <body>
 
     <div class="container mt-5">
+        <a href="{% url 'professional_dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card profile-card">
                     
-                    <!-- Profile Header -->
+                    <!-- ✅ Profile Header (Specialty Removed) -->
                     <div class="profile-header">
-                        <h1 class="mb-1">{{ professional.name }}</h1>
-                        <p class="text-light"><i class="fas fa-user-md"></i> {{ professional.specialty }}</p>
+                        <h1 id="professional-name">{{ professional.name }}</h1>
                     </div>
                     
                     <!-- Profile Image -->
@@ -115,62 +135,50 @@
                         {% endif %}
                     </div>
 
-                    <!-- Profile Details -->
+                    <!-- ✅ Profile Details (Specialty remains here) -->
                     <div class="profile-info">
                         <div class="info-item">
-                            <i class="fas fa-user-md text-info"></i> <strong>Specialty:</strong> {{ professional.specialty }}
+                            <i class="fas fa-user-md"></i> <strong id="specialty-text">Specialty:</strong> {{ professional.specialty }}
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-envelope text-primary"></i> <strong>Email:</strong> {{ professional.contact_email }}
+                            <i class="fas fa-envelope"></i> <strong id="email-text">Email:</strong> {{ professional.contact_email }}
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-phone text-success"></i> <strong>Phone:</strong> {{ professional.phone_number }}
+                            <i class="fas fa-phone"></i> <strong id="phone-text">Phone:</strong> {{ professional.phone_number }}
                         </div>
-
-                        <!-- Social Media Links -->
-                        <div class="social-icons">
-                            {% if professional.linkedin %}
-                                <a href="{{ professional.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
-                            {% endif %}
-                            {% if professional.twitter %}
-                                <a href="{{ professional.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
-                            {% endif %}
-                            {% if professional.website %}
-                                <a href="{{ professional.website }}" target="_blank"><i class="fas fa-globe"></i></a>
-                            {% endif %}
-                        </div>
-
-                        <!-- ✅ FIX: Display available and booked slots in vertical order -->
-                        <p><strong>Available Slots:</strong></p>
+                        
+                        {% if user.is_authenticated %}
+                        <!-- ✅ Available Slots -->
+                        <p id="available-slots-label"><strong>Available Slots:</strong></p>
                         <ul class="slot-list">
                             {% for slot in professional.available_slots %}
-                                <li><span style="color: green;">{{ slot }}</span></li>
+                                <li style="color: green;">{{ slot }}</li>
                             {% endfor %}
                             {% for slot in professional.booked_slots %}
-                                <li><span style="color: red;">{{ slot }} - Booked</span></li>
+                                <li style="color: red;">{{ slot }} - Booked</li>
                             {% endfor %}
                             {% if not professional.available_slots and not professional.booked_slots %}
                                 <li style="color: red;">No available slots</li>
                             {% endif %}
                         </ul>
 
-                        <!-- Action Buttons -->
+                        <!-- ✅ Action Buttons -->
                         <div class="action-btns">
-                            <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-primary">
+                            <a href="{% url 'book_appointment' %}?professional={{ professional.id }}" class="btn btn-primary" id="book-button">
                                 <i class="fas fa-calendar-check"></i> Book Appointment
                             </a>
-                            <a href="{% url 'message_professional' professional.id %}" class="btn btn-outline-primary">
+                            <a href="{% url 'message_professional' professional.id %}" class="btn btn-outline-primary" id="message-button">
                                 <i class="fas fa-comment-dots"></i> Message
                             </a>
                         </div>
 
                     </div> <!-- End Profile Info -->
+                    {% endif %}
 
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
