@@ -69,17 +69,6 @@ https://youtu.be/sGepfbtpCOo
 **Community Forum**: This is where the users and professional they will interact.
 
 
-## Usage Guide
-- **Sign up/Login** to access mental health resources.
-- **Schedule appointment** with professionals.
-- **Use MindCare Ressource Center meaterials** such as books, articles and videos
-- **Engage in the community** for peer support and discussions.
-- **Take quizzes** to see your improvemnt.
-
-# Database Schema:
- ![database image](https://github.com/user-attachments/assets/1003a339-3ea5-478d-b4e7-53446eecc30b)
-
-
 ## Contribution
 To contribute:
 1. Fork the repository.
