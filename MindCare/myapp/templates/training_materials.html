@@ -190,56 +190,7 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
-        translatePage(savedLanguage, true);
-    });
-
-    function translatePage(selectedLanguage, isPageLoad = false) {
-        var keys = [
-            "training-title", "training-desc", "upload-video", "upload-book", "upload-article",
-            "video-section", "book-section", "article-section", "no-video", "no-videos",
-            "no-books", "no-articles", "download-book", "read-more", "language-label"
-        ];
-
-        var texts = {};
-        keys.forEach(key => {
-            let element = document.getElementById(key);
-            if (element) {
-                texts[key] = element.textContent.trim();
-            }
-        });
-
-        // ✅ Include dynamic video, book, and article titles
-        let elements = document.querySelectorAll("[id^='video-title-'], [id^='book-title-'], [id^='article-title-'], [id^='article-summary-']");
-        elements.forEach(el => {
-            texts[el.id] = el.textContent.trim();
-        });
-
-        fetch("/translate/", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ "text": Object.values(texts).join("|"), "language": selectedLanguage })
-        })
-        .then(response => response.json())
-        .then(data => {
-            let translatedTextArray = data.translated_text.split("|");
-            keys.forEach((key, index) => {
-                let element = document.getElementById(key);
-                if (element) {
-                    element.textContent = translatedTextArray[index] || texts[key];
-
-                    // ✅ Update the <title> tag separately
-                    if (key === "training-title") {
-                        document.title = translatedTextArray[index] || texts[key];
-                    }
-                }
-            });
-        })
-        .catch(error => console.error("Translation failed:", error));
-    }
-  </script>
+  
 
 </body>
 </html>
