@@ -24,6 +24,10 @@ https://github.com/Ericanshimir/MindCare/tree/main/MindCare/designs
 
 https://youtu.be/sGepfbtpCOo
 
+Analysis of  the results and how they achieved or missed the objectives in the project proposal with the supervisor. 
+
+https://docs.google.com/document/d/1ndavCCUKBWmEi2BoIczrs38Iwepr5g7VvlHKB_dlork/edit?tab=t.0
+
 ### Steps to Run the App
 1. **Clone the Repository**
    ```sh
