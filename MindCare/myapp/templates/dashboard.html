@@ -56,17 +56,16 @@
             border-radius: 10px;
             padding: 20px;
         }
-        .progress-bar {
-            background-color: #28a745;
-        }
         #notifications-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 10px;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #ddd;
-        }
+    max-height: none; /* Remove the fixed height limit */
+    overflow-y: visible; /* Allow expansion without scrollbar */
+    border-radius: 10px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+    transition: max-height 0.3s ease-in-out; /* Smooth transition */
+}
+
         .alert {
             display: flex;
             align-items: center;
@@ -96,6 +95,24 @@
             background-color: #e74c3c;
             color: white;
         }
+
+        /* Hide extra notifications initially */
+        .hidden { display: none; }
+
+        /* Read More Button */
+        .read-more-btn {
+            background-color: #1f4870;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+            margin: 10px auto;
+        }
+        .read-more-btn:hover { background-color: #16324f; }
     </style>
 </head>
 <body>
@@ -119,44 +136,87 @@
             <main class="col-md-9 col-lg-10 dashboard-content">
                 <h2 id="welcome-message">Welcome, {{ user.username }}!</h2>
                 <div class="card p-3">
-                    <div class="card p-3">
-                        <h5 class="text-primary">Notifications</h5>
-                        <button class="btn btn-danger btn-sm mb-2" id="clear-notifications">
-                            <i class="fas fa-trash-alt"></i> Clear All
-                        </button>
-                        <div id="notifications-container">
-                            {% for notification in notifications %}
-                                <div class="alert">
-                                    <i class="fas fa-bell me-3"></i>
-                                    <div>
-                                        <strong>{{ notification.message }}</strong><br>
-                                        <small class="text-muted">{{ notification.created_at|date:"M d, Y H:i A" }}</small>
-                                    </div>
+                    <h5 class="text-primary">Notifications</h5>
+                    <button class="btn btn-danger btn-sm mb-2" id="clear-notifications">
+                        <i class="fas fa-trash-alt"></i> Clear All
+                    </button>
+                    <div id="notifications-container">
+                        {% for notification in notifications %}
+                            <div class="alert notification-row {% if forloop.counter > 5 %}hidden{% endif %}">
+                                <i class="fas fa-bell me-3"></i>
+                                <div>
+                                    <strong>{{ notification.message }}</strong><br>
+                                    <small class="text-muted">{{ notification.created_at|date:"M d, Y H:i A" }}</small>
                                 </div>
-                            {% empty %}
-                                <p class="text-muted">No notifications available.</p>
-                            {% endfor %}
-                        </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">No notifications available.</p>
+                        {% endfor %}
                     </div>
-                    
+                
+                    <!-- Read More Button -->
+                    {% if notifications|length > 5 %}
+                        <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
+                    {% endif %}
+                </div>
+                
+                    <!-- Read More Button -->
+                    {% if notifications|length > 5 %}
+                        <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
+                    {% endif %}
                 </div>
             </main>
         </div>
     </div>
+
+    <!-- JavaScript to handle Read More functionality -->
     <script>
+        function toggleMore() {
+            let hiddenRows = document.querySelectorAll('.hidden');
+            let button = document.getElementById('read-more-btn');
+            
+            if (hiddenRows.length > 0) {
+                hiddenRows.forEach(row => row.classList.remove('hidden'));
+                button.innerText = 'Show Less';
+            } else {
+                let rows = document.querySelectorAll('.notification-row');
+                rows.forEach((row, index) => {
+                    if (index >= 5) row.classList.add('hidden');
+                });
+                button.innerText = 'See More';
+            }
+        }
+    </script>
+<script>
+    function toggleMore() {
+        let hiddenRows = document.querySelectorAll('.hidden');
+        let button = document.getElementById('read-more-btn');
         
+        if (hiddenRows.length > 0) {
+            hiddenRows.forEach(row => row.classList.remove('hidden'));
+            button.innerText = 'Show Less';
+        } else {
+            let rows = document.querySelectorAll('.notification-row');
+            rows.forEach((row, index) => {
+                if (index >= 5) row.classList.add('hidden');
+            });
+            button.innerText = 'See More';
+        }
+    }
+
     function fetchNotifications() {
         fetch("{% url 'fetch_notifications' %}?nocache=" + new Date().getTime())  // ✅ Prevent caching
             .then(response => response.json())
             .then(data => {
-                console.log("Fetched Notifications:", data);  // ✅ Debugging log
+                console.log("Fetched Notifications:", data);
                 const container = document.getElementById("notifications-container");
-                container.innerHTML = "";  // Clear old notifications
+                container.innerHTML = "";
 
                 if (data.notifications.length > 0) {
-                    data.notifications.forEach(notif => {
+                    data.notifications.forEach((notif, index) => {
+                        let hiddenClass = index >= 5 ? 'hidden' : ''; // Hide extra notifications initially
                         container.innerHTML += `
-                            <div class="alert">
+                            <div class="alert notification-row ${hiddenClass}">
                                 <i class="fas fa-bell me-3"></i>
                                 <div>
                                     <strong>${notif.message}</strong><br>
@@ -165,6 +225,19 @@
                             </div>
                         `;
                     });
+
+                    // ✅ Add "See More" Button if Needed
+                    if (data.notifications.length > 5) {
+                        if (!document.getElementById("read-more-btn")) {
+                            container.insertAdjacentHTML("afterend", `
+                                <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
+                            `);
+                        }
+                    } else {
+                        let btn = document.getElementById("read-more-btn");
+                        if (btn) btn.remove();
+                    }
+
                 } else {
                     container.innerHTML = "<p class='text-muted'>No notifications available.</p>";
                 }
@@ -175,39 +248,7 @@
     // ✅ Fetch new notifications every 5 seconds
     setInterval(fetchNotifications, 5000);
     document.addEventListener("DOMContentLoaded", fetchNotifications);
-
-
-        function clearNotifications() {
-            console.log("Clear Notifications button clicked.");  // ✅ Check if the function runs
-    
-            fetch("{% url 'clear_notificationsss' %}", {  // ✅ Ensure this URL is correct
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Server Response:", data);  // ✅ Log response from server
-    
-                if (data.success) {
-                    console.log("Notifications cleared from backend.");
-                    document.getElementById("notifications-container").innerHTML = "<p class='text-muted'>No notifications available.</p>";
-                } else {
-                    console.error("Failed to clear notifications:", data.message);
-                }
-            })
-            .catch(error => console.error("Error clearing notifications:", error));
-        }
-    
-        function getCSRFToken() {
-            return document.querySelector('[name=csrfmiddlewaretoken]').value;
-        }
-    
-        document.getElementById("clear-notifications").addEventListener("click", clearNotifications);
-    </script>
-    
+</script>
 
 </body>
 </html>

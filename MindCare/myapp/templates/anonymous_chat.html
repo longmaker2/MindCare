@@ -86,9 +86,29 @@
         button:hover {
             background: #1f4870;
         }
+        .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Moves it to the left */
+    background-color: #1f4870;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
     </style>
 </head>
 <body>
+    <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
     <h2>Private & Anonymous Chat</h2>
     <p>Your username: <b id="username-display">{{ request.user.username }}</b></p>
     

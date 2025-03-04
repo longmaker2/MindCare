@@ -88,24 +88,43 @@
         background: #0056b3;
         transform: scale(1.05);
     }
+
     .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px; /* Moves it to the left */
-    background-color: #1f4870;
-    color: white;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: 0.3s;
-}
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #1f4870;
+        color: white;
+        padding: 10px 16px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: 0.3s;
+    }
 
-.back-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
+    .back-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
 
+    /* Hide extra rows initially */
+    .hidden { display: none; }
+
+    /* Read More Button */
+    .read-more-btn {
+        background-color: #1f4870;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: 0.3s;
+        display: block;
+        margin: 20px auto;
+    }
+
+    .read-more-btn:hover { background-color: #16324f; }
 </style>
 
 <div class="container mt-4">
@@ -124,9 +143,9 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="appointment-list">
                     {% for appointment in appointments %}
-                    <tr>
+                    <tr class="appointment-row {% if forloop.counter > 10 %}hidden{% endif %}">
                         <td>{{ appointment.client.username }}</td>
                         <td>{{ appointment.client.email }}</td>
                         <td>{{ appointment.date }}</td>
@@ -143,6 +162,11 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Read More Button -->
+        {% if appointments|length > 10 %}
+            <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
+        {% endif %}
     {% else %}
         <div class="alert alert-info text-center" role="alert">
             <p class="mb-0">No appointments booked yet.</p>
@@ -151,4 +175,23 @@
 
     <a href="{% url 'professional_dashboard' %}" class="btn-back">Back to Dashboard</a>
 </div>
+
+<script>
+    function toggleMore() {
+        let hiddenRows = document.querySelectorAll('.hidden');
+        let button = document.getElementById('read-more-btn');
+        
+        if (hiddenRows.length > 0) {
+            hiddenRows.forEach(row => row.classList.remove('hidden'));
+            button.innerText = 'Show Less';
+        } else {
+            let rows = document.querySelectorAll('.appointment-row');
+            rows.forEach((row, index) => {
+                if (index >= 10) row.classList.add('hidden');
+            });
+            button.innerText = 'See More';
+        }
+    }
+</script>
+
 {% endblock %}

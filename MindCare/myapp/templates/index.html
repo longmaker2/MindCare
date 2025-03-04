@@ -163,10 +163,12 @@ body {
 
 #about .features li::before {
     content: "✔️";
-    color: #1f4870;;
-    font-size: 1.2rem;
-    margin-right: 10px;
+    color: #1f4870 !important;  /* Ensure the color is applied */
+    font-size: 1.2rem !important;  /* Ensure the size applies */
+    margin-right: 10px !important;  /* Ensure spacing is applied */
+    font-weight: bold !important;  /* Make the checkmark bold */
 }
+
 /* Adjust About Section Layout */
 #about .row {
     display: flex;
@@ -412,6 +414,56 @@ body {
     color: #333;
     cursor: pointer;
 }
+/* Styling for Get Started (Login/Signup) Button */
+a.getstarted.scrollto {
+    display: inline-block;
+    padding: 10px 25px;
+    font-size: 1rem !important;  /* Small but readable */
+    font-weight: 600;
+    text-transform: capitalize !important; /* Capitalize first letter of each word */
+    letter-spacing: 0.5px;
+    color: #fff !important;  /* White text for contrast */
+    background: linear-gradient(135deg, #1f4870, #163754) !important;  /* Smooth gradient */
+    border: none;
+    border-radius: 25px; /* Soft rounded button */
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(31, 72, 112, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover Effect */
+a.getstarted.scrollto:hover {
+    background: linear-gradient(135deg, #163754, #0d2a42) !important;  /* Darker on hover */
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+}
+
+/* Active (Click) Effect */
+a.getstarted.scrollto:active {
+    transform: scale(0.95);
+    box-shadow: 0px 3px 6px rgba(31, 72, 112, 0.2);
+}
+
+/* Modern Button Animation */
+a.getstarted.scrollto::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.6s ease-in-out;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+}
+
+a.getstarted.scrollto:hover::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+}
 
 
 </style>
@@ -454,9 +506,82 @@ body {
 
         </div>
   </header><!-- End Header -->
-  
+  <style>
+    /* Styling for Hero Section Text */
+#hero h1, #hero h2 {
+    font-family: "Poppins", sans-serif; /* Modern, readable font */
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Main Heading */
+#hero h1 {
+    font-size: 3.5rem;
+    color: #222; /* Darker for better contrast */
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeInDown 1s ease-in-out;
+}
+
+/* Subheading */
+#hero h2 {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 25px;
+    text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeInDown 1s ease-in-out;
+}
+
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+  </style>
 
   <section id="hero" class="d-flex align-items-center">
+    <style>/* Ensure the button styling applies */
+        a.btn-get-started.scrollto {
+            display: inline-block;
+            padding: 14px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff !important; /* Ensure text color applies */
+            background: #1f4870 !important; /* Apply blue background */
+            border: 2px solid #1f4870 !important;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 5px 15px rgba(31, 72, 112, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Hover Effect */
+        a.btn-get-started.scrollto:hover {
+            background: #163754 !important;
+            border-color: #163754 !important;
+            transform: scale(1.05);
+            box-shadow: 0px 8px 20px rgba(31, 72, 112, 0.4);
+        }
+        
+        /* Active (Click) Effect */
+        a.btn-get-started.scrollto:active {
+            transform: scale(0.95);
+            box-shadow: 0px 4px 10px rgba(31, 72, 112, 0.2);
+        }
+        </style>
     <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
         <div class="row justify-content-center">
             <div class="col-xl-7 col-lg-9 text-center">
@@ -758,7 +883,208 @@ body {
 
 
           
-<!-- Professionals Section -->
+<style>/* Professionals Section - Styling */
+    #professionals {
+        background: linear-gradient(to right, #ffffff, #e3f2fd); /* Soft blue gradient */
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    #professionals h2 {
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: #1f4870;
+        margin-bottom: 20px;
+        text-transform: capitalize;
+    }
+    
+    /* Ensure the description text is justified */
+    #professionals p {
+        font-size: 1.2rem;
+        color: #555;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: justify; /* ✅ Ensures justified text alignment */
+    }
+    
+    /* Professional Card */
+    .member {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Ensure text inside the professional card is justified */
+    .member p {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 10px;
+        text-align: justify; /* ✅ Ensures justified text alignment */
+    }
+    
+    /* Professional Name */
+    .member h4 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1f4870;
+        margin-top: 15px;
+    }
+    
+    /* Book Appointment Button */
+    .book-appointment-btn {
+        display: inline-block;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-transform: capitalize !important; /* Capitalizes First Letter */
+        letter-spacing: 0.5px;
+        color: #fff !important;
+        background: linear-gradient(135deg, #1f4870, #163754) !important;
+        border: none;
+        border-radius: 30px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 8px rgba(31, 72, 112, 0.3);
+        cursor: pointer;
+    }
+    
+    /* Hover Effect */
+    .book-appointment-btn:hover {
+        background: linear-gradient(135deg, #163754, #0d2a42) !important;
+        transform: scale(1.05);
+        box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+    }
+    
+    /* Available Slots Styling */
+    .available-slots-container {
+        width: 100%;
+        text-align: left; /* Aligns content to the left for professional look */
+        margin-top: 10px;
+    }
+    
+    .available-slots-title {
+        font-weight: bold;
+        color: #1f4870;
+        font-size: 1.1rem;
+        text-align: left; /* Aligns the title above the slots */
+        margin-bottom: 5px;
+    }
+    
+    #available-slots {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 1rem;
+    }
+    
+    #available-slots li {
+        color: green;
+        font-weight: bold;
+        text-align: left;
+        padding: 5px 0;
+    }
+    
+    /* Read More Button */
+    .read-more-btn {
+        background-color: #1f4870;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: 0.3s;
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+    }
+    
+    .read-more-btn:hover {
+        background-color: #16324f;
+    }
+    /* Modal Styling */
+#appointment-modal .modal-content {
+    background: #e3f2fd; /* ✅ Matches the soft blue gradient of the page */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.1);
+    color: #1f4870; /* ✅ Ensures text is visible */
+}
+
+/* Modal Header */
+#appointment-modal .modal-header {
+    background: #1f4870; /* ✅ Dark blue header */
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 15px;
+}
+
+/* Modal Title */
+#appointment-modal .modal-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white; /* ✅ White title text for better contrast */
+    text-transform: capitalize;
+}
+
+/* Modal Close Button */
+#appointment-modal .btn-close {
+    filter: invert(1); /* ✅ Makes the close button visible */
+}
+
+/* Modal Form Fields */
+#appointment-modal .form-label {
+    font-weight: bold;
+    color: #1f4870; /* ✅ Dark blue for labels */
+}
+
+/* Modal Input Fields */
+#appointment-modal input, 
+#appointment-modal select, 
+#appointment-modal textarea {
+    border: 1px solid #1f4870;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+    color: #1f4870;
+}
+
+/* Confirm Appointment Button */
+#appointment-modal button[type="submit"].btn-primary {
+    background: linear-gradient(135deg, #1f4870, #163754) !important;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white !important;
+    padding: 12px 25px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+}
+
+/* Button Hover Effect */
+#appointment-modal button[type="submit"].btn-primary:hover {
+    background: linear-gradient(135deg, #163754, #0d2a42) !important;
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+}
+
+/* Modal Footer */
+#appointment-modal .modal-footer {
+    background: #1f4870; /* ✅ Dark blue footer */
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    padding: 15px;
+}
+
+    </style>
 <section id="professionals" class="professionals">
   <div class="container" data-aos="fade-up">
     <div class="section-title">
@@ -953,11 +1279,11 @@ document.addEventListener("DOMContentLoaded", function () {
             let professionalId = this.getAttribute("data-professional-id");
             let professionalName = this.getAttribute("data-professional-name");
             let specialty = this.getAttribute("data-specialty");
-            
+
             let availableSlots = this.getAttribute("data-available-slots") ? this.getAttribute("data-available-slots").split(",") : [];
             let bookedSlots = this.getAttribute("data-booked-slots") ? this.getAttribute("data-booked-slots").split(",") : [];
 
-            // ✅ Filter out booked slots from available slots
+            // ✅ Remove booked slots from available slots
             let filteredSlots = availableSlots.filter(slot => !bookedSlots.includes(slot.trim()));
 
             document.getElementById("modal-professional-id").value = professionalId;
@@ -982,12 +1308,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
 
-            let modal = new bootstrap.Modal(document.getElementById("appointment-modal"));
-            modal.show();
+            let modalElement = document.getElementById("appointment-modal");
+            let modalInstance = new bootstrap.Modal(modalElement);
+            modalInstance.show();
         });
     });
 
-    // ✅ Prevent Page Refresh After Booking
+    // ✅ Handle appointment form submission
     document.getElementById("appointment-form").addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -1011,28 +1338,29 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.message) {
                 let meetLink = data.google_meet_link;
 
-                // ✅ Keep the Success Popup Visible
+                // ✅ Show success popup
                 let successPopup = document.getElementById("success-popup");
                 successPopup.style.display = "block";
                 document.getElementById("meet-link").href = meetLink;
                 document.getElementById("meet-link").textContent = "Join Google Meet";
 
-                // ✅ Properly Hide the Modal
+                // ✅ Close the modal properly
                 let modalElement = document.getElementById("appointment-modal");
                 let modalInstance = bootstrap.Modal.getInstance(modalElement);
                 if (modalInstance) {
                     modalInstance.hide();
                 }
 
-                // ✅ Remove the Bootstrap backdrop overlay (Fixes gray screen issue)
-                document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
-                    backdrop.remove();
-                });
+                // ✅ Ensure backdrop removal is instant
+                setTimeout(() => {
+                    document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.remove());
+                }, 10); // Instant removal with minimal delay
 
-                // ✅ Ensure the body scrolls normally after closing the modal
+                // ✅ Ensure body scrolling is restored
                 document.body.classList.remove("modal-open");
+                document.body.style.overflow = "auto";
 
-                // ✅ Reset the Form
+                // ✅ Reset the form
                 document.getElementById("appointment-form").reset();
             }
         })
@@ -1044,6 +1372,15 @@ document.addEventListener("DOMContentLoaded", function () {
             submitButton.disabled = false;
             submitButton.textContent = "Confirm Appointment";
         });
+    });
+
+    // ✅ Forcefully remove modal backdrop after closing
+    document.getElementById("appointment-modal").addEventListener("hidden.bs.modal", function () {
+        setTimeout(() => {
+            document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.remove());
+        }, 10); // Remove immediately
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "auto";
     });
 });
 
@@ -1062,6 +1399,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <!-- Success Popup -->
 <div id="success-popup">Message sent successfully!</div>
+
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">
@@ -1126,6 +1465,58 @@ document.addEventListener("DOMContentLoaded", function () {
               </div>
               
               <div class="col-lg-8 mt-5 mt-lg-0">
+                <style>/* Styling for Send Message Button */
+                    button[type="submit"][data-translate] {
+                        display: inline-block;
+                        padding: 12px 30px;
+                        font-size: 1rem !important;  /* Small but readable */
+                        font-weight: 600;
+                        text-transform: capitalize !important; /* Capitalize first letter of each word */
+                        letter-spacing: 0.5px;
+                        color: #fff !important;  /* Ensure white text */
+                        background: linear-gradient(135deg, #1f4870, #163754) !important;  /* Smooth gradient */
+                        border: none;
+                        border-radius: 25px; /* Soft rounded button */
+                        text-decoration: none;
+                        transition: all 0.3s ease-in-out;
+                        box-shadow: 0px 4px 8px rgba(31, 72, 112, 0.3);
+                        position: relative;
+                        overflow: hidden;
+                        cursor: pointer;
+                    }
+                    
+                    /* Hover Effect */
+                    button[type="submit"][data-translate]:hover {
+                        background: linear-gradient(135deg, #163754, #0d2a42) !important;  /* Darker on hover */
+                        transform: scale(1.05);
+                        box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+                    }
+                    
+                    /* Active (Click) Effect */
+                    button[type="submit"][data-translate]:active {
+                        transform: scale(0.95);
+                        box-shadow: 0px 3px 6px rgba(31, 72, 112, 0.2);
+                    }
+                    
+                    /* Modern Button Animation */
+                    button[type="submit"][data-translate]::after {
+                        content: "";
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 300%;
+                        height: 300%;
+                        background: rgba(255, 255, 255, 0.1);
+                        transition: all 0.6s ease-in-out;
+                        transform: translate(-50%, -50%) scale(0);
+                        border-radius: 50%;
+                    }
+                    
+                    button[type="submit"][data-translate]:hover::after {
+                        transform: translate(-50%, -50%) scale(1);
+                        opacity: 0;
+                    }
+                    </style>
                   <form id="contact-form" action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
                       {% csrf_token %}
                       <input type="text" name="name" class="form-control" placeholder="Your Name" required>
@@ -1221,6 +1612,81 @@ document.addEventListener("DOMContentLoaded", function () {
           Designed by <a href="https://bootstrapmade.com/">Erica</a>
         </div>
       </div>
+      <style>/* Styling for Social Media Icons */
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            font-size: 1.5rem !important;
+            text-transform: capitalize !important; /* Capitalize first letter */
+            color: #fff !important;
+            background: #1f4870 !important; /* Dark blue background */
+            border-radius: 50%;
+            text-decoration: none !important;
+            transition: all 0.3s ease-in-out;
+            margin: 5px;
+            box-shadow: 0px 4px 8px rgba(31, 72, 112, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Hover Effect */
+        .social-links a:hover {
+            background: #163754 !important; /* Darker blue on hover */
+            transform: scale(1.1);
+            box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+        }
+        
+        /* Active (Click) Effect */
+        .social-links a:active {
+            transform: scale(0.95);
+            box-shadow: 0px 3px 6px rgba(31, 72, 112, 0.2);
+        }
+        
+        /* Individual Social Media Colors */
+        .social-links .facebook {
+            background: #1877F2 !important;
+        }
+        
+        .social-links .twitter {
+            background: #1DA1F2 !important;
+        }
+        
+        .social-links .instagram {
+            background: linear-gradient(135deg, #F58529, #DD2A7B, #8134AF) !important;
+        }
+        
+        .social-links .google-plus {
+            background: #DB4437 !important;
+        }
+        
+        .social-links .linkedin {
+            background: #0077B5 !important;
+        }
+        
+        /* Hover Effects for Each Social Media */
+        .social-links .facebook:hover {
+            background: #0d62c7 !important;
+        }
+        
+        .social-links .twitter:hover {
+            background: #0c85d0 !important;
+        }
+        
+        .social-links .instagram:hover {
+            background: linear-gradient(135deg, #e74c3c, #e67e22, #f1c40f) !important;
+        }
+        
+        .social-links .google-plus:hover {
+            background: #c1351d !important;
+        }
+        
+        .social-links .linkedin:hover {
+            background: #005a8c !important;
+        }
+        </style>
       <div class="social-links text-center text-md-right pt-3 pt-md-0">
         <a href="#" class="https://twitter.com/home?lang=en"><i class="bx bxl-twitter"></i></a>
         <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
@@ -1234,6 +1700,53 @@ document.addEventListener("DOMContentLoaded", function () {
   </footer><!-- End Footer -->
 
   <div id="preloader"></div>
+  <style>/* Styling for Back to Top Button */
+    a.back-to-top {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem !important;
+        text-transform: capitalize !important; /* Capitalize first letter */
+        color: #fff !important;
+        background: #1f4870 !important; /* Dark blue */
+        border-radius: 50%;
+        text-decoration: none !important;
+        transition: all 0.3s ease-in-out;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        box-shadow: 0px 4px 8px rgba(31, 72, 112, 0.3);
+    }
+    
+    /* Hover Effect */
+    a.back-to-top:hover {
+        background: #163754 !important; /* Slightly darker blue */
+        transform: scale(1.1);
+        box-shadow: 0px 6px 12px rgba(31, 72, 112, 0.4);
+    }
+    
+    /* Active (Click) Effect */
+    a.back-to-top:active {
+        transform: scale(0.95);
+        box-shadow: 0px 3px 6px rgba(31, 72, 112, 0.2);
+    }
+    
+    /* Animation for Smooth Visibility */
+    a.back-to-top {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+    
+    /* Show Button When Scrolling */
+    a.back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    </style>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->

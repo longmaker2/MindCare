@@ -1,0 +1,24 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.session.django_language }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Language Settings" %}</title>
+</head>
+<body>
+    <h1>{% trans "Select Your Preferred Language" %}</h1>
+
+    <form action="{% url 'change_language' %}" method="post">
+        {% csrf_token %}
+        <label for="language">{% trans "Choose Language" %}:</label>
+        <select name="language" id="language">
+            <option value="en" {% if request.session.django_language == "en" %}selected{% endif %}>English</option>
+            <option value="fr" {% if request.session.django_language == "fr" %}selected{% endif %}>Français</option>
+            <option value="es" {% if request.session.django_language == "es" %}selected{% endif %}>Español</option>
+        </select>
+        <button type="submit">{% trans "Save Changes" %}</button>
+    </form>
+
+    <p>{% trans "Current Language" %}: {{ request.session.django_language|default:"en" }}</p>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,14 +7,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f4f4f9;
+            background-color: #f2f7fc;
             font-family: Arial, sans-serif;
+            color: #1f4870;
         }
         .table {
-            background-color: white;
+            background-color: #1f4870;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+        }
+        .table th {
+            background-color: #16324f;
+            color: white;
+        }
+        .table tbody tr {
+            border-bottom: 1px solid #16324f;
+        }
+        .table tbody tr:hover {
+            background-color: #2a5279;
         }
         .status-badge {
             font-size: 14px;
@@ -23,45 +34,45 @@
             border-radius: 8px;
             font-weight: bold;
         }
-        .status-upcoming {
-            background-color: #ffc107;
-            color: #000;
-        }
-        .status-completed {
-            background-color: #28a745;
+        .status-upcoming { background-color: #ffc107; color: #000; }
+        .status-completed { background-color: #28a745; color: white; }
+        .status-canceled { background-color: #dc3545; color: white; }
+        .hidden { display: none; }
+        .read-more-btn {
+            background-color: #1f4870;
             color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: 0.3s;
         }
-        .status-canceled {
-            background-color: #dc3545;
-            color: white;
-        }
+        .read-more-btn:hover { background-color: #16324f; }
         .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px; /* Moves it to the left */
-    background-color: #393c40;
-    color: white;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-    transition: 0.3s;
-}
-
-.back-button:hover {
-    background-color: #444d57;
-    transform: scale(1.05);
-}
-
+            display: inline-block;
+            background-color: #1f4870;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .back-button:hover {
+            background-color: #16324f;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
     <div class="container py-4">
         <h2 class="text-center mb-4">📆 My Appointments</h2>
         <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
-
-
-        <!-- Appointment Table -->
+        
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead class="table-dark">
@@ -73,9 +84,9 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="appointment-list">
                     {% for appointment in appointments %}
-                        <tr>
+                        <tr class="appointment-row {% if forloop.counter > 10 %}hidden{% endif %}">
                             <td>{{ appointment.date }}</td>
                             <td>{{ appointment.time }}</td>
                             <td>{{ appointment.professional_name }}</td>
@@ -104,8 +115,30 @@
                 </tbody>
             </table>
         </div>
+        
+        <div class="text-center mt-3">
+            {% if appointments|length > 10 %}
+                <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
+            {% endif %}
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMore() {
+            let hiddenRows = document.querySelectorAll('.hidden');
+            let button = document.getElementById('read-more-btn');
+            
+            if (hiddenRows.length > 0) {
+                hiddenRows.forEach(row => row.classList.remove('hidden'));
+                button.innerText = 'Show Less';
+            } else {
+                let rows = document.querySelectorAll('.appointment-row');
+                rows.forEach((row, index) => {
+                    if (index >= 10) row.classList.add('hidden');
+                });
+                button.innerText = 'Read More';
+            }
+        }
+    </script>
 </body>
 </html>

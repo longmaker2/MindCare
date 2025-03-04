@@ -13,9 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
 
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
     <style>
         .container {
             max-width: 600px;
@@ -69,7 +66,7 @@
                 <label for="available_slots" id="current-slots-label">Your Current Available Slots:</label>
                 <ul class="list-group mb-3" id="available-slots-list">
                     {% for slot in professional.available_slots %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center" id="slot-item">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ slot }}
                             <button type="button" class="btn btn-danger btn-sm remove-slot" data-slot="{{ slot }}">
                                 <i class="fas fa-trash-alt"></i>
@@ -80,37 +77,24 @@
                     {% endfor %}
                 </ul>
 
-                <!-- New Slot with Calendar & AM/PM Format -->
+                <!-- New Slot: Manual Input for Time -->
                 <div class="mb-3">
-                    <label for="new_slots" class="form-label" id="add-new-slot-label">Select a Date & Time:</label>
-                    <input type="text" class="form-control" id="new_slots" name="new_slots" placeholder="Select date and time">
+                    <label for="new_slots" class="form-label" id="add-new-slot-label">Enter a Time (HH:MM):</label>
+                    <input type="text" class="form-control" id="new_slots" name="new_slots" placeholder="e.g., 09:00">
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100" id="save-availability-button"><i class="fas fa-save"></i> Save Availability</button>
             </form>
 
-            <a href="{% url 'professional_dashboard' %}" class="btn btn-secondary w-100 btn-back mt-2" id="back-to-dashboard"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="{% url 'professional_dashboard' %}" class="btn btn-secondary w-100 btn-back mt-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
     </div>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- ✅ Flatpickr (Date & Time Picker with AM/PM) -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
     <script>
         $(document).ready(function () {
-            // ✅ Initialize Flatpickr with 12-hour format & AM/PM toggle
-            $("#new_slots").flatpickr({
-                enableTime: true,
-                dateFormat: "Y-m-d h:i K", // K ensures AM/PM format
-                minDate: "today", // Prevent past dates
-                time_24hr: false,  // Use 12-hour format with AM/PM
-                altInput: true, // Show formatted date
-                altFormat: "F j, Y h:i K", // Pretty format
-            });
-
             // ✅ Remove a slot dynamically
             $(".remove-slot").click(function () {
                 var slot = $(this).data("slot");
@@ -123,7 +107,7 @@
                         remove_slot: slot,
                         csrfmiddlewaretoken: "{{ csrf_token }}"
                     },
-                    success: function (response) {
+                    success: function () {
                         listItem.remove();
                     },
                     error: function () {
@@ -132,13 +116,15 @@
                 });
             });
 
-            // ✅ Handle form submission dynamically (without page refresh)
+            // ✅ Handle form submission dynamically
             $("#availability-form").submit(function (event) {
                 event.preventDefault();
 
                 var newSlot = $("#new_slots").val().trim();
-                if (newSlot === "") {
-                    alert("Please select a valid date and time.");
+                var timeFormat = /^([01]\d|2[0-3]):([0-5]\d)$/;  // Validate HH:MM format
+
+                if (newSlot === "" || !timeFormat.test(newSlot)) {
+                    alert("Please enter a valid time in HH:MM format.");
                     return;
                 }
 
@@ -149,9 +135,9 @@
                         new_slots: newSlot,
                         csrfmiddlewaretoken: "{{ csrf_token }}"
                     },
-                    success: function (response) {
+                    success: function () {
                         $("#available-slots-list").append(`
-                            <li class="list-group-item d-flex justify-content-between align-items-center" id="slot-item">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
                                 ${newSlot}
                                 <button type="button" class="btn btn-danger btn-sm remove-slot" data-slot="${newSlot}">
                                     <i class="fas fa-trash-alt"></i>

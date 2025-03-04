@@ -33,6 +33,7 @@ APPEND_SLASH = False
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware', 
 ]
 
 ROOT_URLCONF = 'eyt.urls'
@@ -130,9 +132,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+
+USE_L10N = True
 
 USE_I18N = True
 
@@ -169,3 +172,19 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = 'login'   # Ensures redirects go to your login page
+
+# Default language
+LANGUAGE_CODE = 'en'
+
+LANGUAGE_CODE = os.getenv('DJANGO_LANGUAGE', 'en')  # Uses session-based language if available
+
+# Supported languages
+LANGUAGES = [
+    ('en', _('English')),
+    ('fr', _('French')),
+    ('es', _('Spanish')),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),  # Correct way to join paths using os.path
+]

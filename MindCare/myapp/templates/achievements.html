@@ -5,6 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="achievements-title">My Achievements</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #f5faff, #dbeaff); /* Soft gradient */
+            color: #1f4870; /* Primary Text Color */
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Container Styling */
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Header Styling */
+        h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f4870;
+            margin-bottom: 15px;
+        }
+
+        /* Description Text */
+        p {
+            font-size: 1.2rem;
+            color: #444;
+        }
+
+        /* Back to Dashboard Button */
+        .btn-secondary {
+            background: #1f4870;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.3s ease-in-out, transform 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #163754;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.95);
+        }
+
+        /* Achievement Container */
+        #achievementContainer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+            min-height: 50px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
@@ -12,84 +79,78 @@
         <p id="achievements-description">Your progress and milestones will appear here.</p>
         <a href="{% url 'dashboard' %}" class="btn btn-secondary" id="back-to-dashboard">Back to Dashboard</a>
     </div>
-    <div id="achievementContainer"></div>
-    <script>loadAchievements();</script>
     
+    <div id="achievementContainer"></div>
+
+    <script>loadAchievements();</script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-    let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
-    let translations = JSON.parse(localStorage.getItem("translations")) || {};
+            let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
+            let translations = JSON.parse(localStorage.getItem("translations")) || {};
 
-    if (Object.keys(translations).length > 0) {
-        applyTranslations(translations);
-    } else {
-        translatePage(savedLanguage);
-    }
+            if (Object.keys(translations).length > 0) {
+                applyTranslations(translations);
+            } else {
+                translatePage(savedLanguage);
+            }
 
-    // ✅ Force translation after slight delay (ensures UI is fully loaded)
-    setTimeout(() => {
-        translatePage(savedLanguage);
-    }, 100);
-});
-
-function translatePage(selectedLanguage) {
-    let keys = [
-        "achievements-title", "achievements-header",
-        "achievements-description", "back-to-dashboard"
-    ];
-
-    let texts = {};
-    keys.forEach(key => {
-        let element = document.getElementById(key);
-        if (element) {
-            texts[key] = element.textContent.trim();
-        }
-    });
-
-    fetch("/translate/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ "text": Object.values(texts).join("|"), "language": selectedLanguage })
-    })
-    .then(response => response.json())
-    .then(data => {
-        let translatedTextArray = data.translated_text.split("|");
-        let translations = {};
-        let keysArray = Object.keys(texts);
-
-        keysArray.forEach((key, index) => {
-            translations[key] = translatedTextArray[index] || texts[key];
+            setTimeout(() => {
+                translatePage(savedLanguage);
+            }, 100);
         });
 
-        localStorage.setItem("translations", JSON.stringify(translations)); // ✅ Save translations
-        applyTranslations(translations);
-    })
-    .catch(error => console.error("Translation failed:", error));
-}
+        function translatePage(selectedLanguage) {
+            let keys = ["achievements-title", "achievements-header", "achievements-description", "back-to-dashboard"];
+            let texts = {};
+            keys.forEach(key => {
+                let element = document.getElementById(key);
+                if (element) {
+                    texts[key] = element.textContent.trim();
+                }
+            });
 
-function applyTranslations(translations) {
-    Object.keys(translations).forEach(key => {
-        let element = document.getElementById(key);
-        if (element) {
-            element.textContent = translations[key];
+            fetch("/translate/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ "text": Object.values(texts).join("|"), "language": selectedLanguage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let translatedTextArray = data.translated_text.split("|");
+                let translations = {};
+                let keysArray = Object.keys(texts);
 
-            // ✅ Ensure the <title> updates when translated
-            if (key === "achievements-title") {
-                document.title = translations[key];
-            }
+                keysArray.forEach((key, index) => {
+                    translations[key] = translatedTextArray[index] || texts[key];
+                });
+
+                localStorage.setItem("translations", JSON.stringify(translations));
+                applyTranslations(translations);
+            })
+            .catch(error => console.error("Translation failed:", error));
         }
-    });
-}
 
-// ✅ Listen for language change in localStorage (instant update across pages)
-window.addEventListener("storage", function(event) {
-    if (event.key === "selectedLanguage") {
-        let newLanguage = event.newValue;
-        localStorage.removeItem("translations"); // ✅ Clear outdated translations
-        translatePage(newLanguage);
-    }
-});
+        function applyTranslations(translations) {
+            Object.keys(translations).forEach(key => {
+                let element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[key];
 
+                    if (key === "achievements-title") {
+                        document.title = translations[key];
+                    }
+                }
+            });
+        }
+
+        window.addEventListener("storage", function(event) {
+            if (event.key === "selectedLanguage") {
+                let newLanguage = event.newValue;
+                localStorage.removeItem("translations");
+                translatePage(newLanguage);
+            }
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

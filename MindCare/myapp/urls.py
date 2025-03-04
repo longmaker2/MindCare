@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import cancel_appointment_by_professional, clear_notificationsss, fetch_notifications, fetch_updates, professionals_list, remove_appointment, translate_page, translate_text, translate_view, update_availability
+from .views import cancel_appointment_by_professional, change_language, clear_notificationsss, fetch_notifications, fetch_updates, language_settings, professionals_list, remove_appointment, translate_page, translate_text, translate_view, update_availability, upload_quiz
 from .views import index, appointment_success
 from .views import book_appointment
 from django.shortcuts import render
@@ -81,6 +81,11 @@ urlpatterns = [
     path('cancel-appointment/<int:appointment_id>/', cancel_appointment_by_professional, name="cancel_appointment_by_professional"),
     path('fetch-updates/', fetch_updates, name='fetch_updates'),
     path('fetch-notifications/', fetch_notifications, name="fetch_notifications"),
+    path('api/quizzes/upload/', upload_quiz, name='upload_quiz'),
+    path('language-settings/', language_settings, name='language_settings'),
+    path('change-language/', change_language, name='change_language'),
+    path('set-language/<str:lang_code>/', views.set_language, name='set_language'),
+    
 
 
    

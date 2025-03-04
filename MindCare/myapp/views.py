@@ -15,10 +15,136 @@ from django.db import models
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, redirect
 from googletrans import Translator
 import logging
-
+from django.utils.translation import activate, get_language
+from django.utils import translation
+from django.shortcuts import get_object_or_404, render
+from django.core.mail import send_mail
+from .models import Professional, Appointment
+import random
+import json
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now  # ✅ Import for date validation
+from .models import Professional, Appointment
+from myapp.utils import send_email_async  # ✅ Absolute import
+import smtplib
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import render
+from myapp.models import Professional, Appointment
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import ChatMessage
+import json
+from .models import ChatMessage
+from django.shortcuts import render, redirect
+from .models import ChatMessage
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timezone import now
+from .models import ChatMessage
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import Message
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+import json
+from django.http import JsonResponse
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from .models import Message
+from django.http import JsonResponse
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+import json
+from django.db import transaction  # ✅ Force commit messages immediately
+from .models import AnonymousPrivateMessage
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import ChatMessage
+import random
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Professional
+from django.http import JsonResponse
+from .models import AnonymousPrivateMessage
+from .models import Message
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Video
+from .forms import VideoUploadForm
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import AnonymousPrivateMessage
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from .models import AnonymousPrivateMessage
+from django.shortcuts import render, get_object_or_404
+from myapp.models import Professional, Appointment, Message
+from django.shortcuts import render
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from myapp.models import Professional, Appointment, Message, Notification
+from django.utils.timezone import now
+from datetime import datetime
+from django.utils.timezone import now
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Message, Notification
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.urls import reverse
+from .models import Professional
+#from django.http import JsonResponse
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from .models import Message, Notification, Appointment
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Video
+from .forms import VideoUploadForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from myapp.models import Appointment, Notification, Professional
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Book, Article, Course
+from .forms import BookForm, ArticleForm, CourseForm
+from .models import CompletedCourse  # Move import inside function
+from django.shortcuts import render
+from django.shortcuts import render
+from .models import Quiz
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Professional, Appointment
+from .forms import AppointmentForm
+from django.shortcuts import render
+from .models import Appointment, CompletedCourse, Achievement, QuizResult
+from django.shortcuts import render
+from django.shortcuts import render
+from .models import Quiz
+from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from .models import Professional
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views import View
+from .models import Quiz, Question
 
 logger = logging.getLogger(__name__)
 
@@ -87,9 +213,9 @@ def counter(request):
 def post(request, pk):
     return render(request, 'post.html', {'pk': pk})
 
-
 def dashboard(request):
-    return render(request, 'dashboard.html' )
+
+    return render(request, 'dashboard.html')
 
 def training_materials(request):
     return render(request, 'training_materials.html' )
@@ -197,11 +323,6 @@ def index(request):
     professionals = Professional.objects.all()  # Fetch professionals from DB
     return render(request, 'index.html', {'professionals': professionals})
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Professional, Appointment
-from .forms import AppointmentForm
-
 @login_required
 def index(request):
     professionals = Professional.objects.all()  # Fetch all professionals
@@ -219,25 +340,7 @@ def index(request):
 
 def appointment_success(request):
     return render(request, 'appointment_success.html')
-import json
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.core.mail import send_mail
-from .models import Professional, Appointment
-import random
 
-import json
-import random
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.timezone import now  # ✅ Import for date validation
-from .models import Professional, Appointment
-from myapp.utils import send_email_async  # ✅ Absolute import
-
-import smtplib
-from django.core.mail import send_mail
-from django.conf import settings
 
 def send_email(subject, message, recipient_email):
     """Send email synchronously to ensure it's sent properly."""
@@ -371,28 +474,11 @@ def book_appointment(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Professional
-
 def get_available_slots(request, professional_id, date):
     """Returns available slots for a professional on a given date."""
     professional = get_object_or_404(Professional, id=professional_id)
 
     return JsonResponse({'available_slots': professional.available_slots})
-
-from django.shortcuts import render
-from myapp.models import Professional
-
-from django.shortcuts import render
-from myapp.models import Professional, Appointment
-
-from django.shortcuts import render
-from myapp.models import Professional, Appointment
-
-from django.shortcuts import render
-from myapp.models import Professional, Appointment
 
 def index(request):
     professionals = Professional.objects.all()
@@ -407,9 +493,6 @@ def index(request):
         ]
 
     return render(request, 'index.html', {'professionals': professionals})
-
-from django.http import JsonResponse
-from .models import AnonymousPrivateMessage
 
 def get_messages(request):
     """Fetch messages in descending order (newest at the bottom)"""
@@ -434,60 +517,11 @@ def get_messages(request):
 
     return JsonResponse(message_list[::-1], safe=False)  # ✅ Reverse to show newest at the bottom
 
-
-
-
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from .models import ChatMessage
-import random
-
 # Generate random anonymous username
 def generate_anonymous_username():
     adjectives = ["Brave", "Smart", "Quick", "Happy", "Clever"]
     nouns = ["Panda", "Tiger", "Dolphin", "Eagle", "Fox"]
     return f"{random.choice(adjectives)} {random.choice(nouns)}"
-
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import ChatMessage
-import json
-
-from django.shortcuts import render, redirect
-from .models import ChatMessage
-
-from django.shortcuts import render, redirect
-from .models import ChatMessage
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.timezone import now
-from .models import ChatMessage
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .models import Message
-from django.utils.timezone import now
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-
-import json
-from django.http import JsonResponse
-from django.utils.timezone import now
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-from .models import Message
-
-from django.http import JsonResponse
-from django.utils.timezone import now
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-import json
-from django.db import transaction  # ✅ Force commit messages immediately
-from .models import AnonymousPrivateMessage
 
 @csrf_exempt
 @login_required
@@ -541,10 +575,6 @@ def send_message(request):
 
     return JsonResponse({"success": False, "error": "Invalid request method"}, status=400)
 
-
-from .models import Message
-from django.contrib.auth.models import User
-
 def chat_room(request):
     if request.user.is_authenticated:
         # Show messages for 'Everyone' + messages sent directly to the user
@@ -557,10 +587,6 @@ def chat_room(request):
     users = User.objects.exclude(username=request.user.username) 
 
     return render(request, "anonymous_chat.html", {"messages": messages, "users": users})
-
-
-from django.http import JsonResponse
-from .models import AnonymousPrivateMessage
 
 def get_messages(request):
     """Fetch messages immediately without delay"""
@@ -579,12 +605,6 @@ def get_messages(request):
     
     return JsonResponse(message_list, safe=False, headers={'Cache-Control': 'no-store'})
 
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import AnonymousPrivateMessage
-from django.contrib.auth.models import User
-
 @login_required
 def anonymous_chat(request):
     # ✅ Fetch messages for "Everyone" AND private messages sent to the logged-in user
@@ -602,9 +622,6 @@ def anonymous_chat(request):
 
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Video
-from .forms import VideoUploadForm
 
 # Function to check if user is an admin
 def is_admin(user):
@@ -628,10 +645,6 @@ def training_materials(request):
     """Allow all users to view and filter uploaded videos"""
     videos = Video.objects.all()
     return render(request, "training_materials.html", {"videos": videos})
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Video
-from .forms import VideoUploadForm
 
 def is_admin(user):
     return user.is_authenticated and user.is_superuser
@@ -665,24 +678,6 @@ def professional_detail(request, professional_id=None):
         professional = get_object_or_404(Professional, id=professional_id)
 
     return render(request, "professional_detail.html", {"professional": professional})
-
-
-from django.shortcuts import render, get_object_or_404
-from myapp.models import Professional, Appointment, Message
-
-from django.shortcuts import render
-from django.utils.timezone import now
-from django.contrib.auth.decorators import login_required
-from myapp.models import Professional, Appointment, Message, Notification
-
-from django.utils.timezone import now
-from datetime import datetime
-
-from django.utils.timezone import now
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Appointment, Message, Notification
 
 @login_required
 def professional_dashboard(request):
@@ -720,13 +715,12 @@ def professional_dashboard(request):
         'current_datetime': current_datetime  # ✅ Pass the current timestamp
     })
 
-
-# ✅ API View for Real-time Updates (AJAX)
 @login_required
 def fetch_updates(request):
     professional = request.user.professional_profile
     current_datetime = now()
 
+    # ✅ Get upcoming appointments
     upcoming_appointments = list(Appointment.objects.filter(
         professional_name=professional.name,
         status='Upcoming'
@@ -741,26 +735,30 @@ def fetch_updates(request):
         )
     ).order_by('date', 'time').values('client__username', 'date', 'time'))
 
-    messages = list(Message.objects.filter(receiver=professional)
-                    .order_by('-timestamp')
-                    .values('sender__username', 'content', 'timestamp'))
+    # ✅ Fix sender username key manually
+    messages = Message.objects.filter(receiver=professional).order_by('-timestamp').values(
+        'sender__username', 'content', 'timestamp'
+    )
+    
+    messages_list = [
+        {
+            "sender_username": msg["sender__username"],  # ✅ Fix the key name
+            "content": msg["content"],
+            "timestamp": msg["timestamp"].strftime("%Y-%m-%d %H:%M")
+        }
+        for msg in messages
+    ]
 
+    # ✅ Fetch notifications
     notifications = list(Notification.objects.filter(recipient=request.user)
                         .order_by('-created_at')
                         .values('message', 'created_at'))
 
     return JsonResponse({
         'appointments': upcoming_appointments,
-        'messages': messages,
+        'messages': messages_list,  # ✅ Now correctly formatted
         'notifications': notifications
     })
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from django.urls import reverse
-from .models import Professional
 
 def login_view(request):
     if request.method == 'POST':
@@ -784,12 +782,6 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     
     return render(request, 'login.html')
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Book, Article, Course
-from .forms import BookForm, ArticleForm, CourseForm
 
 @login_required
 def upload_book(request):
@@ -841,8 +833,7 @@ def upload_course(request):
 
 def training_materials_prof(request):
     return render(request, 'training_materials_prof.html')  # Ensure the template exists
-from django.shortcuts import render
-from .models import Book, Article, Course, Video
+
 
 def training_materials(request):
     books = Book.objects.all()
@@ -856,8 +847,6 @@ def training_materials(request):
         'courses': courses,
         "videos": videos
     })
-from django.shortcuts import render
-from .models import Appointment, CompletedCourse, Achievement, QuizResult
 
 def user_dashboard(request):
     user = request.user
@@ -877,32 +866,15 @@ def user_dashboard(request):
         "achievements": achievements,
         "progress": round(progress, 2)
     })
-from .models import Appointment, CompletedCourse, Achievement, QuizResult
 def my_view(request):
     from .models import CompletedCourse  # Move import inside function
-    ...
-from django.shortcuts import render
-
-from django.shortcuts import render
-from .models import Quiz
 
 def quizzes(request):
     quiz_list = Quiz.objects.all()
     return render(request, 'quizzes.html', {'quizzes': quiz_list})
-
-from django.shortcuts import render
-
-from django.shortcuts import render
-from .models import Appointment
-
 def user_appointments(request):
     user_appointments = Appointment.objects.filter(client=request.user).order_by('-date')
     return render(request, 'user_appointments.html', {'appointments': user_appointments})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from myapp.models import Appointment, Notification, Professional
 
 @login_required
 def cancel_appointment(request, appointment_id):
@@ -929,24 +901,14 @@ def cancel_appointment(request, appointment_id):
         return redirect("professional_dashboard")  # Redirect professionals to their dashboard
     else:
         return redirect("user_appointments")  # Redirect regular users to their appointments list
-
-
-from django.shortcuts import render
-from .models import CompletedCourse
-
 def completed_courses(request):
     courses = CompletedCourse.objects.filter(user=request.user)  # Now valid
     return render(request, 'completed_courses.html', {'courses': courses})
 
-    
-
-from django.shortcuts import render, get_object_or_404
-from .models import CompletedCourse
 
 def course_detail(request, course_id):
     course = get_object_or_404(CompletedCourse, id=course_id)
     return render(request, 'course_detail.html', {'course': course})
-from django.shortcuts import render
 
 def achievements(request):
     return render(request, 'achievements.html', {})
@@ -955,18 +917,6 @@ from django.shortcuts import render
 
 def quiz_category(request, category):
     return render(request, 'quiz_category.html', {'category': category})
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from .models import Appointment
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from .models import Appointment
 
 @login_required
 def regular_user_dashboard(request):
@@ -988,17 +938,11 @@ def regular_user_dashboard(request):
 
     return render(request, 'dashboard.html', {"appointments": appointments})
 
-from django.shortcuts import render
-from .models import Professional  # Ensure Professional model is imported
 
 def professional_home(request):
     professionals = Professional.objects.all()  # Fetch professionals
     return render(request, 'professional_home.html', {'professionals': professionals})
 
-
-from django.http import JsonResponse
-from django.shortcuts import render
-from .models import Quiz
 
 def quizzes_api(request):
     quizzes = list(Quiz.objects.values("id", "title", "description", "category"))  # Convert QuerySet to list of dicts
@@ -1041,9 +985,6 @@ def get_quizzes(request):
 def get_quiz_details(request, quiz_id):
     quiz = next((q for q in quizzes if q["id"] == quiz_id), None)
     return JsonResponse(quiz if quiz else {"error": "Quiz not found"})
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 # Sample Quiz Data (This can be replaced with a database later)
 quizzes = [
@@ -1100,21 +1041,11 @@ def get_quiz_details(request, quiz_id):
     return JsonResponse({"message": f"Details for quiz {quiz_id}"}, safe=False)
 
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import Professional
-
 @receiver(post_save, sender=User)
 def create_professional_profile(sender, instance, created, **kwargs):
     if created and instance.is_staff:  # Assuming professionals are staff users
         Professional.objects.get_or_create(user=instance, name=instance.username, contact_email=instance.email)
 
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.utils.timezone import now
-from .models import Professional, Appointment
 
 @login_required
 def appointments_view(request, professional_id):
@@ -1129,12 +1060,6 @@ def appointments_view(request, professional_id):
         'today': now().date()  # ✅ Pass today's date to the template
     }
     return render(request, 'appointments.html', context)
-
-
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views import View
-from .models import Quiz, Question
 
 class QuizListView(View):
     def get(self, request):
@@ -1195,19 +1120,6 @@ def clear_messages(request):
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Invalid request method"})
 
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Appointment
-
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import Appointment, Notification
-
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Appointment, Notification
-
 @login_required
 def remove_appointment(request, appointment_id):
     if request.method == "POST":
@@ -1226,11 +1138,6 @@ def remove_appointment(request, appointment_id):
         return redirect('professional_dashboard')
 
     return redirect('professional_dashboard')
-
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Professional
 
 @login_required
 def update_availability(request):
@@ -1257,13 +1164,6 @@ def update_availability(request):
 def clear_notifications(request):
     request.user.notifications.all().delete()
     return redirect("professional_dashboard")
-from django.http import JsonResponse
-from myapp.utils.translate import translate_text  # ✅ Correct
-
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from myapp.utils.translate import translate_text
 
 @csrf_exempt
 def translate_view(request):
@@ -1317,20 +1217,8 @@ from django.shortcuts import render
 def settings_professional(request):
     return render(request, 'settings_professional.html')
 
-import logging
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from myapp.models import Appointment, Notification
 
 logger = logging.getLogger(__name__)
-
-import logging
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from myapp.models import Appointment, Notification
-from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -1379,16 +1267,30 @@ def cancel_appointment_by_professional(request, appointment_id):
 
     return redirect("professional_dashboard")
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from .models import Notification, Appointment  # Ensure Appointment model is imported
+
 @login_required
 def user_dashboard(request):
     """
-    Displays the user dashboard with notifications.
+    Displays the user dashboard with notifications and upcoming appointments.
     """
     notifications = Notification.objects.filter(
         recipient=request.user
     ).order_by('-created_at')
 
-    return render(request, 'dashboard.html', {'notifications': notifications})
+    # Get upcoming appointments (Assuming there's a 'date' field in the Appointment model)
+    upcoming_appointments = Appointment.objects.filter(
+        user=request.user, date__gte=datetime.now()
+    ).order_by('date')[:5]  # Get only the next 5 upcoming appointments
+
+    return render(request, 'dashboard.html', {
+        'notifications': notifications,
+        'upcoming_appointments': upcoming_appointments
+    })
+
 
 @login_required
 def fetch_notifications(request):
@@ -1398,26 +1300,6 @@ def fetch_notifications(request):
 
     return JsonResponse({"notifications": list(notifications)})
 
-
-from django.http import JsonResponse
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Notification
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Notification
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Notification
-import logging
-
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Notification
-import logging
 
 logger = logging.getLogger(__name__)  # Enable logging
 
@@ -1438,3 +1320,53 @@ def clear_notificationsss(request):
 
     return JsonResponse({'success': True, 'message': 'Notifications cleared.'})
 
+
+@login_required
+def upload_quiz(request):
+    if not request.user.is_superuser and not hasattr(request.user, "is_professional"):
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            quiz = Quiz.objects.create(title=data["title"], description=data["description"])
+
+            for question in data["questions"]:
+                Question.objects.create(
+                    quiz=quiz,
+                    text=question["text"],
+                    options=question["options"],
+                    correct_answer=question["correct_answer"]
+                )
+
+            return JsonResponse({"message": "Quiz uploaded successfully!"}, status=201)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def language_settings(request):
+    """Render the language settings page."""
+    return render(request, 'language_settings.html')
+
+def change_language(request):
+    """Change the language based on user selection."""
+    if request.method == "POST":
+        lang_code = request.POST.get('language', 'en')  # Default to English
+        request.session['django_language'] = lang_code  # Store language in session
+        activate(lang_code)  # Apply the selected language
+
+        print(f"Language changed to: {lang_code}")  # Debugging statement
+        print(f"Session language: {request.session.get('django_language')}")  # Verify session storage
+
+    return redirect('dashboard')
+
+
+def set_language(request, lang_code):
+    """Set user language preference via URL."""
+    if lang_code in ['en', 'fr', 'es']:  # Ensure valid language codes
+        activate(lang_code)  # Apply the selected language
+        request.session['django_language'] = lang_code  # Store in session
+    return redirect(request.META.get('HTTP_REFERER', '/'))  # Return to previous page
