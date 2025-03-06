@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-{% include 'translation.html' %}
+{% include 'translation.html %'}
     <div class="hero-content">
         <h1>We are a team dedicated to making mental health support accessible to everyone.</h1>
         <a href="{% url 'login' %}" class="btn btn-primary">Get Started</a>
@@ -35,14 +35,19 @@
 }
 
 .hero-content h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    z-index: 2;
-    max-width: 70%;
-    margin: 0 auto;
-    line-height: 1.4;
-    color: black !important;/* Dark blue text */
+    font-size: 2rem !important; /* Ensures the size stays large */
+    font-weight: 400 !important; /* Forces normal weight, removing bold */
+    z-index: 9999 !important; /* Ensures it appears above overlays */
+    max-width: 70% !important; /* Keeps text width readable */
+    margin: 0 auto !important; /* Centers the text */
+    line-height: 1.4 !important; /* Improves readability */
+    color: #1f4870 !important; /* Forces the correct color */
+    text-align: center !important; /* Ensures it remains centered */
+    opacity: 0.9 !important; /* Slight transparency for a softer effect */
+    position: relative !important; /* Ensures it stays positioned correctly */
 }
+
+
 
 .hero-content a.btn-primary {
     margin-top: 20px;
