@@ -1,0 +1,14 @@
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center text-danger">⚠ Confirm Delete</h2>
+    <p class="text-center">Are you sure you want to delete the quiz: <strong>{{ quiz.title }}</strong>?</p>
+
+    <div class="d-flex justify-content-center">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'quizzes' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

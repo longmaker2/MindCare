@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from .models import Feature
-from .forms import Video_form
+from .forms import QuestionForm, Video_form
 from .forms import Video
 from .forms import MentorshipApplication
 from django.http import JsonResponse
@@ -145,6 +145,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
 from .models import Quiz, Question
+from .forms import QuizForm
 
 logger = logging.getLogger(__name__)
 
@@ -217,8 +218,8 @@ def dashboard(request):
 
     return render(request, 'dashboard.html')
 
-def training_materials(request):
-    return render(request, 'training_materials.html' )
+#def training_materials(request):
+    #return render(request, 'training_materials.html' )
 
 
 def contact(request):
@@ -641,10 +642,10 @@ def upload_video(request):
     
     return render(request, "upload_video.html", {"form": form})
 
-def training_materials(request):
-    """Allow all users to view and filter uploaded videos"""
-    videos = Video.objects.all()
-    return render(request, "training_materials.html", {"videos": videos})
+#def training_materials(request):
+   # """Allow all users to view and filter uploaded videos"""
+    #videos = Video.objects.all()
+    #return render(request, "training_materials.html", {"videos": videos})
 
 def is_admin(user):
     return user.is_authenticated and user.is_superuser
@@ -783,11 +784,24 @@ def login_view(request):
     
     return render(request, 'login.html')
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .forms import BookForm, ArticleForm, CourseForm
+#from .models import UserProfile
+
+def is_admin_or_professional(user):
+    """ Check if user is a superuser or a professional """
+    return user.is_superuser or getattr(user, "is_professional", False)
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from .forms import BookForm, ArticleForm, CourseForm
+
 @login_required
 def upload_book(request):
-    if not request.user.is_superuser:
-        return redirect('training_materials')  # Redirect non-superusers
-    
+    # ✅ Check if the user is a professional or a superuser
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
+        return redirect('training_materials')  # Restrict access
+
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
@@ -795,15 +809,15 @@ def upload_book(request):
             return redirect('training_materials')
     else:
         form = BookForm()
-    
+
     return render(request, 'upload_book.html', {'form': form})
 
 
 @login_required
 def upload_article(request):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
         return redirect('training_materials')
-    
+
     if request.method == 'POST':
         form = ArticleForm(request.POST)
         if form.is_valid():
@@ -811,15 +825,15 @@ def upload_article(request):
             return redirect('training_materials')
     else:
         form = ArticleForm()
-    
+
     return render(request, 'upload_article.html', {'form': form})
 
 
 @login_required
 def upload_course(request):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
         return redirect('training_materials')
-    
+
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
@@ -827,7 +841,7 @@ def upload_course(request):
             return redirect('training_materials')
     else:
         form = CourseForm()
-    
+
     return render(request, 'upload_course.html', {'form': form})
 
 
@@ -869,9 +883,15 @@ def user_dashboard(request):
 def my_view(request):
     from .models import CompletedCourse  # Move import inside function
 
-def quizzes(request):
-    quiz_list = Quiz.objects.all()
-    return render(request, 'quizzes.html', {'quizzes': quiz_list})
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Quiz, Professional
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Quiz
+
+
 def user_appointments(request):
     user_appointments = Appointment.objects.filter(client=request.user).order_by('-date')
     return render(request, 'user_appointments.html', {'appointments': user_appointments})
@@ -1370,3 +1390,175 @@ def set_language(request, lang_code):
         activate(lang_code)  # Apply the selected language
         request.session['django_language'] = lang_code  # Store in session
     return redirect(request.META.get('HTTP_REFERER', '/'))  # Return to previous page
+
+def about(request):
+    return render(request, 'about.html')
+
+@login_required
+def available_slots(request):
+    professionals = Professional.objects.all()  # Remove any invalid filtering
+
+    for professional in professionals:
+        professional.available_slots = [slot for slot in professional.available_slots if slot not in professional.booked_slots]
+
+    return render(request, "available_slots.html", {"professionals": professionals})
+
+@login_required
+def quizzes(request):
+    """Display quizzes and allow actions based on user role."""
+    quizzes = Quiz.objects.all()
+    
+    # ✅ Check if user is a superuser or has a professional profile
+    is_admin_or_professional = request.user.is_superuser or hasattr(request.user, 'professional_profile')
+
+    return render(request, "quizzes.html", {
+        "quizzes": quizzes, 
+        "is_admin_or_professional": is_admin_or_professional
+    })
+
+
+@login_required
+def upload_quiz(request):
+    """Allow **both** superusers and professionals to upload a quiz."""
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
+        messages.error(request, "You are not authorized to upload quizzes.")
+        return redirect('quizzes')
+
+    if request.method == 'POST':
+        quiz_form = QuizForm(request.POST)
+        question_forms = [QuestionForm(request.POST, prefix=str(i)) for i in range(3)]  # 3 question forms by default
+
+        if quiz_form.is_valid() and all(q_form.is_valid() for q_form in question_forms):
+            quiz = quiz_form.save()
+
+            for q_form in question_forms:
+                question = q_form.save(commit=False)
+                question.quiz = quiz
+                question.save()
+
+            messages.success(request, "Quiz and questions uploaded successfully!")
+            return redirect('quizzes')
+
+    else:
+        quiz_form = QuizForm()
+        question_forms = [QuestionForm(prefix=str(i)) for i in range(3)]
+
+    return render(request, 'upload_quiz.html', {
+        'quiz_form': quiz_form,
+        'question_forms': question_forms
+    })
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Quiz, Question
+from .forms import QuizForm, QuestionForm  # Ensure QuestionForm is imported
+
+def edit_quiz(request, quiz_id):
+    """View to allow superusers and professionals to edit quizzes and their questions."""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = Question.objects.filter(quiz=quiz)  # Fetch related questions
+
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
+        messages.error(request, "You are not authorized to edit quizzes.")
+        return redirect('quizzes')
+
+    if request.method == 'POST':
+        quiz_form = QuizForm(request.POST, instance=quiz)
+        question_forms = [QuestionForm(request.POST, instance=q, prefix=str(q.id)) for q in questions]
+
+        if quiz_form.is_valid() and all(q_form.is_valid() for q_form in question_forms):
+            quiz_form.save()
+
+            for q_form in question_forms:
+                q_form.save()
+
+            messages.success(request, "Quiz and questions updated successfully!")
+            return redirect('quizzes')
+
+    else:
+        quiz_form = QuizForm(instance=quiz)
+        question_forms = [QuestionForm(instance=q, prefix=str(q.id)) for q in questions]
+
+    return render(request, 'edit_quiz.html', {
+        'quiz_form': quiz_form,
+        'question_forms': question_forms,
+        'quiz': quiz
+    })
+
+
+@login_required
+def delete_quiz(request, quiz_id):
+    """Allow **both** superusers and professionals to delete quizzes."""
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    if not (request.user.is_superuser or hasattr(request.user, 'professional_profile')):
+        messages.error(request, "You are not authorized to delete quizzes.")
+        return redirect('quizzes')
+
+    if request.method == "POST":
+        quiz.delete()
+        messages.success(request, "Quiz deleted successfully!")
+        return redirect('quizzes')
+
+    return render(request, 'confirm_delete.html', {'quiz': quiz})
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import QuizResult, Quiz
+
+@login_required
+def submit_quiz(request, quiz_id):
+    if request.method == "POST":
+        user = request.user
+        quiz = Quiz.objects.get(id=quiz_id)
+        data = request.POST
+
+        # Calculate score
+        total_questions = len(data.getlist("questions"))
+        correct_answers = sum(1 for q in data.getlist("questions") if q in data.getlist("correct_answers"))
+        percentage = (correct_answers / total_questions) * 100
+        feedback = "🎉 Well done!" if percentage >= 70 else "❌ Try again!"
+
+        # Save result to database
+        result, created = QuizResult.objects.update_or_create(
+            user=user, quiz=quiz,
+            defaults={"score": correct_answers, "total_questions": total_questions, "feedback": feedback}
+        )
+
+        return JsonResponse({
+            "message": "Quiz submitted successfully!",
+            "percentage": percentage,
+            "feedback": feedback,
+        })
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def get_user_results(request):
+    user = request.user
+    results = QuizResult.objects.filter(user=user).select_related("quiz")
+
+    user_results = {result.quiz.id: {
+        "percentage": result.percentage,
+        "feedback": f"Your Score: {result.percentage}%"
+    } for result in results}
+
+    return JsonResponse({"user_results": user_results})
+
+
+@csrf_exempt
+def save_user_result(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user = request.user
+        quiz_id = data.get("quiz_id")
+        score = data.get("score")
+        percentage = data.get("percentage")
+
+        quiz = Quiz.objects.get(id=quiz_id)
+
+        result, created = QuizResult.objects.update_or_create(
+            user=user, quiz=quiz,
+            defaults={"score": score, "percentage": percentage}
+        )
+
+        return JsonResponse({"message": "Result saved", "percentage": percentage})

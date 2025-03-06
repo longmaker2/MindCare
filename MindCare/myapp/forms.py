@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Video
+from .models import Question, Video
 from .models import MentorshipApplication
 from .models import Professional
 
@@ -69,3 +69,29 @@ class BookUploadForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ["title", "pdf_file"]
+from django import forms
+from .models import Quiz
+
+from django import forms
+from .models import Quiz
+
+class QuizForm(forms.ModelForm):
+    """ Form to create a quiz. """
+    class Meta:
+        model = Quiz
+        fields = ['title', 'description', 'category']  # Only relevant fields
+class QuestionForm(forms.ModelForm):
+    """Form to create quiz questions with options as JSON."""
+    options = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), help_text="Enter options as a comma-separated list.")
+    
+    class Meta:
+        model = Question
+        fields = ['text', 'options', 'correct_answer']
+
+    def clean_options(self):
+        """Ensure options are stored as a JSON list."""
+        options = self.cleaned_data['options']
+        options_list = [option.strip() for option in options.split(',')]
+        if len(options_list) < 2:
+            raise forms.ValidationError("You must provide at least two options.")
+        return options_list  # Store as a list instead of string

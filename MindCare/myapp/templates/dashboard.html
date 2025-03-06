@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,114 +7,8 @@
     <title id="dashboard-title">User Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f4f4f9;
-            font-family: 'Arial', sans-serif;
-        }
-        .sidebar {
-            height: 100vh;
-            background-color: #1f4870;
-            color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            border-radius: 10px;
-        }
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 12px;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-        .sidebar a:hover {
-            background-color: #1abc9c;
-            transform: scale(1.05);
-        }
-        .logout-btn {
-            background-color: #e74c3c;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            text-decoration: none;
-            margin-top: auto;
-            transition: 0.3s;
-        }
-        .logout-btn:hover {
-            background-color: #c0392b;
-            transform: scale(1.05);
-        }
-        .dashboard-content {
-            padding: 20px;
-        }
-        .card {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border: none;
-            border-radius: 10px;
-            padding: 20px;
-        }
-        #notifications-container {
-    max-height: none; /* Remove the fixed height limit */
-    overflow-y: visible; /* Allow expansion without scrollbar */
-    border-radius: 10px;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #ddd;
-    transition: max-height 0.3s ease-in-out; /* Smooth transition */
-}
-
-        .alert {
-            display: flex;
-            align-items: center;
-            background: #f8f9fa;
-            border-left: 5px solid #dc3545;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-        .alert i {
-            color: #dc3545;
-            font-size: 20px;
-        }
-        .alert:hover {
-            background: #f1c6c6;
-        }
-        .alert strong {
-            font-weight: 600;
-        }
-        #clear-notifications {
-            width: 100%;
-            text-align: left;
-            transition: 0.3s;
-        }
-        #clear-notifications:hover {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        /* Hide extra notifications initially */
-        .hidden { display: none; }
-
-        /* Read More Button */
-        .read-more-btn {
-            background-color: #1f4870;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 5px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: 0.3s;
-            display: block;
-            margin: 10px auto;
-        }
-        .read-more-btn:hover { background-color: #16324f; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body>
     <div class="container-fluid">
@@ -121,7 +16,7 @@
             <nav class="col-md-3 col-lg-2 sidebar d-flex flex-column">
                 <h3 id="dashboard-header" class="text-center mb-4">Dashboard</h3>
                 <a href="{% url 'training_materials' %}" id="training-materials">📚 Training Materials</a>
-                <a href="{% url 'index' %}#professionals" class="btn-learn-more">📅 Book Appointment</a>
+                <a href="{% url 'available_slots' %}" class="btn-learn-more">📅 Book Appointment</a>
                 <a href="{% url 'anonymous_chat' %}" id="anonymous-chat">💬 User & Professionals</a>
                 <a href="{% url 'quizzes' %}" id="mental-health-quizzes">📝 Mental Health Quizzes</a>
                 <a href="{% url 'user_appointments' %}" id="my-appointments">📆 My Appointments</a>
@@ -153,102 +48,59 @@
                             <p class="text-muted">No notifications available.</p>
                         {% endfor %}
                     </div>
-                
-                    <!-- Read More Button -->
-                    {% if notifications|length > 5 %}
-                        <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
-                    {% endif %}
-                </div>
-                
-                    <!-- Read More Button -->
-                    {% if notifications|length > 5 %}
-                        <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
-                    {% endif %}
+                    <button id="read-more-btn" class="btn btn-primary mt-3" onclick="toggleMore()" style="display: none;">See More</button>
                 </div>
             </main>
         </div>
     </div>
-
-    <!-- JavaScript to handle Read More functionality -->
     <script>
         function toggleMore() {
-            let hiddenRows = document.querySelectorAll('.hidden');
-            let button = document.getElementById('read-more-btn');
-            
-            if (hiddenRows.length > 0) {
-                hiddenRows.forEach(row => row.classList.remove('hidden'));
-                button.innerText = 'Show Less';
-            } else {
-                let rows = document.querySelectorAll('.notification-row');
-                rows.forEach((row, index) => {
-                    if (index >= 5) row.classList.add('hidden');
-                });
-                button.innerText = 'See More';
-            }
-        }
-    </script>
-<script>
-    function toggleMore() {
-        let hiddenRows = document.querySelectorAll('.hidden');
-        let button = document.getElementById('read-more-btn');
-        
-        if (hiddenRows.length > 0) {
-            hiddenRows.forEach(row => row.classList.remove('hidden'));
-            button.innerText = 'Show Less';
-        } else {
-            let rows = document.querySelectorAll('.notification-row');
-            rows.forEach((row, index) => {
-                if (index >= 5) row.classList.add('hidden');
-            });
-            button.innerText = 'See More';
-        }
+    let hiddenRows = document.querySelectorAll('.notification-row.hidden');
+    let button = document.getElementById('read-more-btn');
+
+    if (hiddenRows.length > 0) {
+        hiddenRows.forEach(row => row.classList.remove('hidden'));
+        button.innerText = 'Show Less';
+    } else {
+        let rows = document.querySelectorAll('.notification-row');
+        rows.forEach((row, index) => {
+            if (index >= 5) row.classList.add('hidden');
+        });
+        button.innerText = 'See More';
     }
+}
 
-    function fetchNotifications() {
-        fetch("{% url 'fetch_notifications' %}?nocache=" + new Date().getTime())  // ✅ Prevent caching
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched Notifications:", data);
-                const container = document.getElementById("notifications-container");
-                container.innerHTML = "";
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("{% url 'fetch_notifications' %}")
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById("notifications-container");
+            container.innerHTML = "";
 
-                if (data.notifications.length > 0) {
-                    data.notifications.forEach((notif, index) => {
-                        let hiddenClass = index >= 5 ? 'hidden' : ''; // Hide extra notifications initially
-                        container.innerHTML += `
-                            <div class="alert notification-row ${hiddenClass}">
-                                <i class="fas fa-bell me-3"></i>
-                                <div>
-                                    <strong>${notif.message}</strong><br>
-                                    <small class="text-muted">${notif.created_at}</small>
-                                </div>
+            if (data.notifications.length > 0) {
+                data.notifications.forEach((notification, index) => {
+                    let hiddenClass = index >= 5 ? 'hidden' : ''; // Hide notifications beyond 5
+                    container.innerHTML += `
+                        <div class="alert notification-row ${hiddenClass}">
+                            <i class="fas fa-bell me-3"></i>
+                            <div>
+                                <strong>${notification.message}</strong><br>
+                                <small class="text-muted">${notification.created_at}</small>
                             </div>
-                        `;
-                    });
+                        </div>`;
+                });
 
-                    // ✅ Add "See More" Button if Needed
-                    if (data.notifications.length > 5) {
-                        if (!document.getElementById("read-more-btn")) {
-                            container.insertAdjacentHTML("afterend", `
-                                <button id="read-more-btn" class="read-more-btn" onclick="toggleMore()">See More</button>
-                            `);
-                        }
-                    } else {
-                        let btn = document.getElementById("read-more-btn");
-                        if (btn) btn.remove();
-                    }
-
-                } else {
-                    container.innerHTML = "<p class='text-muted'>No notifications available.</p>";
+                // Show "See More" button only if there are more than 5 notifications
+                if (data.notifications.length > 5) {
+                    document.getElementById("read-more-btn").style.display = "block";
                 }
-            })
-            .catch(error => console.error("Error fetching notifications:", error));
-    }
+            } else {
+                container.innerHTML = "<p class='text-muted'>No notifications available.</p>";
+            }
+        })
+        .catch(error => console.error("Error fetching notifications:", error));
+});
 
-    // ✅ Fetch new notifications every 5 seconds
-    setInterval(fetchNotifications, 5000);
-    document.addEventListener("DOMContentLoaded", fetchNotifications);
-</script>
-
+    </script>
 </body>
 </html>

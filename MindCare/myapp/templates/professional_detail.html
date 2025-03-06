@@ -72,7 +72,7 @@
     border-radius: 10px;
     border: none;
     cursor: pointer;
-    background-color: #28a745;
+    background-color: #1f4870;
     color: white;
     transition: all 0.3s ease-in-out;
     text-align: center;
@@ -80,7 +80,7 @@
 
 
         .slot-btn:hover {
-            background-color: #218838;
+            background-color: #1f4870;
         }
         .slot-btn.booked {
             background-color: #dc3545;
@@ -331,10 +331,10 @@
                             {% endif %}
                         </div>
                     {% endif %}
-                    
+                    {% if user.is_authenticated %}
 
                         <button class="book-appointment-btn mt-3" onclick="openBookingModal()">📅 Book Appointment</button>
-                        
+                    {% endif %}    
                     </div>
 
                 </div>

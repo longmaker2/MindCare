@@ -214,10 +214,80 @@ quiz-options {
     background: #163754 !important;
     transform: scale(1.05);
 }
+/* Three-dot menu button */
+.quiz-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 22px;
+    background: none;
+    border: none;
+    color: #1f4870;
+    padding: 5px;
+    transition: 0.3s;
+}
+
+.quiz-menu:hover {
+    color: #163754;
+    transform: scale(1.1);
+}
+
+/* Dropdown menu */
+.quiz-dropdown {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 200;
+}
+
+/* Show dropdown when active */
+.quiz-dropdown.active {
+    display: flex;
+}
+
+/* Edit & Delete buttons */
+.quiz-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: #1f4870;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.quiz-dropdown a:hover {
+    color: white;
+    background: #1f4870;
+    border-radius: 5px;
+}
+
+/* Icons inside dropdown */
+.quiz-dropdown a i {
+    font-size: 16px;
+}
+
 
     </style>
 </head>
 <body>
+              {% if is_admin_or_professional %}
+
+                <div class="text-center my-3">
+                    <a href="{% url 'upload_quiz' %}" class="btn btn-primary">➕ Upload New Quiz</a>
+                </div>
+            {% endif %}
+            
+        
     <div class="container py-4">
         <h2 class="text-center mb-4">📝 Take a Quiz</h2>
         <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
@@ -277,40 +347,65 @@ function fetchQuizzes() {
 
 function displayQuizzes(quizzes) {
     let quizContainer = document.getElementById("quizContainer");
-    quizContainer.innerHTML = '';
+    quizContainer.innerHTML = ''; // ✅ Clear previous content
+
+    let currentUser = "{{ user.username }}"; // ✅ Get the logged-in user
+    let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {}; // ✅ Store user-specific progress
+
+    let isSuperuser = "{{ user.is_superuser }}" === "True";  // ✅ Check if user is an admin
+    let isProfessional = "{{ is_admin_or_professional }}" === "True"; // ✅ Check if user is professional
 
     quizzes.forEach(quiz => {
-        let quizData = quizScores[quiz.id] || { percentage: 0 };
-        let hasAttempted = quizData.percentage > 0;
-        let passed = quizData.percentage >= PASSING_SCORE;
+        let userProgress = quizProgress[currentUser]?.[quiz.id] || { percentage: null, feedback: "" }; // ✅ Load user’s quiz progress
+        let hasAttempted = userProgress.percentage !== null;
+        let passed = userProgress.percentage >= 70;
 
-        let buttonText = hasAttempted
-            ? (passed ? "View Score 📊" : "Retake Quiz 🔄")
-            : "Start Quiz 📝";
-        let buttonClass = hasAttempted
-            ? (passed ? "btn-info" : "btn-warning")
-            : "btn-primary";
+        // ✅ Set dynamic button text
+        let buttonText = "Start Quiz";
+        if (hasAttempted) {
+            buttonText = passed ? "View Results" : "Retake Quiz";
+        }
+
+        let editButtons = "";
+        if (isSuperuser || isProfessional) {
+            editButtons = `
+                <button class="quiz-menu" onclick="toggleMenu('${quiz.id}')">⋮</button>
+                <div id="quiz-menu-${quiz.id}" class="quiz-dropdown">
+                    <a href="/quizzes/edit/${quiz.id}/"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="/quizzes/delete/${quiz.id}/" class="text-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                </div>
+            `;
+        }
 
         let colDiv = document.createElement("div");
         colDiv.classList.add("col-md-4", "mb-4");
 
         colDiv.innerHTML = `
-            <div class="card quiz-card">
+            <div class="card quiz-card position-relative p-3">
+                ${editButtons} <!-- ✅ Add edit/delete buttons only for professionals & superusers -->
                 <div class="card-body">
                     <h5 class="card-title">${quiz.title}</h5>
                     <p class="card-text text-muted">${quiz.description}</p>
-                    <button class="btn ${buttonClass} w-100" onclick="openQuiz(${quiz.id})">
-                        ${buttonText}
+                    <button class="btn btn-primary w-100" onclick="openQuiz(${quiz.id})">
+                        ${buttonText} 📝
                     </button>
+
+                    <!-- ✅ Show feedback only for quizzes this user has attempted -->
+                    ${hasAttempted ? `
+                        <div class="quiz-feedback mt-3">
+                            <h6>📊 Your Results:</h6>
+                            <p><strong>Score:</strong> ${userProgress.percentage}%</p>
+                            <p>${userProgress.feedback}</p>
+                        </div>
+                    ` : ""}
                 </div>
             </div>
         `;
 
         quizContainer.appendChild(colDiv);
     });
-
-    updateProgress();
 }
+
 
 function openQuiz(quizId) {
     fetch(`/api/quiz/${quizId}/`)
@@ -385,7 +480,6 @@ function submitQuiz() {
         let userAnswer = userAnswers[index] || "No Answer";
         let isCorrect = userAnswer === question.correct_answer;
 
-        // ✅ Show feedback only for wrong answers
         let feedbackDiv = document.getElementById(`result${index}`);
         if (!isCorrect) {
             feedbackDiv.innerHTML = `<span class="text-danger fw-bold">❌ Incorrect</span>`;
@@ -402,19 +496,25 @@ function submitQuiz() {
 
     let percentage = (score / totalQuestions) * 100;
     let feedback = `<h4>Your Score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)</h4><hr />`;
-    let message = percentage >= PASSING_SCORE
+    let message = percentage >= 70
         ? `<div class="alert alert-success">🎉 Congratulations! You passed this quiz.</div>`
         : `<div class="alert alert-danger">❌ You did not pass. Try again!</div>`;
 
     quizResults.innerHTML = message + feedback + quizResults.innerHTML;
 
-    quizScores[selectedQuiz.id] = { score, percentage, feedback, userAnswers };
-    localStorage.setItem("quizScores", JSON.stringify(quizScores));
+    let currentUser = "{{ user.username }}"; // ✅ Get logged-in user
+    let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {}; // ✅ Load progress
+    quizProgress[currentUser] = quizProgress[currentUser] || {}; // ✅ Ensure user's data exists
+    quizProgress[currentUser][selectedQuiz.id] = { percentage, feedback, userAnswers }; // ✅ Save progress for this user
+
+    localStorage.setItem("quizProgress", JSON.stringify(quizProgress)); // ✅ Store progress
 
     document.getElementById("submitBtn").classList.add("d-none");
     document.getElementById("retakeBtn").classList.remove("d-none");
 
-    fetchQuizzes();
+    // ✅ Update quiz button immediately after submission
+    updateQuizButton(selectedQuiz.id, percentage);
+
     setTimeout(updateProgress, 500);
 }
 
@@ -444,6 +544,20 @@ function retakeQuiz() {
 
 function closeQuiz() {
     document.getElementById("quizModal").classList.remove("show");
+}
+
+function updateQuizButton(quizId, percentage) {
+    let quizButton = document.querySelector(`[onclick="openQuiz(${quizId})"]`);
+
+    if (quizButton) {
+        if (percentage >= 70) {
+            quizButton.innerText = "View Results 🏆";
+            quizButton.classList.replace("btn-primary", "btn-success"); // ✅ Change color if passed
+        } else {
+            quizButton.innerText = "Retake Quiz 🔄";
+            quizButton.classList.replace("btn-primary", "btn-warning"); // ✅ Change color if failed
+        }
+    }
 }
 
 function updateProgress() {
@@ -480,7 +594,34 @@ function updateProgress() {
         }
     });
 }
+console.log("Superuser:", "{{ user.is_superuser }}");
 
 </script>
+<script>
+    function toggleMenu(quizId) {
+        let menu = document.getElementById(`quiz-menu-${quizId}`);
+    
+        if (menu) {
+            menu.classList.toggle("active");
+        }
+    
+        // Close other open menus
+        document.querySelectorAll(".quiz-dropdown").forEach(dropdown => {
+            if (dropdown.id !== `quiz-menu-${quizId}`) {
+                dropdown.classList.remove("active");
+            }
+        });
+    }
+    
+    // Close dropdown if clicked outside
+    document.addEventListener("click", function(event) {
+        if (!event.target.matches(".quiz-menu")) {
+            document.querySelectorAll(".quiz-dropdown").forEach(menu => {
+                menu.classList.remove("active");
+            });
+        }
+    });
+    </script>
+    
 </body>
 </html>

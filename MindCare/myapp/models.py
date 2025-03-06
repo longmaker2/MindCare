@@ -305,3 +305,16 @@ class Notification(models.Model):
     def __str__(self):
         return f"Notification for {self.recipient.username} - {self.message[:30]}..."
     
+from django.db import models
+from django.contrib.auth.models import User
+
+class QuizResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE)
+    score = models.FloatField()
+    total_questions = models.IntegerField()
+    feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def percentage(self):
+        return (self.score / self.total_questions) * 100

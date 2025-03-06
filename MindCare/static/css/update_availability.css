@@ -1,0 +1,162 @@
+/* ✅ General Page Styling */
+body {
+  background-color: #f2f7fc;
+  font-family: 'Arial', sans-serif;
+  color: #1f4870;
+}
+
+/* ✅ Centered Card (Moved Down) */
+.container {
+  max-width: 600px;
+  margin-top: 80px; /* Increased from 50px to 80px to move it down */
+}
+
+/* ✅ Card Design */
+.card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0px 4px 12px rgba(31, 72, 112, 0.3);
+  transition: 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* ✅ Title Styling (Fixing Incorrect Color) */
+h3.card-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f4870 !important;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ✅ Subtitle Text */
+p {
+  text-align: center;
+  font-size: 16px;
+  color: #1f4870;
+}
+
+/* ✅ Form Styling */
+label {
+  font-weight: bold;
+  color: #1f4870;
+}
+
+/* ✅ Input Fields */
+.form-control {
+  border: 2px solid #1f4870 !important;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #1f4870 !important;
+  transition: 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #1f4870 !important;
+  box-shadow: 0 0 8px rgba(31, 72, 112, 0.5);
+  outline: none;
+}
+
+/* ✅ Available Slots List */
+.list-group-item {
+  background-color: #ffffff;
+  border: 2px solid #1f4870 !important;
+  color: #1f4870 !important;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: 0.3s ease-in-out;
+}
+
+.list-group-item:hover {
+  background-color: #1f4870 !important;
+  color: #ffffff !important;
+  cursor: pointer;
+}
+
+/* ✅ Remove Slot Button */
+.btn-danger {
+  background-color: #1f4870 !important;
+  border: none;
+  transition: 0.3s ease-in-out;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #16324f !important;
+  transform: scale(1.05);
+}
+
+/* ✅ Save Availability Button (Fixed Color) */
+.btn-primary {
+  background-color: #1f4870 !important;
+  border: none;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+  width: 100%;
+  text-align: center;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #16324f !important;
+  transform: scale(1.05);
+}
+
+/* ✅ Back to Dashboard Button (Fixed Color) */
+.btn-secondary {
+  background-color: #1f4870 !important;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+  width: 100%;
+  text-align: center;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #16324f !important;
+}
+
+/* ✅ Fixed Back Button */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #1f4870 !important;
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.back-button:hover {
+  background-color: #16324f !important;
+  transform: scale(1.05);
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .container {
+      width: 90%;
+      margin-top: 100px; /* Further adjust spacing for smaller screens */
+  }
+
+  .btn-primary,
+  .btn-secondary {
+      font-size: 14px;
+      padding: 10px 14px;
+  }
+}

@@ -1,0 +1,647 @@
+/* Hero Section */
+.hero-content {
+    position: relative;
+    width: 100%;
+    height: 90vh; /* Full screen height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url('/static/assets/img/erica.webp') no-repeat center center;
+    background-size: cover;
+    padding: 20px;
+}
+
+.hero-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(249, 249, 242, 0.8); /* Beige overlay */
+    z-index: 1;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    z-index: 2;
+    max-width: 70%;
+    margin: 0 auto;
+    line-height: 1.4;
+    color: #1f4870; /* Dark blue text */
+}
+
+.hero-content a.btn-primary {
+    margin-top: 20px;
+    z-index: 2;
+    background-color: #1f4870;
+    color: white;
+    border: 2px solid #1f4870;
+    padding: 14px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero-content a.btn-primary:hover {
+    background-color: white;
+    color: #1f4870;
+    border: 2px solid #1f4870;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content {
+        height: 75vh;
+    }
+
+    .hero-content h1 {
+        font-size: 2.2rem;
+        max-width: 85%;
+    }
+
+    .hero-content a.btn-primary {
+        font-size: 1rem;
+        padding: 12px 25px;
+    }
+}
+
+.section-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #1f4870; /* Main color */
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.section-title span {
+  color: rgb(41, 22, 146); /* Highlight effect */
+}
+
+/* About Us Section */
+.about-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #f8f9fa;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.about-slider-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 60%;
+  margin: auto;
+}
+
+.about-slider {
+  display: flex;
+  width: 400%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.about-card {
+  flex: 1;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: 40px;
+  background: #ffffff;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.about-card h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f4870;
+  margin-bottom: 15px;
+}
+
+.about-card p {
+  font-size: 1.2rem;
+  color: #1f4870;
+  line-height: 1.6;
+  max-width: 80%;
+  margin: auto;
+}
+
+.btn-get-started, .btn-cta, .btn-learn-more {
+  display: inline-block;
+  background: #1f4870;
+  color: white;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-get-started:hover, .btn-cta:hover, .btn-learn-more:hover {
+  background: #163754;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.about-navigation {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.nav-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 5px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.nav-dot.active {
+  background: #1f4870;
+  transform: scale(1.2);
+}
+
+.about-card#what-we-do {
+  background: #ffffff; /* White background */
+  border-left: 5px solid #1f4870; /* Professional left border */
+  padding: 50px;
+  text-align: left;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: transform 0.3s ease-in-out;
+}
+
+.about-card#what-we-do:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.about-card#what-we-do h2 {
+  font-size: 2rem;
+  color: #1f4870;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.about-card#what-we-do p {
+  font-size: 1.2rem;
+  color: #333;
+  line-height: 1.6;
+  max-width: 85%;
+  margin-bottom: 20px;
+}
+
+.about-card#what-we-do .features {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.about-card#what-we-do .features li {
+  font-size: 1.1rem;
+  color: #444;
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.about-card#what-we-do .features i {
+  color: #1f4870;
+  margin-right: 10px;
+  font-size: 1.4rem;
+}
+
+/* CTA Button (Get Started) */
+.btn-cta {
+  display: inline-block;
+  background: linear-gradient(135deg, #1f4870, #163754);
+  color: white;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cta:hover {
+  background: #163754;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Features Section */
+/* Enhanced Features Section Styling */
+.features-section {
+  padding: 100px 0;
+  background: var(--secondary-color);
+  text-align: center;
+}
+
+.features-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 50px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Feature Box Styling */
+.feature-box {
+  background: var(--light-text);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.feature-box h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.feature-box p {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  line-height: 1.7;
+}
+
+/* Hover Effect */
+.feature-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Decorative Background Effect */
+.feature-box::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: rgba(255, 193, 7, 0.1);
+  transition: 0.4s ease-in-out;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.feature-box:hover::before {
+  top: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .features-section h2 {
+      font-size: 2rem;
+  }
+  .feature-box {
+      padding: 30px;
+  }
+}
+
+
+/* Professionals Section */
+/* Professionals Section */
+.professionals {
+    padding: 100px 0;
+    background: var(--secondary-color);
+    text-align: center;
+}
+
+.professionals .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Professional Member Card */
+.member {
+    background: var(--light-text);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.member img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.member h4 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.member p {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+/* Hover Effects */
+.member:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.member:hover img {
+    transform: scale(1.05);
+}
+
+/* Book Appointment Button */
+.book-appointment-btn {
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.book-appointment-btn:hover {
+    background: var(--accent-color);
+    color: var(--text-color);
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .professionals .section-title {
+        font-size: 2rem;
+    }
+    .member {
+        padding: 30px;
+    }
+}
+/* Professionals Section */
+.professionals {
+  padding: 100px 0;
+  background: var(--secondary-color);
+  text-align: center;
+}
+
+.professionals .section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 50px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
+.professionals p {
+  text-transform: none;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+/* Professional Member Card */
+.member {
+  background: var(--light-text);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.member img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.member h4 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-top: 10px;
+}
+
+.member p {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+/* Hover Effects */
+.member:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.member:hover img {
+  transform: scale(1.05);
+}
+
+/* Book Appointment Button */
+.book-appointment-btn {
+  background: var(--primary-color);
+  color: var(--light-text);
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.book-appointment-btn:hover {
+  background: var(--accent-color);
+  color: var(--text-color);
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .professionals .section-title {
+      font-size: 2rem;
+  }
+  .member {
+      padding: 30px;
+  }
+}
+/* Professionals Section */
+.professionals {
+    padding: 100px 0;
+    background: var(--secondary-color);
+    text-align: center;
+}
+
+.professionals .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
+.professionals p {
+    text-transform: none;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+/* Professional Member Card */
+.member {
+    background: var(--light-text);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.member img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.member h4 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.member p {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+/* Hover Effects */
+.member:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.member:hover img {
+    transform: scale(1.05);
+}
+
+/* Book Appointment Button */
+.book-appointment-btn {
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.book-appointment-btn:hover {
+    background: var(--accent-color);
+    color: var(--text-color);
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .professionals .section-title {
+        font-size: 2rem;
+    }
+    .member {
+        padding: 30px;
+    }
+}
+
+/* Appointment Modal */
+#appointment-modal .modal-content {
+  border-radius: 10px;
+}
+
+#appointment-modal .modal-header {
+  background: var(--primary-color);
+  color: var(--light-text);
+  border-radius: 10px 10px 0 0;
+}
+
+#appointment-modal .btn-close {
+  background: var(--light-text);
+}
+
+#appointment-modal .btn-primary {
+  background: var(--accent-color);
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+#appointment-modal .btn-primary:hover {
+  background: #4100e6;
+}
+
+/* Success Popup */
+#success-popup {
+  display: none;
+  background: green;
+  color: white;
+  padding: 15px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  border-radius: 5px;
+  z-index: 1000;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+#success-popup a {
+  color: yellow;
+  font-weight: bold;
+}

@@ -273,3 +273,7 @@
   new PureCounter();
 
 })()
+
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("MindCare JS Loaded!");
+});

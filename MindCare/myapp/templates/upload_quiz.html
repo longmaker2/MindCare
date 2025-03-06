@@ -1,0 +1,46 @@
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/upload_quiz.css' %}">
+<div class="container py-4">
+    <h2 class="text-center">Upload New Quiz</h2>
+
+    <div class="d-flex justify-content-center">
+        <form method="post" class="w-75 bg-white p-4 rounded shadow">
+            {% csrf_token %}
+
+            <h4>Quiz Details</h4>
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                {{ quiz_form.title }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ quiz_form.description }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                {{ quiz_form.category }}
+            </div>
+
+            <h4>Questions & Options</h4>
+            {% for form in question_forms %}
+                <div class="question-box border p-3 my-2">
+                    <label>Question:</label>
+                    {{ form.text }}
+                    <label>Options (comma-separated):</label>
+                    {{ form.options }}
+                    <label>Correct Answer:</label>
+                    {{ form.correct_answer }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Upload Quiz</button>
+        </form>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'quizzes' %}" class="btn btn-secondary">⬅ Back to Quizzes</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/edit_quiz.css' %}">
+<div class="container mt-4">
+    <h2>Edit Quiz</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Quiz Title & Description -->
+        <div class="mb-3">
+            <label class="form-label">Quiz Title</label>
+            {{ quiz_form.title }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quiz Description</label>
+            {{ quiz_form.description }}
+        </div>
+
+        <h4>Questions</h4>
+
+        {% for question_form in question_forms %}
+        <div class="mb-3 p-3 border rounded bg-light">
+            <label class="form-label">Question {{ forloop.counter }}</label>
+            {{ question_form.text }}
+
+            <label class="form-label">Options (comma-separated)</label>
+            {{ question_form.options }}
+
+            <label class="form-label">Correct Answer</label>
+            {{ question_form.correct_answer }}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success mt-3">Save Changes</button>
+        <a href="{% url 'quizzes' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us | MindCare{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-card">
+        <h2>About <span class="highlight">MindCare</span></h2>
+        <p class="sub-text">Empowering minds, transforming lives.</p>
+
+        <div class="about-content">
+            <h3><i class="bi bi-eye"></i> Our Vision</h3>
+            <p>
+                To create a world where mental health support is readily available, empowering individuals 
+                to lead fulfilling lives with emotional resilience.
+            </p>
+
+            <h3><i class="bi bi-bullseye"></i> Our Mission</h3>
+            <p>
+                To provide a secure and user-friendly platform that connects individuals 
+                with mental health resources, professionals, and self-care tools to 
+                enhance their emotional and psychological well-being.
+            </p>
+        </div>
+
+        <ul class="features">
+            <li><i class="bi bi-clock"></i> <strong>24/7 Support:</strong> Get assistance anytime, anywhere.</li>
+            <li><i class="bi bi-person"></i> <strong>Personalized Guidance:</strong> Expert recommendations tailored to you.</li>
+            <li><i class="bi bi-heart"></i> <strong>Interactive Tools:</strong> Assessments, journaling, and self-care activities.</li>
+            <li><i class="bi bi-shield"></i> <strong>Secure & Confidential:</strong> Your privacy and safety are our top priorities.</li>
+        </ul>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'login' %}" class="btn-learn-more">Get Started</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Center About Section */
+    .about-container {
+        text-align: center;
+        max-width: 800px;
+        margin: auto;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-card h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1f4870;
+        margin-bottom: 10px;
+    }
+
+    .sub-text {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .about-content h3 {
+        font-size: 1.8rem;
+        color: #1f4870;
+        margin-top: 20px;
+    }
+
+    .about-content p {
+        font-size: 1.1rem;
+        color: #666;
+        text-align: justify;
+        margin-bottom: 20px;
+    }
+
+    .features {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    .features li {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+    }
+
+    .features li i {
+        color: #1f4870;
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+
+    .btn-learn-more {
+        display: inline-block;
+        background: #1f4870;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .btn-learn-more:hover {
+        background: #163754;
+        transform: scale(1.1);
+    }
+</style>
+
+{% endblock %}

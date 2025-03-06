@@ -1,0 +1,348 @@
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/slots.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'css/available_slots.css' %}">
+
+<div class="container mt-5">
+<a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+
+    <div class="section-title text-center">
+        <h2>Meet Our Professionals</h2>
+        <p>Connect with experienced mental health professionals ready to support you.</p>
+    </div>
+
+    <!-- PROFESSIONALS SECTION -->
+    <div class="row d-flex flex-row flex-nowrap overflow-auto">
+        {% for professional in professionals %}
+        <div class="col-md-4">
+            <div class="card shadow-lg text-center p-3">
+                {% if professional.image %}
+                <img src="{{ professional.image.url }}" class="img-fluid rounded-circle mx-auto d-block" alt="{{ professional.name }}" style="width: 120px; height: 120px;">
+                {% else %}
+                <img src="{% static 'assets/images/default.png' %}" class="img-fluid rounded-circle mx-auto d-block" alt="Default Image" style="width: 120px; height: 120px;">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ professional.name }}</h5>
+                    <p class="text-muted">{{ professional.specialty }}</p>
+
+                    {% if user.is_authenticated %}
+                    <p><strong>Available Slots:</strong></p>
+                    <ul id="available-slots-{{ professional.id }}" class="list-unstyled">
+                        {% for slot in professional.available_slots %}
+                        {% if slot not in professional.booked_slots %}
+                        <li class="text-success"><i class="bi bi-clock"></i> {{ slot }}</li>
+                        {% endif %}
+                        {% empty %}
+                        <p class="text-muted">No available slots</p>
+                        {% endfor %}
+                    </ul>
+                    <button class="btn btn-primary book-appointment-btn mt-3" 
+    data-professional-id="{{ professional.id }}" 
+    data-professional-name="{{ professional.name }}" 
+    data-specialty="{{ professional.specialty }}"
+    data-available-slots="{% for slot in professional.available_slots %}{% if slot not in professional.booked_slots %}{{ slot }},{% endif %}{% endfor %}"
+    data-booked-slots="{{ professional.booked_slots|join:',' }}">
+    <i class="bi bi-calendar-check"></i> Book Appointment
+</button>
+
+                    
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No professionals available at the moment.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Appointment Booking Modal -->
+<div id="appointment-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Book Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="appointment-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="professional" id="modal-professional-id">
+
+                    <p>Booking with: <strong id="modal-professional-name"></strong></p>
+                    <p>Specialty: <span id="modal-specialty"></span></p>
+
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Select Date:</label>
+                        <input type="date" class="form-control" name="date" id="appointment-date" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="time" class="form-label">Select Time:</label>
+                        <select class="form-select" name="time" id="appointment-time" required></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason:</label>
+                        <textarea class="form-control" name="reason" placeholder="Enter appointment reason" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Confirm Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div id="success-popup" class="alert alert-success position-fixed top-0 end-0 m-3" style="display: none; z-index: 1050;">
+    Appointment confirmed! A Google Meet link has been sent to your email.
+    <br>
+    <a id="meet-link" href="#" class="text-white font-weight-bold" target="_blank"></a>
+</div>
+<!-- Bootstrap CSS (Already included in your project) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<!-- Bootstrap JS (Required for modal to work) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  let today = new Date().toISOString().split("T")[0];
+  document.getElementById("appointment-date").setAttribute("min", today);
+
+  document.querySelectorAll(".book-appointment-btn").forEach(button => {
+      button.addEventListener("click", function () {
+          let professionalId = this.getAttribute("data-professional-id");
+          let professionalName = this.getAttribute("data-professional-name");
+          let specialty = this.getAttribute("data-specialty");
+
+          let availableSlotsAttr = this.getAttribute("data-available-slots");
+          let availableSlots = availableSlotsAttr ? availableSlotsAttr.split(",") : [];
+
+          console.log("Available slots received:", availableSlots);  // ✅ Debugging
+
+          // Update modal fields
+          document.getElementById("modal-professional-id").value = professionalId;
+          document.getElementById("modal-professional-name").textContent = professionalName;
+          document.getElementById("modal-specialty").textContent = specialty;
+
+          let timeSelect = document.getElementById("appointment-time");
+          timeSelect.innerHTML = "";
+
+          if (availableSlots.length === 0 || availableSlots[0] === "") {
+              let option = document.createElement("option");
+              option.textContent = "No available slots";
+              option.disabled = true;
+              option.selected = true;
+              timeSelect.appendChild(option);
+          } else {
+              availableSlots.forEach(slot => {
+                  let option = document.createElement("option");
+                  option.value = slot.trim();
+                  option.textContent = slot.trim();
+                  timeSelect.appendChild(option);
+              });
+          }
+
+          // Open modal
+          let modalElement = document.getElementById("appointment-modal");
+          let modalInstance = new bootstrap.Modal(modalElement);
+          modalInstance.show();
+      });
+  });
+
+  // Handle form submission
+  document.getElementById("appointment-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let formData = new FormData(this);
+      let professionalId = formData.get("professional");
+      let selectedSlot = formData.get("time");
+
+      fetch("/book_appointment/", {
+          method: "POST",
+          body: formData,
+          headers: {
+              "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.message) {
+              alert("Appointment booked! Check your email for the Google Meet link.");
+
+              document.getElementById("meet-link").href = data.google_meet_link;
+              document.getElementById("meet-link").textContent = "Join Google Meet";
+              document.getElementById("success-popup").style.display = "block";
+
+              let modalElement = document.getElementById("appointment-modal");
+              let modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance.hide();
+
+              document.getElementById("appointment-form").reset();
+          } else {
+              alert(data.error || "Failed to book appointment.");
+          }
+      })
+      .catch(error => {
+          console.error("Error booking appointment:", error);
+          alert("Error booking appointment. Please try again.");
+      });
+  });
+});
+</script>
+<script>document.addEventListener("DOMContentLoaded", function () {
+  let today = new Date().toISOString().split("T")[0];
+  document.getElementById("appointment-date").setAttribute("min", today);
+
+  document.querySelectorAll(".book-appointment-btn").forEach(button => {
+      button.addEventListener("click", function () {
+          let professionalId = this.getAttribute("data-professional-id");
+          let professionalName = this.getAttribute("data-professional-name");
+          let specialty = this.getAttribute("data-specialty");
+          let availableSlots = this.getAttribute("data-available-slots") ? this.getAttribute("data-available-slots").split(",") : [];
+
+          document.getElementById("modal-professional-id").value = professionalId;
+          document.getElementById("modal-professional-name").textContent = professionalName;
+          document.getElementById("modal-specialty").textContent = specialty;
+
+          let timeSelect = document.getElementById("appointment-time");
+          timeSelect.innerHTML = "";
+
+          if (availableSlots.length === 0) {
+              let option = document.createElement("option");
+              option.textContent = "No available slots";
+              option.disabled = true;
+              option.selected = true;
+              timeSelect.appendChild(option);
+          } else {
+              availableSlots.forEach(slot => {
+                  let option = document.createElement("option");
+                  option.value = slot;
+                  option.textContent = slot;
+                  timeSelect.appendChild(option);
+              });
+          }
+
+          let modalElement = document.getElementById("appointment-modal");
+          let modalInstance = new bootstrap.Modal(modalElement);
+          modalInstance.show();
+      });
+  });
+
+  // ✅ Handle appointment form submission
+  document.getElementById("appointment-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let formData = new FormData(this);
+      let professionalId = formData.get("professional");
+      let selectedSlot = formData.get("time");
+      let date = formData.get("date");
+      let reason = formData.get("reason");
+
+      console.log("Submitting appointment:", { professionalId, selectedSlot, date, reason }); // ✅ Debugging step
+
+      let submitButton = this.querySelector("button[type='submit']");
+      submitButton.disabled = true;
+      submitButton.textContent = "Booking...";
+
+      fetch("{% url 'book_appointment' %}", {
+          method: "POST",
+          body: formData,
+          headers: {
+              "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log("Response received:", data); // ✅ Debugging step
+
+          if (data.message) {
+              let meetLink = data.google_meet_link;
+              alert("Appointment booked! Check your email for the Google Meet link.");
+
+              document.getElementById("meet-link").href = meetLink;
+              document.getElementById("meet-link").textContent = "Join Google Meet";
+              document.getElementById("success-popup").style.display = "block";
+
+              let modalElement = document.getElementById("appointment-modal");
+              let modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance.hide();
+
+              document.getElementById("appointment-form").reset();
+          } else {
+              alert(data.error || "Failed to book appointment.");
+          }
+      })
+      .catch(error => {
+          console.error("Error booking appointment:", error);
+          alert("Error booking appointment. Please try again.");
+      })
+      .finally(() => {
+          submitButton.disabled = false;
+          submitButton.textContent = "Confirm Appointment";
+      });
+  });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let modalElement = document.getElementById("appointment-modal");
+    let modalInstance = new bootstrap.Modal(modalElement);
+
+    document.querySelectorAll(".book-appointment-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            modalInstance.hide(); // Hide any open modals
+            setTimeout(() => {
+                modalInstance.show(); // Show the new modal properly
+            }, 100);
+        });
+    });
+
+    modalElement.addEventListener("hidden.bs.modal", function () {
+        document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+            backdrop.remove(); // ✅ Remove unnecessary backdrops
+        });
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "auto";
+    });
+});
+
+</script>
+<script>
+    document.querySelectorAll(".list-unstyled").forEach(slotList => {
+        let slots = slotList.querySelectorAll("li");
+        let maxVisible = 3;
+        
+        if (slots.length > maxVisible) {
+            slots.forEach((slot, index) => {
+                if (index >= maxVisible) {
+                    slot.style.display = "none";
+                }
+            });
+
+            let seeMoreBtn = document.createElement("button");
+            seeMoreBtn.classList.add("btn-see-more");
+            seeMoreBtn.innerText = "See More";
+            slotList.after(seeMoreBtn);
+
+            let expanded = false;
+
+            seeMoreBtn.addEventListener("click", function () {
+                expanded = !expanded;
+                slots.forEach((slot, index) => {
+                    if (index >= maxVisible) {
+                        slot.style.display = expanded ? "list-item" : "none";
+                    }
+                });
+
+                this.innerText = expanded ? "Show Less" : "See More";
+            });
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
