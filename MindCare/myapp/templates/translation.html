@@ -1,0 +1,54 @@
+<style>
+  
+iframe.skiptranslate {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  opacity: 0 !important;
+}
+
+/* Hide Google Translate Branding */
+.goog-logo-link, 
+.goog-te-gadget span:nth-child(2), 
+.goog-te-gadget span,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget span:nth-child(2),
+.goog-te-gadget span {
+    display: none !important;
+}
+
+/* Ensure the dropdown is visible and styled nicely */
+.goog-te-combo {
+    display: inline-block !important;
+    background: #ffffff !important;
+    color: #1f4870 !important;
+    border-radius: 4px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #ddd !important;
+    cursor: pointer;
+}
+
+/* Remove unwanted margin and padding */
+.goog-te-gadget-simple {
+    font-size: 0 !important;
+    background: none !important;
+    border: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+</style>
+<div id="google_translate_element"></div>
+<script src="script.js"></script>
+      <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {pageLanguage: 'en'},
+                'google_translate_element'
+            );
+        } 
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

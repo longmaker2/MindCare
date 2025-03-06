@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
+{% include 'translation.html' %}
     <div class="hero-content">
         <h1>We are a team dedicated to making mental health support accessible to everyone.</h1>
         <a href="{% url 'login' %}" class="btn btn-primary">Get Started</a>
@@ -421,6 +421,326 @@
           }
       }
   </style>
+  <style>
+    .professionals {
+      padding: 100px 0;
+      background: var(--secondary-color);
+      text-align: center;
+  }
+  
+  .professionals .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1f4870 !important;
+      margin-bottom: 50px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+  }
+  
+  /* Professional Member Card */
+  .member {
+      background: var(--light-text);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease-in-out;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+  }
+  
+  .member img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: transform 0.3s ease-in-out;
+  }
+  
+  .member h4 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-top: 10px;
+  }
+  
+  .member p {
+      font-size: 1.1rem;
+      color: var(--text-color);
+      margin-bottom: 15px;
+  }
+  
+  /* Hover Effects */
+  .member:hover {
+      transform: translateY(-8px);
+      box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  .member:hover img {
+      transform: scale(1.05);
+  }
+  
+  /* Book Appointment Button */
+  .book-appointment-btn {
+      background: var(--primary-color);
+      color: var(--light-text);
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: all 0.3s ease-in-out;
+      border: none;
+      cursor: pointer;
+  }
+  
+  .book-appointment-btn:hover {
+      background: var(--accent-color);
+      color: var(--text-color);
+      transform: scale(1.05);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+      .professionals .section-title {
+          font-size: 2rem;
+      }
+      .member {
+          padding: 30px;
+      }
+  }
+  /* Professionals Section */
+  .professionals {
+    padding: 100px 0;
+    background: var(--secondary-color);
+    text-align: center;
+  }
+  
+  .professionals .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
+  .professionals p {
+    text-transform: none;
+    font-size: 1.1rem;
+    color: var(--text-color);
+  }
+  
+  /* Professional Member Card */
+  .member {
+    background: var(--light-text);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .member img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .member h4 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 10px;
+  }
+  
+  .member p {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+  }
+  
+  /* Hover Effects */
+  .member:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  .member:hover img {
+    transform: scale(1.05);
+  }
+  
+  /* Book Appointment Button */
+  .book-appointment-btn {
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .book-appointment-btn:hover {
+    background: var(--accent-color);
+    color: var(--text-color);
+    transform: scale(1.05);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .professionals .section-title {
+        font-size: 2rem;
+    }
+    .member {
+        padding: 30px;
+    }
+  }
+  /* Professionals Section */
+  .professionals {
+      padding: 100px 0;
+      background: var(--secondary-color);
+      text-align: center;
+  }
+  
+  .professionals .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: 50px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+  }
+  
+  /* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
+  .professionals p {
+      text-transform: none;
+      font-size: 1.1rem;
+      color: var(--text-color);
+  }
+  
+  /* Professional Member Card */
+  .member {
+      background: var(--light-text);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease-in-out;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+  }
+  
+  .member img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: transform 0.3s ease-in-out;
+  }
+  
+  .member h4 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-top: 10px;
+  }
+  
+  .member p {
+      font-size: 1.1rem;
+      color: var(--text-color);
+      margin-bottom: 15px;
+  }
+  
+  /* Hover Effects */
+  .member:hover {
+      transform: translateY(-8px);
+      box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  .member:hover img {
+      transform: scale(1.05);
+  }
+  
+  /* Book Appointment Button */
+  .book-appointment-btn {
+      background: var(--primary-color);
+      color: var(--light-text);
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: all 0.3s ease-in-out;
+      border: none;
+      cursor: pointer;
+  }
+  
+  .book-appointment-btn:hover {
+      background: var(--accent-color);
+      color: var(--text-color);
+      transform: scale(1.05);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+      .professionals .section-title {
+          font-size: 2rem;
+      }
+      .member {
+          padding: 30px;
+      }
+  }
+  
+  /* Appointment Modal */
+  #appointment-modal .modal-content {
+    border-radius: 10px;
+  }
+  
+  #appointment-modal .modal-header {
+    background: var(--primary-color);
+    color: var(--light-text);
+    border-radius: 10px 10px 0 0;
+  }
+  
+  #appointment-modal .btn-close {
+    background: var(--light-text);
+  }
+  
+  #appointment-modal .btn-primary {
+    background: var(--accent-color);
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  #appointment-modal .btn-primary:hover {
+    background: #4100e6;
+  }
+  
+  /* Success Popup */
+  #success-popup {
+    display: none;
+    background: green;
+    color: white;
+    padding: 15px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  
+  #success-popup a {
+    color: yellow;
+    font-weight: bold;
+  }
+  
+  </style>
 </section>
 
 <!-- PROFESSIONALS SECTION -->
@@ -520,324 +840,4 @@
     <br>
     <a id="meet-link" href="#" style="color: yellow; font-weight: bold;" target="_blank"></a>
   </div>
-<style>
-  .professionals {
-    padding: 100px 0;
-    background: var(--secondary-color);
-    text-align: center;
-}
-
-.professionals .section-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: blue;
-    margin-bottom: 50px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Professional Member Card */
-.member {
-    background: var(--light-text);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease-in-out;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-}
-
-.member img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.member h4 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-top: 10px;
-}
-
-.member p {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    margin-bottom: 15px;
-}
-
-/* Hover Effects */
-.member:hover {
-    transform: translateY(-8px);
-    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
-}
-
-.member:hover img {
-    transform: scale(1.05);
-}
-
-/* Book Appointment Button */
-.book-appointment-btn {
-    background: var(--primary-color);
-    color: var(--light-text);
-    padding: 12px 25px;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: all 0.3s ease-in-out;
-    border: none;
-    cursor: pointer;
-}
-
-.book-appointment-btn:hover {
-    background: var(--accent-color);
-    color: var(--text-color);
-    transform: scale(1.05);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .professionals .section-title {
-        font-size: 2rem;
-    }
-    .member {
-        padding: 30px;
-    }
-}
-/* Professionals Section */
-.professionals {
-  padding: 100px 0;
-  background: var(--secondary-color);
-  text-align: center;
-}
-
-.professionals .section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--primary-color);
-  margin-bottom: 50px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
-.professionals p {
-  text-transform: none;
-  font-size: 1.1rem;
-  color: var(--text-color);
-}
-
-/* Professional Member Card */
-.member {
-  background: var(--light-text);
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease-in-out;
-  text-align: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.member img {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.member h4 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-top: 10px;
-}
-
-.member p {
-  font-size: 1.1rem;
-  color: var(--text-color);
-  margin-bottom: 15px;
-}
-
-/* Hover Effects */
-.member:hover {
-  transform: translateY(-8px);
-  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
-}
-
-.member:hover img {
-  transform: scale(1.05);
-}
-
-/* Book Appointment Button */
-.book-appointment-btn {
-  background: var(--primary-color);
-  color: var(--light-text);
-  padding: 12px 25px;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: all 0.3s ease-in-out;
-  border: none;
-  cursor: pointer;
-}
-
-.book-appointment-btn:hover {
-  background: var(--accent-color);
-  color: var(--text-color);
-  transform: scale(1.05);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .professionals .section-title {
-      font-size: 2rem;
-  }
-  .member {
-      padding: 30px;
-  }
-}
-/* Professionals Section */
-.professionals {
-    padding: 100px 0;
-    background: var(--secondary-color);
-    text-align: center;
-}
-
-.professionals .section-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--primary-color);
-    margin-bottom: 50px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Ensuring the paragraph under "Meet Our Professionals" is in small letters */
-.professionals p {
-    text-transform: none;
-    font-size: 1.1rem;
-    color: var(--text-color);
-}
-
-/* Professional Member Card */
-.member {
-    background: var(--light-text);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease-in-out;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-}
-
-.member img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease-in-out;
-}
-
-.member h4 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-top: 10px;
-}
-
-.member p {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    margin-bottom: 15px;
-}
-
-/* Hover Effects */
-.member:hover {
-    transform: translateY(-8px);
-    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
-}
-
-.member:hover img {
-    transform: scale(1.05);
-}
-
-/* Book Appointment Button */
-.book-appointment-btn {
-    background: var(--primary-color);
-    color: var(--light-text);
-    padding: 12px 25px;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: all 0.3s ease-in-out;
-    border: none;
-    cursor: pointer;
-}
-
-.book-appointment-btn:hover {
-    background: var(--accent-color);
-    color: var(--text-color);
-    transform: scale(1.05);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .professionals .section-title {
-        font-size: 2rem;
-    }
-    .member {
-        padding: 30px;
-    }
-}
-
-/* Appointment Modal */
-#appointment-modal .modal-content {
-  border-radius: 10px;
-}
-
-#appointment-modal .modal-header {
-  background: var(--primary-color);
-  color: var(--light-text);
-  border-radius: 10px 10px 0 0;
-}
-
-#appointment-modal .btn-close {
-  background: var(--light-text);
-}
-
-#appointment-modal .btn-primary {
-  background: var(--accent-color);
-  border-radius: 50px;
-  font-weight: 600;
-  transition: all 0.3s ease-in-out;
-}
-
-#appointment-modal .btn-primary:hover {
-  background: #4100e6;
-}
-
-/* Success Popup */
-#success-popup {
-  display: none;
-  background: green;
-  color: white;
-  padding: 15px;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  border-radius: 5px;
-  z-index: 1000;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-#success-popup a {
-  color: yellow;
-  font-weight: bold;
-}
-
-</style>
 {% endblock %}

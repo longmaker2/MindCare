@@ -32,6 +32,7 @@
     list-style: none;
     padding: 0;
     margin-bottom: 0;
+    color: #ffffff !important;
 }
 
 .navbar .nav-link {
@@ -41,7 +42,7 @@
 
 .navbar .nav-link:hover,
 .navbar .nav-link.active {
-    color: #ffc107 !important;
+    color: #0713ff !important;
 }
 
 /* Language Selector Dropdown */
@@ -114,9 +115,10 @@ a {
                 <a href="#features">Features</a>
                 <a href="#professionals">Help & Support</a>
                 {% if user.is_authenticated %}
-                    <a href="#" class="getstarted">Logout</a>
+                    <a href="{% url 'logout' %}" class="getstarted">Logout</a>
                 {% else %}
-                    <a href="#" class="getstarted">Login/Sign Up</a>
+                <a href="{% url 'login' %}" class="getstarted">Login/Sign Up</a>
+
                 {% endif %}
                 <select class="form-select" id="language">
                     <option>English</option>
@@ -124,7 +126,7 @@ a {
                     <option>Español</option>
                     <a>Swahili</option>
                 </select>
-            </div>
+            
     </header>
 
     <div class="content-wrapper">
