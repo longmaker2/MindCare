@@ -1,6 +1,6 @@
-﻿ansible-core==2.13.13
+ansible-core==2.13.13
 autobahn==23.1.2
-cffi==1.17.1
+cffi==1.17.
 gunicorn==23.0.0
 cryptography==44.0.2
 hyperlink==21.0.0
@@ -12,3 +12,4 @@ pycparser==2.22
 PyYAML==6.0.2
 resolvelib==0.8.1
 txaio==23.1.1
+Django==4.2.20
