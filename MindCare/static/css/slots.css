@@ -49,25 +49,16 @@ body {
   transition: max-height 0.5s ease-in-out;
 }
 
-/* "See More / Show Less" Button */
-.btn-see-more {
-  background: #1f4870;
+btn-see-more {
+  background: transparent;
   border: none;
-  color: white;
-  font-weight: bold;
-  padding: 8px 12px;
-  border-radius: 5px;
+  color: #1f4870;
   cursor: pointer;
   margin-top: 10px;
-  transition: 0.3s;
-  text-align: center;
-  display: inline-block;
-  width: 150px;
 }
 
 .btn-see-more:hover {
-  background: #163754;
-  transform: scale(1.05);
+  text-decoration: underline;
 }
 
 /* Book Appointment Button */
