@@ -3,7 +3,7 @@ ansible-core==2.13.13
 asgiref==3.7.2
 asttokens==2.0.8
 attrs==25.1.0
-autobahn==24.4.2
+autobahn==23.1.2
 Automat==24.8.1
 backcall==0.2.0
 billiard==4.2.1
