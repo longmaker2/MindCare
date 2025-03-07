@@ -623,12 +623,15 @@ def anonymous_chat(request):
 
     # ✅ Get all users **except the current logged-in user**
     users = User.objects.exclude(username=request.user.username)
+    
+    # Check if the user is a professional by looking for a professional_profile
+    is_professional = hasattr(request.user, 'professional_profile')
 
     return render(request, 'anonymous_chat.html', {
         'messages': messages,
-        'users': users
+        'users': users,
+        'is_professional': is_professional
     })
-
 
 from django.shortcuts import render, redirect
 
@@ -856,20 +859,22 @@ def upload_course(request):
 def training_materials_prof(request):
     return render(request, 'training_materials_prof.html')  # Ensure the template exists
 
-
 def training_materials(request):
     books = Book.objects.all()
     articles = Article.objects.all()
     courses = Course.objects.all()
-    videos = Video.objects.all()  
+    videos = Video.objects.all()
     
+    # Check if the user is a professional
+    is_professional = hasattr(request.user, 'professional_profile')
+        
     return render(request, 'training_materials.html', {
         'books': books,
         'articles': articles,
         'courses': courses,
-        "videos": videos
+        'videos': videos,
+        'is_professional': is_professional
     })
-
 def user_dashboard(request):
     user = request.user
 

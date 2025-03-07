@@ -107,7 +107,7 @@
     </style>
 </head>
 <body>
-    <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+    <a href="{% if is_professional %}{% url 'professional_dashboard' %}{% else %}{% url 'dashboard' %}{% endif %}" class="back-button">⬅ Back to Dashboard</a>
     <h2>Private & Anonymous Chat</h2>
     <p>Your username: <b id="username-display">{{ request.user.username }}</b></p>
     

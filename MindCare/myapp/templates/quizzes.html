@@ -16,7 +16,7 @@ body {
 }
 
 /* Back to Dashboard Button (Fixed in Top Left Corner) */
-a[href="{% url 'dashboard' %}"] {
+.back-to-dashboard-btn {
     position: fixed;
     top: 20px;
     left: 20px;
@@ -290,7 +290,11 @@ quiz-options {
         
     <div class="container py-4">
         <h2 class="text-center mb-4">📝 Take a Quiz</h2>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">⬅ Back to Dashboard</a>
+        {% if is_admin_or_professional %}
+    <a href="{% url 'professional_dashboard' %}" class="btn btn-secondary mb-3 back-to-dashboard-btn">⬅ Back to Dashboard</a>
+{% else %}
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3 back-to-dashboard-btn">⬅ Back to Dashboard</a>
+{% endif %}
 
         <div class="d-flex justify-content-center mb-4">
             <input type="text" class="form-control search-bar" id="quizSearch" placeholder="Search for quizzes..." onkeyup="searchQuizzes()">

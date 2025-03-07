@@ -129,7 +129,7 @@
 <body>
 
   <h1 id="training-title">Training Materials</h1>
-  <a href="{% url 'dashboard' %}" class="back-button">⬅ Back to Dashboard</a>
+  <a href="{% if is_professional %}{% url 'professional_dashboard' %}{% else %}{% url 'dashboard' %}{% endif %}" class="back-button">⬅ Back to Dashboard</a>
 
   <p id="training-desc">Explore educational resources including articles, books, and videos.</p>
 
