@@ -1,3 +1,4 @@
+{% include 'translation.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -95,7 +96,7 @@ a {
         }
 
         .btn-submit:hover {
-            background-color: #ffc107;
+            background-color: #18053f;
         }
 
         .info i {
@@ -143,9 +144,10 @@ a {
                         <p><i class="bi bi-telephone-fill"></i> +250790135783</p>
                     </div>
                 </div>
-
+                
                 <div class="col-md-8">
-                    <form action="{% url 'contact' %}" method="post">
+                    <!-- Add ID to the form -->
+                    <form id="contactForm" action="{% url 'contact' %}" method="post">
                         {% csrf_token %}
                         <input class="form-control mb-3" type="text" name="name" placeholder="Your Name" required>
                         <input class="form-control mb-3" type="email" name="email" placeholder="Your Email" required>
@@ -153,10 +155,166 @@ a {
                         <textarea class="form-control mb-3" rows="5" name="message" placeholder="Message" required></textarea>
                         <button class="btn-submit" type="submit">Send Message</button>
                     </form>
+    
+                    <!-- Success popup (hidden by default) -->
+                    <div id="successPopup" class="popup" style="display: none;">
+                        <div class="popup-content">
+                            <span class="close">&times;</span>
+                            <p>Message sent successfully!</p>
+                        </div>
+                    </div>
+    
+                    <!-- Error popup (hidden by default) -->
+                    <div id="errorPopup" class="popup" style="display: none;">
+                        <div class="popup-content">
+                            <span class="close">&times;</span>
+                            <p id="errorMessage">An error occurred. Please try again.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    
+    <!-- Add CSS for the popup -->
+    <style>
+        .popup {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            position: relative;
+            width: 300px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+    
+    <!-- Add JavaScript to handle form submission -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contactForm');
+        const successPopup = document.getElementById('successPopup');
+        const errorPopup = document.getElementById('errorPopup');
+        const errorMessage = document.getElementById('errorMessage');
+        const closeButtons = document.querySelectorAll('.close');
+        
+        // Close popup when clicking the X
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                successPopup.style.display = 'none';
+                errorPopup.style.display = 'none';
+            });
+        });
+        
+        // Close popup when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === successPopup) {
+                successPopup.style.display = 'none';
+            }
+            if (event.target === errorPopup) {
+                errorPopup.style.display = 'none';
+            }
+        });
+        
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            
+            fetch('{% url "contact" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorMessage.textContent = data.error;
+                    errorPopup.style.display = 'flex';
+                } else {
+                    form.reset(); // Clear the form
+                    successPopup.style.display = 'flex';
+                }
+            })
+            .catch(error => {
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorPopup.style.display = 'flex';
+            });
+        });
+    });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            const formData = new FormData(form);
+
+            fetch("{% url 'contact' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest", // Ensures Django detects an AJAX request
+                    "X-CSRFToken": "{{ csrf_token }}",
+                }
+            })
+            .then(response => response.json()) // Convert response to JSON
+            .then(data => {
+                if (data.message) { // If success response from Django
+                    Swal.fire({
+                        title: "Success!",
+                        text: data.message,
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        form.reset(); // Clear the form after user clicks OK
+                    });
+
+                } else if (data.error) { // If error response from Django
+                    Swal.fire({
+                        title: "Error!",
+                        text: data.error,
+                        icon: "error",
+                        confirmButtonText: "Try Again"
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: "Error!",
+                    text: "There was a problem sending your message.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            });
+        });
+    });
+</script>
 
     <footer class="footer">
         <p>&copy; 2025 MindCare Burundi. Designed by Erica.</p>

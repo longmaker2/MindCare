@@ -228,18 +228,26 @@ def contact(request):
         email = request.POST.get("email")
         subject = request.POST.get("subject")
         message = request.POST.get("message")
-
+        
         # Debugging log to ensure data is received
         print(f"📩 New Message from {name} ({email}): {message}")
-
+        
         if not name or not email or not subject or not message:
-            return JsonResponse({"error": "All fields are required."}, status=400)
-
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({"error": "All fields are required."}, status=400)
+            else:
+                messages.error(request, "All fields are required.")
+                return redirect('index')  # Or whatever page you want to redirect to
+        
         messages.success(request, "Message sent successfully!")
-
-        # ✅ Make sure to return JSON format
-        return JsonResponse({"message": "Message sent successfully!"}, status=200)
-
+        
+        # For AJAX requests, return JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({"message": "Message sent successfully!"}, status=200)
+        # For normal form submission, redirect back
+        else:
+            return redirect('index')  # Or whatever page you want to redirect to
+    
     return render(request, "index.html")
 
 def home(request):

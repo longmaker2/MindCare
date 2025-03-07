@@ -1,120 +1,326 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: 'Arial', sans-serif;
-        }
-        .settings-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #4ca5af;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #1b6b76;
-        }
-        .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px; /* Moves the button to the left */
-    background-color: #007bff;
-    color: white;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
-    transition: 0.3s;
-}
+{% extends 'base.html' %}
+{% load static %}
 
-.back-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-    </style>
-</head>
-<body>
-    <a href="{% url 'dashboard' %}" class="back-button"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-
-    <div class="settings-container">
-        <h2>Language Settings</h2>
-        <select id="language-selector">
-            <option value="en">English</option>
-            <option value="fr">French</option>
-            <option value="es">Spanish</option>
-            <option value="de">German</option>
-            <option value="sw">Swahili</option>
-        </select>
-        <button onclick="saveLanguage()">Save Language</button>
+{% block content %}
+<div class="settings-container">
+    <div class="language-settings-card">
+        <div class="card-header">
+            <h2><i class="bi bi-globe"></i> Language Settings</h2>
+            <p>Select your preferred language for a personalized experience</p>
+        </div>
+        
+        <div class="language-selector">
+            <div class="current-language">
+                <span>Current Language:</span>
+                <div id="current-language-display">English</div>
+            </div>
+            
+            <div class="language-options">
+                <label for="google_translate_element">Choose Language:</label>
+                <div id="google_translate_element" class="translate-dropdown"></div>
+            </div>
+            
+            <div class="popular-languages">
+                <h3>Quick Select</h3>
+                <div class="language-buttons">
+                    <button class="lang-btn" onclick="changeLanguage('en')">English</button>
+                    <button class="lang-btn" onclick="changeLanguage('es')">Español</button>
+                    <button class="lang-btn" onclick="changeLanguage('fr')">Français</button>
+                    <button class="lang-btn" onclick="changeLanguage('de')">Deutsch</button>
+                    <button class="lang-btn" onclick="changeLanguage('zh-CN')">中文</button>
+                    <button class="lang-btn" onclick="changeLanguage('ar')">العربية</button>
+                    <button class="lang-btn" onclick="changeLanguage('hi')">हिन्दी</button>
+                    <button class="lang-btn" onclick="changeLanguage('ja')">日本語</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="language-info">
+            <div class="info-card">
+                <i class="bi bi-info-circle"></i>
+                <p>Language preferences are saved to your browser and will be remembered next time you visit.</p>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let savedLanguage = localStorage.getItem("selectedLanguage") || "en";
-            document.getElementById("language-selector").value = savedLanguage;
+<style>
+    .settings-container {
+        max-width: 800px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+    
+    .language-settings-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(31, 72, 112, 0.1);
+        padding: 40px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .language-settings-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(31, 72, 112, 0.15);
+    }
+    
+    .card-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f5f5f5;
+    }
+    
+    .card-header h2 {
+        color: #1f4870;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .card-header p {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+    
+    .card-header i {
+        margin-right: 10px;
+        color: #1f4870;
+    }
+    
+    .language-selector {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .current-language {
+        display: flex;
+        align-items: center;
+        background: #f7fafc;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .current-language span {
+        font-weight: 600;
+        color: #1f4870;
+        margin-right: 15px;
+        font-size: 1.1rem;
+    }
+    
+    #current-language-display {
+        font-weight: 700;
+        color: #1f4870;
+        font-size: 1.2rem;
+        background: #e6f0f9;
+        padding: 6px 15px;
+        border-radius: 6px;
+    }
+    
+    .language-options {
+        margin: 20px 0;
+    }
+    
+    .language-options label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #1f4870;
+        font-size: 1.1rem;
+    }
+    
+    .translate-dropdown {
+        margin-top: 10px;
+        position: relative;
+    }
+    
+    /* Style for Google Translate dropdown */
+    .goog-te-combo {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 2px solid #cfdce8;
+        background-color: #ffffff;
+        color: #1f4870;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%231f4870' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 40px;
+    }
+    
+    .goog-te-combo:focus {
+        outline: none;
+        border-color: #1f4870;
+        box-shadow: 0 0 0 3px rgba(31, 72, 112, 0.2);
+    }
+    
+    .popular-languages {
+        margin-top: 20px;
+    }
+    
+    .popular-languages h3 {
+        font-size: 1.2rem;
+        color: #1f4870;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    .language-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .lang-btn {
+        background: #f0f7ff;
+        color: #1f4870;
+        border: 1px solid #cfdce8;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .lang-btn:hover {
+        background: #1f4870;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .language-info {
+        margin-top: 30px;
+    }
+    
+    .info-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: #f0f7ff;
+        border-radius: 12px;
+        padding: 20px;
+        border-left: 4px solid #1f4870;
+    }
+    
+    .info-card i {
+        font-size: 1.5rem;
+        color: #1f4870;
+    }
+    
+    .info-card p {
+        margin: 0;
+        color: #5a6978;
+        font-size: 0.95rem;
+    }
+    
+    /* Remove Google branding */
+    iframe.skiptranslate,
+    .goog-logo-link, 
+    .goog-te-gadget span:nth-child(2),
+    .goog-te-gadget span,
+    .goog-te-banner-frame.skiptranslate,
+    .goog-te-gadget span:nth-child(2),
+    .goog-te-gadget span {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        opacity: 0 !important;
+    }
+    
+    /* Make sure body content doesn't shift */
+    body {
+        top: 0 !important;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .settings-container {
+            margin: 30px auto;
+        }
+        
+        .language-settings-card {
+            padding: 25px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.8rem;
+        }
+        
+        .current-language {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .language-buttons {
+            justify-content: center;
+        }
+    }
+</style>
+
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+            {
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            },
+            'google_translate_element'
+        );
+    }
+    
+    // Function to change language via the quick select buttons
+    function changeLanguage(langCode) {
+        var select = document.querySelector('.goog-te-combo');
+        if (select) {
+            select.value = langCode;
+            select.dispatchEvent(new Event('change'));
+            
+            // Update current language display
+            setTimeout(function() {
+                var selectedOption = select.options[select.selectedIndex];
+                if (selectedOption) {
+                    document.getElementById('current-language-display').textContent = selectedOption.text;
+                }
+            }, 300);
+        }
+    }
+    
+    // Update the current language display when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add MutationObserver to detect when Google Translate has finished loading
+        var observer = new MutationObserver(function(mutations) {
+            var select = document.querySelector('.goog-te-combo');
+            if (select) {
+                var selectedOption = select.options[select.selectedIndex];
+                if (selectedOption) {
+                    document.getElementById('current-language-display').textContent = selectedOption.text;
+                }
+                
+                // Add change event listener
+                select.addEventListener('change', function() {
+                    var selectedOption = select.options[select.selectedIndex];
+                    if (selectedOption) {
+                        document.getElementById('current-language-display').textContent = selectedOption.text;
+                    }
+                });
+                
+                observer.disconnect();
+            }
         });
-
-        function saveLanguage() {
-            let selectedLanguage = document.getElementById("language-selector").value;
-            localStorage.setItem("selectedLanguage", selectedLanguage);
-
-            // ✅ Fetch and store translations for instant use
-            fetchTranslations(selectedLanguage);
-
-            alert("Language saved successfully! The entire system will now reflect this language.");
-            location.reload(); // ✅ Reload settings to apply changes
-        }
-
-        function fetchTranslations(language) {
-            fetch("/translate_all/", {  // ✅ Server route to translate all text
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ language: language })
-            })
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem("translations", JSON.stringify(data)); // ✅ Store translations
-                localStorage.setItem("languageChanged", "true"); // ✅ Notify all pages
-            })
-            .catch(error => console.error("Error fetching translations:", error));
-        }
-    </script>
-</body>
-</html>
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+{% endblock %}
