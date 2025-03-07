@@ -13,3 +13,4 @@ PyYAML==6.0.2
 resolvelib==0.8.1
 txaio==23.1.1
 Django==4.2.20
+psycopg2==3.2.5
