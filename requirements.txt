@@ -1,6 +1,6 @@
 ansible-core==2.13.13
 autobahn==23.1.2
-cffi==1.17.
+cffi==1.17.0
 gunicorn==23.0.0
 cryptography==44.0.2
 hyperlink==21.0.0
