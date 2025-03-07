@@ -774,16 +774,45 @@ def fetch_updates(request):
 
 def login_view(request):
     if request.method == 'POST':
+        # Check if this is an AJAX request to validate the role
+        if 'role_check' in request.POST and request.POST['role_check'] == 'true':
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(request, username=username, password=password)
+            
+            if user:
+                # Determine the user's role
+                user_role = 'professional' if hasattr(user, 'professional_profile') else 'user'
+                return JsonResponse({
+                    'status': 'success',
+                    'user_role': user_role
+                })
+            else:
+                return JsonResponse({
+                    'status': 'invalid_credentials',
+                    'message': 'Invalid username or password'
+                })
+        
+        # Normal login flow
         username = request.POST['username']
         password = request.POST['password']
         role = request.POST['role']
         user = authenticate(request, username=username, password=password)
 
         if user:
+            # Determine the user's actual role
+            is_professional = hasattr(user, 'professional_profile')
+            
+            # Validate that the user is trying to log in with their correct role
+            if (role == 'professional' and not is_professional) or (role == 'user' and is_professional):
+                messages.error(request, f"You cannot log in as {role}. Your registered role is {'professional' if is_professional else 'user'}.")
+                return redirect('login')
+            
+            # Proceed with normal login
             login(request, user)
 
             if role == 'professional':
-                if hasattr(user, 'professional_profile'):  # Check if the user has a Professional profile
+                if is_professional:  # Check if the user has a Professional profile
                     return redirect(reverse('professional_dashboard'))
                 else:
                     messages.error(request, 'No professional profile found. Contact support.')
@@ -1575,3 +1604,33 @@ def save_user_result(request):
         )
 
         return JsonResponse({"message": "Result saved", "percentage": percentage})
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
+import json
+
+@csrf_exempt
+def check_user_role(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        # Authenticate user
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            # Check user type from your user model
+            # This depends on how you've implemented user roles in your system
+            # For example, if you have a UserProfile model with a user_type field:
+            user_type = user.userprofile.user_type if hasattr(user, 'userprofile') else 'user'
+            
+            return JsonResponse({
+                'exists': True,
+                'user_type': user_type
+            })
+        
+        return JsonResponse({'exists': False})
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

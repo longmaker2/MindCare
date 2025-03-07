@@ -91,6 +91,7 @@ urlpatterns = [
     path('quizzes/upload/', upload_quiz, name='upload_quiz'), 
     path('quizzes/edit/<int:quiz_id>/', edit_quiz, name='edit_quiz'),  # Edit Quiz URL
     path('quizzes/delete/<int:quiz_id>/', delete_quiz, name='delete_quiz'),  # Delete Quiz URL
+    path('check_user_role/', views.check_user_role, name='check_user_role'),
     
 
 

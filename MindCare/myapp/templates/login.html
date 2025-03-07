@@ -76,7 +76,7 @@
         }
 
         /* ✅ Login Button */
-        input[type="submit"] {
+        input[type="submit"], button[type="submit"] {
             background: #1f4870;
             color: white;
             font-size: 18px;
@@ -84,9 +84,12 @@
             border: none;
             cursor: pointer;
             transition: 0.3s;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
         }
 
-        input[type="submit"]:hover {
+        input[type="submit"]:hover, button[type="submit"]:hover {
             background: #1f4870;
             transform: scale(1.05);
         }
@@ -108,27 +111,32 @@
             text-decoration: underline;
         }
 
-        /* ✅ Language Selector */
-        .language-container {
-            margin-top: 15px;
-            text-align: center;
-        }
-        select, button {
-            cursor: pointer;
-        }
-        button {
-            width: 100%;
+        /* ✅ Error Message */
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: none;
             padding: 10px;
-            background: #1f4870;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: 0.3s;
+            background-color: #fdecea;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
         }
-        button:hover {
-            background: #1d0244;
-            transform: scale(1.05);
+
+        /* Django Messages */
+        .messages {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .messages .error {
+            color: #e74c3c;
+            font-weight: 600;
+            padding: 10px;
+            background-color: #fdecea;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+            margin-bottom: 10px;
         }
 
         /* ✅ Responsive Design */
@@ -145,27 +153,112 @@
     <div class="container">
         <h1><i class="fas fa-user-circle"></i> Login</h1>
 
-        <form action="{% url 'login' %}" method="POST">
+        <!-- Display Django messages if any -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div id="error-message" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> 
+            <span id="error-text">You cannot login with this role. Please select the role that matches your registration.</span>
+        </div>
+
+        <form id="loginForm" action="{% url 'login' %}" method="POST">
             {% csrf_token %}
 
             <p><i class="fas fa-user"></i> Username:</p>
-            <input type="text" name="username" placeholder="Enter your username" required />
+            <input type="text" name="username" id="username" placeholder="Enter your username" required />
 
             <p><i class="fas fa-lock"></i> Password:</p>
-            <input type="password" name="password" placeholder="Enter your password" required />
+            <input type="password" name="password" id="password" placeholder="Enter your password" required />
 
             <p><i class="fas fa-user-tag"></i> Login as:</p>
-            <select name="role">
+            <select name="role" id="role">
                 <option value="user">Regular User</option>
                 <option value="professional">Professional</option>
             </select>
 
-            <input type="submit" value="Login" />
+            <button type="submit" id="login-button">Login</button>
         </form>
 
         <div class="signup-container">
             <p>Don't have an account? <a href="{% url 'register' %}">Sign Up</a></p>
         </div>
+    </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const selectedRole = document.getElementById('role').value;
+                
+                // Create form data to send
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('password', password);
+                formData.append('role_check', 'true');
+                
+                // Get the CSRF token from the form
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                try {
+                    // Send a request to validate the role
+                    const response = await fetch(loginForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        // User exists, now check if the role matches
+                        if (data.user_role === selectedRole) {
+                            // Roles match, proceed with actual login
+                            submitLoginForm();
+                        } else {
+                            // Roles don't match, show error
+                            errorText.textContent = `You cannot log in as ${selectedRole}. Your registered role is ${data.user_role}.`;
+                            errorMessage.style.display = 'block';
+                            setTimeout(() => {
+                                errorMessage.style.display = 'none';
+                            }, 5000); // Hide after 5 seconds
+                        }
+                    } else {
+                        // Invalid credentials or some other error, let the regular form handle this
+                        submitLoginForm();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // If there's an error with the fetch, fall back to normal form submission
+                    submitLoginForm();
+                }
+            });
+            
+            function submitLoginForm() {
+                // Remove the role_check field that was only for validation
+                const roleCheckInput = document.querySelector('input[name="role_check"]');
+                if (roleCheckInput) {
+                    roleCheckInput.remove();
+                }
+                
+                // Submit the form normally
+                loginForm.submit();
+            }
+        });
+    </script>
 </body>
 </html>
