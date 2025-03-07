@@ -412,134 +412,285 @@ function openQuiz(quizId) {
         .then(response => response.json())
         .then(data => {
             selectedQuiz = data;
-            userAnswers = {};
-            let quizData = quizScores[quizId] || { percentage: 0 };
-            let hasAttempted = quizData.percentage > 0;
-            let passed = quizData.percentage >= PASSING_SCORE;
+            
+            // Get current user and their progress
+            let currentUser = "{{ user.username }}";
+            let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {};
+            let userQuizData = quizProgress[currentUser]?.[quizId];
+            
+            let hasAttempted = userQuizData && userQuizData.percentage !== null;
+            let passed = hasAttempted && userQuizData.percentage >= PASSING_SCORE;
 
-            document.getElementById("quizTitle").innerText = selectedQuiz.title;
+            document.getElementById("quizTitle").innerText = data.title;
             let quizQuestions = document.getElementById("quizQuestions");
+            let quizResults = document.getElementById("quizResults");
+            
+            // Reset the progress bar
+            document.getElementById("quizProgressBar").style.width = "0%";
+            document.getElementById("quizProgressBar").innerText = "0%";
+            
+            // Clear previous content
             quizQuestions.innerHTML = '';
-
-            selectedQuiz.questions.forEach((question, index) => {
-                let userAnswer = hasAttempted ? quizData.userAnswers?.[index] || "" : null;
-                let optionsHTML = question.options.map(option => `
-                    <div class="quiz-option">
-                        <input type="radio" id="q${index}-${option}" name="question${index}" value="${option}" 
-                            onchange="saveAnswer(${index}, '${option}')"
-                            ${hasAttempted ? "disabled" : ""} ${userAnswer === option ? "checked" : ""} />
-                        <label for="q${index}-${option}">${option}</label>
-                    </div>
-                `).join("");
-
-                let feedbackIcon = hasAttempted
-                    ? (userAnswer === question.correct_answer 
-                        ? `<span class="text-success">✅</span>` 
-                        : `<span class="text-danger">❌ <b>Correct:</b> ${question.correct_answer}</span>`)
-                    : '';
-
-                let questionDiv = document.createElement("div");
-                questionDiv.classList.add("quiz-question", "mb-3", "p-2");
-                questionDiv.innerHTML = `
-                    <p class="fw-bold">Q${index + 1}: ${question.text}</p>
-                    <div class="quiz-options">${optionsHTML}</div>
-                    <div id="result${index}" class="feedback-icon">${feedbackIcon}</div>
-                `;
-
-                quizQuestions.appendChild(questionDiv);
-            });
-
-            let resultsDiv = document.getElementById("quizResults");
-            resultsDiv.innerHTML = "";
-
+            quizResults.innerHTML = '';
+            
+            // If the user has already taken this quiz and is viewing results
             if (hasAttempted) {
-                let message = passed
+                // Set progress bar to 100%
+                document.getElementById("quizProgressBar").style.width = "100%";
+                document.getElementById("quizProgressBar").innerText = "100%";
+                
+                // Display their previous answers and correct/incorrect indicators
+                data.questions.forEach((question, index) => {
+                    let userAnswer = userQuizData.userAnswers[index] || "No Answer";
+                    let isCorrect = userAnswer === question.correct_answer;
+                    
+                    let optionsHTML = question.options.map(option => `
+                        <div class="quiz-option">
+                            <input type="radio" id="q${index}-${option}" name="question${index}" value="${option}" 
+                                disabled ${userAnswer === option ? "checked" : ""} />
+                            <label for="q${index}-${option}">${option}</label>
+                        </div>
+                    `).join("");
+                    
+                    let feedbackIcon = isCorrect 
+                        ? `<span class="text-success">✅ Correct</span>` 
+                        : `<span class="text-danger">❌ Incorrect. Correct answer: ${question.correct_answer}</span>`;
+                    
+                    let questionDiv = document.createElement("div");
+                    questionDiv.classList.add("quiz-question", "mb-3", "p-2");
+                    questionDiv.innerHTML = `
+                        <p class="fw-bold">Q${index + 1}: ${question.text}</p>
+                        <div class="quiz-options">${optionsHTML}</div>
+                        <div class="feedback-icon">${feedbackIcon}</div>
+                    `;
+                    
+                    quizQuestions.appendChild(questionDiv);
+                });
+                
+                // Calculate and display the score at the top of the results section
+                let score = 0;
+                data.questions.forEach((question, index) => {
+                    if (userQuizData.userAnswers[index] === question.correct_answer) {
+                        score++;
+                    }
+                });
+                
+                let percentage = userQuizData.percentage;
+                let totalQuestions = data.questions.length;
+                
+                // Create a summary result section at the TOP of the modal
+                let resultSummary = document.createElement("div");
+                resultSummary.classList.add("mb-4", "p-3", "border", "rounded");
+                
+                let resultMessage = percentage >= PASSING_SCORE
                     ? `<div class="alert alert-success">🎉 Congratulations! You passed this quiz.</div>`
                     : `<div class="alert alert-danger">❌ You did not pass. Try again!</div>`;
-                resultsDiv.innerHTML = message + quizData.feedback;
+                    
+                resultSummary.innerHTML = `
+                    ${resultMessage}
+                    <h4 class="text-center">Your Score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)</h4>
+                `;
+                
+                // Insert the summary at the beginning of the questions section
+                quizQuestions.insertBefore(resultSummary, quizQuestions.firstChild);
+                
+                // Hide submit button, show retake button
+                document.getElementById("submitBtn").classList.add("d-none");
+                document.getElementById("retakeBtn").classList.remove("d-none");
+            } else {
+                // Display the quiz for first-time taking
+                userAnswers = {}; // Reset user answers
+                
+                data.questions.forEach((question, index) => {
+                    let optionsHTML = question.options.map(option => `
+                        <div class="quiz-option">
+                            <input type="radio" id="q${index}-${option}" name="question${index}" value="${option}" 
+                                onchange="saveAnswer(${index}, '${option}')" />
+                            <label for="q${index}-${option}">${option}</label>
+                        </div>
+                    `).join("");
+                    
+                    let questionDiv = document.createElement("div");
+                    questionDiv.classList.add("quiz-question", "mb-3", "p-2");
+                    questionDiv.innerHTML = `
+                        <p class="fw-bold">Q${index + 1}: ${question.text}</p>
+                        <div class="quiz-options">${optionsHTML}</div>
+                        <div id="result${index}" class="feedback-icon"></div>
+                    `;
+                    
+                    quizQuestions.appendChild(questionDiv);
+                });
+                
+                // Show submit button, hide retake button
+                document.getElementById("submitBtn").classList.remove("d-none");
+                document.getElementById("retakeBtn").classList.add("d-none");
             }
-
-            document.getElementById("submitBtn").classList.toggle("d-none", hasAttempted);
-            document.getElementById("retakeBtn").classList.toggle("d-none", !hasAttempted);
+            
+            // Show the modal
             document.getElementById("quizModal").classList.add("show");
         })
-        .catch(error => alert("Error loading quiz."));
+        .catch(error => {
+            console.error("Error loading quiz:", error);
+            alert("Error loading quiz. Please try again later.");
+        });
 }
-
 function saveAnswer(questionIndex, answer) {
     userAnswers[questionIndex] = answer;
+    console.log(`Saved answer for question ${questionIndex}: ${answer}`);
+    
+    // Update progress bar based on answered questions
+    updateQuizProgressBar();
+}
+
+function updateQuizProgressBar() {
+    let totalQuestions = selectedQuiz ? selectedQuiz.questions.length : 0;
+    let answeredQuestions = Object.keys(userAnswers).length;
+    let progressPercentage = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+    
+    let progressBar = document.getElementById("quizProgressBar");
+    progressBar.style.width = `${progressPercentage}%`;
+    progressBar.innerText = `${Math.round(progressPercentage)}%`;
 }
 
 function submitQuiz() {
+    if (!selectedQuiz) return;
+    
     let score = 0;
     let totalQuestions = selectedQuiz.questions.length;
-    let quizResults = document.getElementById("quizResults");
-    quizResults.innerHTML = "";
-
-    selectedQuiz.questions.forEach((question, index) => {
-        let userAnswer = userAnswers[index] || "No Answer";
-        let isCorrect = userAnswer === question.correct_answer;
-
-        let feedbackDiv = document.getElementById(`result${index}`);
-        if (!isCorrect) {
-            feedbackDiv.innerHTML = `<span class="text-danger fw-bold">❌ Incorrect</span>`;
-            quizResults.innerHTML += `
-                <p>❌ <b>Q${index + 1}:</b> ${question.text} 
-                   <br><b>Your Answer:</b> ${userAnswer}
-                   <br><b>Correct Answer:</b> ${question.correct_answer}</p>
-                <hr>
-            `;
+    let quizQuestions = document.getElementById("quizQuestions");
+    
+    // Check for unanswered questions
+    let unansweredQuestions = [];
+    for (let i = 0; i < totalQuestions; i++) {
+        if (!userAnswers.hasOwnProperty(i)) {
+            unansweredQuestions.push(i + 1); // Adding 1 to show human-readable question numbers
         }
-
-        if (isCorrect) score++;
+    }
+    
+    if (unansweredQuestions.length > 0) {
+        alert(`Please answer all questions before submitting. Unanswered questions: ${unansweredQuestions.join(', ')}`);
+        return;
+    }
+    
+    // Calculate score and generate feedback
+    selectedQuiz.questions.forEach((question, index) => {
+        let userAnswer = userAnswers[index];
+        let isCorrect = userAnswer === question.correct_answer;
+        
+        let resultDiv = document.getElementById(`result${index}`);
+        if (resultDiv) {
+            if (isCorrect) {
+                resultDiv.innerHTML = `<span class="text-success">✅ Correct</span>`;
+                score++;
+            } else {
+                resultDiv.innerHTML = `<span class="text-danger">❌ Incorrect. Correct answer: ${question.correct_answer}</span>`;
+            }
+        }
+        
+        // Disable all inputs after submission
+        let questionInputs = document.querySelectorAll(`input[name="question${index}"]`);
+        questionInputs.forEach(input => {
+            input.disabled = true;
+        });
     });
-
+    
+    // Calculate percentage score
     let percentage = (score / totalQuestions) * 100;
-    let feedback = `<h4>Your Score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)</h4><hr />`;
-    let message = percentage >= 70
+    
+    // Create results summary
+    let resultMessage = percentage >= PASSING_SCORE
         ? `<div class="alert alert-success">🎉 Congratulations! You passed this quiz.</div>`
         : `<div class="alert alert-danger">❌ You did not pass. Try again!</div>`;
-
-    quizResults.innerHTML = message + feedback + quizResults.innerHTML;
-
-    let currentUser = "{{ user.username }}"; // ✅ Get logged-in user
-    let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {}; // ✅ Load progress
-    quizProgress[currentUser] = quizProgress[currentUser] || {}; // ✅ Ensure user's data exists
-    quizProgress[currentUser][selectedQuiz.id] = { percentage, feedback, userAnswers }; // ✅ Save progress for this user
-
-    localStorage.setItem("quizProgress", JSON.stringify(quizProgress)); // ✅ Store progress
-
+        
+    let resultSummary = document.createElement("div");
+    resultSummary.classList.add("mb-4", "p-3", "border", "rounded");
+    resultSummary.innerHTML = `
+        ${resultMessage}
+        <h4 class="text-center">Your Score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)</h4>
+    `;
+    
+    // Add results to the top of questions container
+    quizQuestions.insertBefore(resultSummary, quizQuestions.firstChild);
+    
+    // Save results to local storage
+    let currentUser = "{{ user.username }}";
+    let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {};
+    quizProgress[currentUser] = quizProgress[currentUser] || {};
+    
+    // Determine feedback message based on score
+    let feedbackMessage = percentage >= PASSING_SCORE 
+        ? "Great job! You've mastered this topic." 
+        : "Keep studying and try again to improve your score.";
+    
+    // Store quiz data
+    quizProgress[currentUser][selectedQuiz.id] = { 
+        percentage: percentage, 
+        userAnswers: {...userAnswers},
+        feedback: feedbackMessage,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem("quizProgress", JSON.stringify(quizProgress));
+    
+    // Also update quizScores for backward compatibility
+    quizScores[selectedQuiz.id] = { 
+        percentage: percentage, 
+        userAnswers: {...userAnswers}
+    };
+    localStorage.setItem("quizScores", JSON.stringify(quizScores));
+    
+    // Update UI
     document.getElementById("submitBtn").classList.add("d-none");
     document.getElementById("retakeBtn").classList.remove("d-none");
-
-    // ✅ Update quiz button immediately after submission
+    
+    // Update quiz button in the main list
     updateQuizButton(selectedQuiz.id, percentage);
-
-    setTimeout(updateProgress, 500);
+    
+    // Update overall progress
+    updateProgress();
+    
+    // Make sure the progress bar shows 100% when quiz is submitted
+    document.getElementById("quizProgressBar").style.width = "100%";
+    document.getElementById("quizProgressBar").innerText = "100%";
+    
+    // Refresh the quiz list to show updated status
+    fetchQuizzes();
 }
-
 
 function retakeQuiz() {
     if (!selectedQuiz) return;
 
+    // Reset user answers object
     userAnswers = {};
-    delete quizScores[selectedQuiz.id];
-    localStorage.setItem("quizScores", JSON.stringify(quizScores));
+    
+    // Remove this quiz from scores (if it exists)
+    let currentUser = "{{ user.username }}";
+    let quizProgress = JSON.parse(localStorage.getItem("quizProgress")) || {};
+    
+    if (quizProgress[currentUser] && quizProgress[currentUser][selectedQuiz.id]) {
+        delete quizProgress[currentUser][selectedQuiz.id];
+        localStorage.setItem("quizProgress", JSON.stringify(quizProgress));
+    }
+    
+    // For backward compatibility
+    if (quizScores[selectedQuiz.id]) {
+        delete quizScores[selectedQuiz.id];
+        localStorage.setItem("quizScores", JSON.stringify(quizScores));
+    }
 
-    document.querySelectorAll("input[type=radio]").forEach(input => {
-        input.disabled = false;
-        input.checked = false;
-    });
-
-    document.querySelectorAll(".feedback-icon").forEach(icon => {
-        icon.innerHTML = "";
-    });
-
-    document.getElementById("quizResults").innerHTML = "";
-    document.getElementById("submitBtn").classList.remove("d-none");
-    document.getElementById("retakeBtn").classList.add("d-none");
-
-    document.getElementById("quizModal").classList.add("show");
+    // Close the modal first
+    closeQuiz();
+    
+    // Then reopen it with a fresh quiz
+    setTimeout(() => {
+        openQuiz(selectedQuiz.id);
+    }, 100);
+    
+    // Update overall progress
+    updateProgress();
+    
+    // Refresh quiz list to show updated statuses
+    fetchQuizzes();
 }
 
 function closeQuiz() {
